@@ -1,3 +1,3 @@
-from .card import Suit, Rank, Card
+from .card import *
 
 __all__ = ['Suit', 'Rank', 'Card']

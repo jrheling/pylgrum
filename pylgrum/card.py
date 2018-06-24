@@ -14,17 +14,7 @@
 import typing
 from enum import Enum
 
-"""Trivial enum of card suits."""
-class Suit(Enum):
-    SPADE = 'S'
-    HEART = 'H'
-    CLUB = 'C'
-    DIAMOND = 'D'
-
-"""Simple class to track card ranks (e.g. ace, face cards, royals, etc.).
-
-Public methods:
-"""
+"""Trivial enum of card ranks (e.g. ace, face cards, royals, etc.)."""
 class Rank(Enum):
     ACE = '1'
     TWO = '2'
@@ -40,7 +30,13 @@ class Rank(Enum):
     QUEEN = 'Q'
     KING = 'K'
 
-
+"""Trivial enum of card suits."""
+class Suit(Enum):
+    SPADE = 'S'
+    HEART = 'H'
+    CLUB = 'C'
+    DIAMOND = 'D'
+    
 """Cards have suit+rank, point value, and can be compared (by point value).
 
 Public methods:
@@ -49,10 +45,10 @@ Public methods:
  overriden operators ==, !=, <, >, <=, >= work on point value (e.g. Jack == King)
 """
 class Card:
-    suit = None # type: Suit
     rank = None # type: Rank
+    suit = None # type: Suit
 
-    def __init__(self, suit: Suit, rank: Rank):
+    def __init__(self, rank: Rank, suit: Suit) -> None:
         self.suit = suit
         self.rank = rank
 
@@ -78,7 +74,7 @@ class Card:
         """Return the point value of a card (if held as 'deadwood')."""
         if self.rank.name is "A":
             return 1
-        elif self.rank.name in ("JACK","QUEEN","KING"):
+        elif self.rank.name in ("JACK", "QUEEN", "KING"):
             return 10
         else:
             return int(self.rank.value)
