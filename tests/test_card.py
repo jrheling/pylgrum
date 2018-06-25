@@ -60,5 +60,15 @@ class TestCard(unittest.TestCase):
         self.assertFalse(jack < king)
         self.assertTrue(nine < jack)
 
+    def test_same_suit(self):
+        club1 = Card(rank=Rank.TWO, suit=Suit.CLUB)
+        club2 = Card(rank=Rank.SEVEN, suit=Suit.CLUB)
+        heart = Card(rank=Rank.FIVE, suit=Suit.HEART)
+
+        self.assertTrue(club1.same_suit(club2))
+        self.assertTrue(club2.same_suit(club1))
+        self.assertFalse(club1.same_suit(heart))
+        self.assertFalse(heart.same_suit(club1))
+
 if __name__ == '__main__':
     unittest.main()
