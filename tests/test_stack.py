@@ -27,7 +27,7 @@ class TestStack(unittest.TestCase):
         pass
 
     def test_stack_add(self):
-        cs = CardStack()        
+        cs = CardStack()
         c = Card(rank=Rank.QUEEN, suit=Suit.HEART)
 
         self.assertEqual(cs.size(), 0)
@@ -53,7 +53,7 @@ class TestStack(unittest.TestCase):
 
         with self.assertRaises(CardNotFoundError):
             cs.remove(24) # index out of bounds
-        
+
     def test_stack_find(self):
         cs = get_test_stack()
         three_diamond = Card(rank=Rank.THREE, suit=Suit.DIAMOND)
@@ -67,16 +67,26 @@ class TestStack(unittest.TestCase):
 
         with self.assertRaises(CardNotFoundError):
             cs.find(qd)
-        
+
     def test_stack_draw(self):
         cs = get_test_stack()
-        
+
         self.assertEqual(cs.size(), 12)
         seven_spade = cs.draw()
         self.assertTrue(seven_spade.is_same_card(Card(rank=Rank.SEVEN,
                                                       suit=Suit.SPADE)))
 
         self.assertEqual(cs.size(), 11)
+
+    def test_stack_peek(self):
+        cs = get_test_stack()
+
+        self.assertEqual(cs.size(), 12)
+        seven_spade = cs.peek()
+        self.assertTrue(seven_spade.is_same_card(Card(rank=Rank.SEVEN,
+                                                      suit=Suit.SPADE)))
+
+        self.assertEqual(cs.size(), 12)
 
     def test_stack_shuffle(self):
         cs1 = get_test_stack()
@@ -89,10 +99,10 @@ class TestStack(unittest.TestCase):
     def test_stack_eq(self):
         cs1 = get_test_stack()
         cs2 = get_test_stack()
-        
+
         self.assertTrue(cs1 == cs2)
         cs2.remove(2)
         self.assertFalse(cs1 == cs2)
-        
+
 if __name__ == '__main__':
     unittest.main()

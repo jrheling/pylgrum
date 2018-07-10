@@ -26,8 +26,10 @@ python >=3.5
 from .card import *
 from .stack import *
 from .errors import *
-
-
+from .deck import *
+from .hand import *
+from .game import *
+from .player import *
 
 __all__ = ['Suit', 'Rank', 'Card', 'CardStack', 'PylgrumError',
-           'CardNotFoundError']
+           'CardNotFoundError', 'Deck', 'Player']

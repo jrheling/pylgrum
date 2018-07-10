@@ -73,6 +73,10 @@ class CardStack():
         """Remove and return the top card on the stack."""
         return self.cards.pop()
 
+    def peek(self) -> Card:
+        """Return but do not remove the top card on the stack."""
+        return self.cards[len(self.cards)-1]
+
     def shuffle(self) -> None:
         """Randomly re-order the stack."""
         random.shuffle(self.cards)
