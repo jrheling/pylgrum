@@ -70,5 +70,52 @@ class TestCard(unittest.TestCase):
         self.assertFalse(club1.same_suit(heart))
         self.assertFalse(heart.same_suit(club1))
 
+    def test_rank_val(self):
+        nine = Card(rank=Rank.NINE, suit=Suit.CLUB)
+        ten = Card(rank=Rank.TEN, suit=Suit.DIAMOND)
+        jack = Card(rank=Rank.JACK, suit=Suit.HEART)
+        king = Card(rank=Rank.KING, suit=Suit.SPADE)
+
+        self.assertEqual(nine.rank_val(), 9)
+        self.assertEqual(ten.rank_val(), 10)
+        self.assertEqual(jack.rank_val(), 11)
+        self.assertEqual(king.rank_val(), 13)
+
+    def test_sorted(self):
+        nine = Card(rank=Rank.NINE, suit=Suit.CLUB)
+        ten = Card(rank=Rank.TEN, suit=Suit.DIAMOND)
+        jack = Card(rank=Rank.JACK, suit=Suit.HEART)
+        king = Card(rank=Rank.KING, suit=Suit.SPADE)
+
+        cards = [king, ten, nine, jack]
+        ascending = sorted(cards, key=lambda card: card.rank_val())
+        expected = [nine, ten, jack, king]
+        for i in range(0,len(cards)):
+            self.assertTrue(ascending[i].is_same_card(expected[i]))
+        
+    def test_sort(self):
+        nine = Card(rank=Rank.NINE, suit=Suit.CLUB)
+        ten = Card(rank=Rank.TEN, suit=Suit.DIAMOND)
+        jack = Card(rank=Rank.JACK, suit=Suit.HEART)
+        king = Card(rank=Rank.KING, suit=Suit.SPADE)
+
+        cards = [king, ten, nine, jack]
+        cards.sort(key=lambda card: card.rank_val())
+        expected = [nine, ten, jack, king]
+        for i in range(0,len(cards)):
+            self.assertTrue(cards[i].is_same_card(expected[i]))
+
+    def test_hash(self):
+        three = Card(rank=Rank.THREE, suit=Suit.CLUB)
+        otherthree = Card(rank=Rank.THREE, suit=Suit.CLUB)
+        four = Card(rank=Rank.FOUR, suit=Suit.SPADE)
+
+        self.assertEqual(hash(three), hash(otherthree))
+        self.assertNotEqual(hash(three), hash(four))
+
+        dict = {}
+        dict[three] = "foo"
+        self.assertEqual(dict[otherthree], "foo")
+        
 if __name__ == '__main__':
     unittest.main()

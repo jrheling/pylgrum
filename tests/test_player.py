@@ -1,5 +1,6 @@
 import unittest
-from context import Player, Hand, Card, Suit, Rank, OverdealtHandError
+from context import Player, Hand, Card, Suit, Rank, OverdealtHandError,\
+    PylgrumInternalError, HandWithMelds
 
 class TestPlayer(unittest.TestCase):
 
@@ -29,6 +30,18 @@ class TestPlayer(unittest.TestCase):
 
         with self.assertRaises(OverdealtHandError):
             self.p.receive_card(Card(rank=Rank.SEVEN, suit=Suit.SPADE)) 
+
+    def test_bad_handtype(self):
+        with self.assertRaises(PylgrumInternalError):
+            player = Player(object)
+
+    def test_nondefault_handtype(self):
+        """Test instantiation of Player with a non-default hand type.
+
+        Note: testing alternate hand types is done elsewhere - here we just
+        want to make sure the Player can be instantiated.
+        """
+        player = Player(HandWithMelds)
         
 if __name__ == '__main__':
     unittest.main()

@@ -48,6 +48,16 @@ class TestStack(unittest.TestCase):
         self.assertEqual(removed_card,three_d)
         self.assertEqual(cs.size(), 10)
 
+    def test_stack_remove_last(self):
+        cs = CardStack()
+        c = Card(rank=Rank.QUEEN, suit=Suit.HEART)
+
+        self.assertEqual(cs.size(), 0)
+        cs.add(c)
+        self.assertEqual(cs.size(), 1)
+        cs.remove(cs.find(c))
+        self.assertEqual(cs.size(), 0)
+        
     def test_stack_remove_miss(self):
         cs = get_test_stack()
 

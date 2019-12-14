@@ -4,7 +4,7 @@ import random
 from pylgrum import Card
 from .errors import CardNotFoundError
 
-class CardStack():
+class CardStack(object):
     """A base class for collections of cards (e.g. deck, hand, discard pile).
 
     CardStack supports basic operations on collections of cards. In order to
@@ -26,15 +26,19 @@ class CardStack():
     """
 
     def __init__(self) -> None:
-        self.cards = [] # List[Card]
+        self._cards = [] # List[Card]
 
+    @property
+    def cards(self) -> list:
+        return self._cards
+        
     def size(self) -> int:
         """Number of cards in the stack."""
-        return len(self.cards)
+        return len(self._cards)
 
     def add(self, newcard: Card) -> None:
         """Add a card to the top of the stack."""
-        self.cards.append(newcard)
+        self._cards.append(newcard)
 
     def remove(self, i: int) -> Card:
         """Remove and return the card at the given index.
@@ -42,13 +46,12 @@ class CardStack():
         Raises: CardNotFoundError
         """
         try:
-            target_card = self.cards[i]
+            target_card = self._cards[i]
         except IndexError:
             raise CardNotFoundError("Index value {} out of range".format(i))
-
-        before_the_card = self.cards[0:i]
-        after_the_card = self.cards[i+1:]
-        self.cards = before_the_card + after_the_card
+        before_the_card = self._cards[0:i]
+        after_the_card = self._cards[i+1:]
+        self._cards = before_the_card + after_the_card
         return target_card
 
     def find(self, targetcard: Card) -> int:
@@ -63,7 +66,7 @@ class CardStack():
         Raises:
          CardNotFoundError: if specified card is not in the stack.
         """
-        for (position, checked_card) in enumerate(self.cards):
+        for (position, checked_card) in enumerate(self._cards):
             if checked_card.is_same_card(targetcard):
                 return position
         raise CardNotFoundError("{} not found in stack".format(
@@ -71,19 +74,19 @@ class CardStack():
 
     def draw(self) -> Card:
         """Remove and return the top card on the stack."""
-        return self.cards.pop()
+        return self._cards.pop()
 
     def peek(self) -> Card:
         """Return but do not remove the top card on the stack."""
-        return self.cards[len(self.cards)-1]
+        return self._cards[len(self._cards)-1]
 
     def shuffle(self) -> None:
         """Randomly re-order the stack."""
-        random.shuffle(self.cards)
+        random.shuffle(self._cards)
 
     def __eq__(self, other) -> bool:
         """Stacks are equal iff they have the same cards in the same order."""
-        return self.cards == other.cards
+        return self._cards == other.cards
 
     def __str__(self) -> str:
         """Printing a stack returns its cards in top-to-bottom order.
@@ -92,7 +95,7 @@ class CardStack():
         is the last card listed. This way the visible order corresponds to the
         human notion of the "top" of the stack.
         """
-        cards_to_print = self.cards.copy()
+        cards_to_print = self._cards.copy()
         cards_to_print.reverse()
         r_str = ", ".join([c.__str__() for c in cards_to_print])
         return r_str

@@ -75,6 +75,23 @@ class Card:
         else:
             return int(self.rank.value)
 
+    def rank_val(self) -> int:
+        """Return a sort-able rank value of the card.
+
+        Note the differerence between rank_val and score_val: both JACK
+        and TEN are worth 10 points score-wise, but JACK is an 11 in 
+        rank_val and TEN is a 10. rank_val is used to sort potential 
+        sets.
+        """
+        if self.rank.value == 'J':
+            return 11
+        elif self.rank.value == 'Q':
+            return 12
+        elif self.rank.value == 'K':
+            return 13
+        else:
+            return int(self.rank.value)
+
     def same_suit(self, other) -> bool:
         """True if both cards share a suit."""
         if self.suit == other.suit:
@@ -97,3 +114,6 @@ class Card:
         rank_str = self.rank.name[0] + self.rank.name[1:].lower()
         suit_str = self.suit.name[0] + self.suit.name[1:].lower() + 's'
         return "{} of {}".format(rank_str, suit_str)
+
+    def __hash__(self):
+        return hash(self.rank) ^ hash(self.suit)
