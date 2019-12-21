@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from context import Meld, Card, Suit, Rank, InvalidMeldError
+from .context import Meld, Card, Suit, Rank, InvalidMeldError
 
 class TestMeld(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_run)
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
-        
+
     def test_not_same_suit(self):
         m = Meld(Card(rank=Rank.TWO, suit=Suit.HEART),
                  Card(rank=Rank.TWO, suit=Suit.CLUB))
@@ -21,7 +21,7 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_run)
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
-        
+
     def test_same_rank(self):
         m = Meld(Card(rank=Rank.TWO, suit=Suit.HEART),
                  Card(rank=Rank.TWO, suit=Suit.DIAMOND))
@@ -30,7 +30,7 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_run)
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
-        
+
     def test_not_same_rank(self):
         m = Meld(Card(rank=Rank.TWO, suit=Suit.HEART),
                  Card(rank=Rank.THREE, suit=Suit.HEART))
@@ -39,7 +39,7 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_run)
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
-        
+
     def test_partial_run(self):
         m = Meld(Card(rank=Rank.TWO, suit=Suit.HEART),
                  Card(rank=Rank.THREE, suit=Suit.HEART))
@@ -48,7 +48,7 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_run)
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
-        
+
     def test_full_run(self):
         # these cards are intentionally out of order - order is not
         #  reliable for cards added at init time
@@ -76,10 +76,10 @@ class TestMeld(unittest.TestCase):
         self.assertTrue(m.complete)
 
         # cards were implicitly re-ordered by add()
-        self.assertEqual(m.cards[0],c2) 
-        self.assertEqual(m.cards[1],c3) 
+        self.assertEqual(m.cards[0],c2)
+        self.assertEqual(m.cards[1],c3)
         self.assertEqual(m.cards[2],c4)
-        
+
     def test_partial_set(self):
         m = Meld(Card(rank=Rank.TWO, suit=Suit.HEART),
                  Card(rank=Rank.TWO, suit=Suit.DIAMOND))
@@ -120,10 +120,10 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
         self.assertEqual(m.size(), 2)
-        
+
         with self.assertRaises(InvalidMeldError):
             m.add(Card(rank=Rank.TWO, suit=Suit.CLUB))
-            
+
         self.assertEqual(m.size(), 2)
 
     def test_invalid_set_add(self):
@@ -135,10 +135,10 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
         self.assertEqual(m.size(), 2)
-        
+
         with self.assertRaises(InvalidMeldError):
             m.add(Card(rank=Rank.THREE, suit=Suit.CLUB))
-            
+
         self.assertEqual(m.size(), 2)
 
     def test_invalid_add_does_not_break_complete_set(self):
@@ -154,7 +154,7 @@ class TestMeld(unittest.TestCase):
 
         with self.assertRaises(InvalidMeldError):
             m.add(Card(rank=Rank.THREE, suit=Suit.CLUB))
-            
+
         self.assertEqual(m.size(), 3)
         self.assertTrue(m.all_same_rank)
         self.assertFalse(m.all_same_suit)
@@ -175,7 +175,7 @@ class TestMeld(unittest.TestCase):
 
         with self.assertRaises(InvalidMeldError):
             m.add(Card(rank=Rank.SIX, suit=Suit.CLUB))
-            
+
         self.assertEqual(m.size(), 3)
         self.assertTrue(m.all_same_suit)
         self.assertFalse(m.all_same_rank)
@@ -195,18 +195,18 @@ class TestMeld(unittest.TestCase):
         self.assertTrue(m.complete)
 
         m.add(Card(rank=Rank.SIX, suit=Suit.HEART))
-            
+
         self.assertEqual(m.size(), 4)
         self.assertTrue(m.all_same_suit)
         self.assertFalse(m.all_same_rank)
         self.assertFalse(m.is_run)
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
-        
+
     def test_singleton_add(self):
         """Test adding a card to a single-card partial meld.
 
-        This is significant b/c until the 2nd card is added, any 
+        This is significant b/c until the 2nd card is added, any
         single-card partial meld is both a potential run and set.
         """
         m = Meld(Card(rank=Rank.KING, suit=Suit.CLUB))
@@ -228,6 +228,6 @@ class TestMeld(unittest.TestCase):
         c = Card(rank=Rank.KING, suit=Suit.CLUB)
         m = Meld(c)
         m.remove(m.find(c))
-        
+
 if __name__ == '__main__':
     unittest.main()

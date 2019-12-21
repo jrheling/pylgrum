@@ -50,7 +50,7 @@ class Game():
         elif self._current_player == self.player2:
             self._current_player = self.player1
         else:
-            print("TOTALLY IMPOSSIBLE - INTERNAL ERROR")
+            print("TOTALLY IMPOSSIBLE - INTERNAL ERROR") #FIXME raise instead
 
     def pre_turn_hook(self):
         """Called before each move. For sub-class use."""

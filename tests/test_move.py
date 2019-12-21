@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from context import Move, MoveState, CardSource, IllegalMoveError, Card, \
+from .context import Move, MoveState, CardSource, IllegalMoveError, Card, \
     Rank, Suit
 
 class TestMove(unittest.TestCase):
@@ -20,9 +20,9 @@ class TestMove(unittest.TestCase):
         self.m.draw_card()
         self.assertEqual(self.m.state, MoveState.IN_PROGRESS)
         self.assertEqual(self.m.card_source, CardSource.DRAW_STACK)
-        
+
     def test_draw_discard(self):
-        self.m.draw_card()
+        self.m.draw_discard()
         self.assertEqual(self.m.state, MoveState.IN_PROGRESS)
         self.assertEqual(self.m.card_source, CardSource.DISCARD_STACK)
 
@@ -31,7 +31,7 @@ class TestMove(unittest.TestCase):
         with self.assertRaises(IllegalMoveError):
             self.m.draw_card()
 
-    def test_draw_discard(self):
+    def test_draw_and_discard(self):
         self.m.draw_card()
         with self.assertRaises(IllegalMoveError):
             self.m.draw_discard()
@@ -44,6 +44,6 @@ class TestMove(unittest.TestCase):
     def test_early_discard(self):
         with self.assertRaises(IllegalMoveError):
             self.m.discard(Card(rank=Rank.QUEEN, suit=Suit.HEART))
-        
+
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from context import Game, Player
+from .context import Game, Player
 
 class TestGame(unittest.TestCase):
 
@@ -19,11 +19,11 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.g._deck.size(), 30)
         c2 = self.g._draw()
         self.assertFalse(c1.is_same_card(c2))
-        
+
     def test_draw_discard(self):
         self.assertEqual(self.g._deck.size(), 31)
         self.assertEqual(self.g._discards.size(), 1)
-        c1 = self.g._draw_discard()
+        self.g._draw_discard()
         self.assertEqual(self.g._deck.size(), 31)
         self.assertEqual(self.g._discards.size(), 0)
 
@@ -31,10 +31,10 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.g.player1, self.g._current_player)
         self.g._alternate_player()
         self.assertEqual(self.g.player2, self.g._current_player)
-        
+
     @skip("Cannot implement play test yet - need computer player.")
     def test_play(self):
         self.assertTrue(False)
-        
+
 if __name__ == '__main__':
     unittest.main()

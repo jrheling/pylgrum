@@ -1,5 +1,5 @@
 import unittest
-from context import Player, Hand, Card, Suit, Rank, OverdealtHandError,\
+from .context import Player, Hand, Card, Suit, Rank, OverdealtHandError,\
     PylgrumInternalError, HandWithMelds
 
 class TestPlayer(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(self.p._hand.size(), 11) ## a full hand
 
         with self.assertRaises(OverdealtHandError):
-            self.p.receive_card(Card(rank=Rank.SEVEN, suit=Suit.SPADE)) 
+            self.p.receive_card(Card(rank=Rank.SEVEN, suit=Suit.SPADE))
 
     def test_bad_handtype(self):
         with self.assertRaises(PylgrumInternalError):
@@ -42,6 +42,6 @@ class TestPlayer(unittest.TestCase):
         want to make sure the Player can be instantiated.
         """
         player = Player(HandWithMelds)
-        
+
 if __name__ == '__main__':
     unittest.main()

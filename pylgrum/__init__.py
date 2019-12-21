@@ -5,21 +5,25 @@ PyLGRum is an implementation of the card game Gin Rummy in Python.
 For more details about the game history and rules, see:
     https://en.wikipedia.org/wiki/Gin_rummy
 
-Classes:
+Primary classes:
 
- Card: One card, with suit, rank (i.e. "queen", 2), and point value.
- Stack: A mutable stack of cards, with shuffle and search methods.
- Deck: 52 cards, one of each suit+rank. (Derived from Stack)
- Hand: The cards assigned to each player. (Derived from Stack)
- Rank: Enum of the face markings of cards (numbers + royalty).
- Suit: Enum of the card suits.
-
-Exceptions:
- CardNotFoundError: raised on failed attempt to find or reference a card
-                    in a Stack.
+- Card: a playing card w/ suit, rank (e.g. "queen"), and point value.
+- CardStack: a collection of Cards.
+    - Deck: 52 unique Cards
+    - Meld: a (potentially partial) set or run of Cards
+    - Hand: Cards held by a given Player
+        - HandWithMelds: a Hand organized by (potentially partial) Melds
+- Game: a sequence of Moves between two Players. Moves are passed between the
+  Players and Game.
+    - TUIGame: simple console-based PoC
+- Move: a stateful message passed between Game and Player that exchanges a
+  Card and allows a Player to signal the end of the Game.
+- Player (abstract): has a Hand, and implements hooks for the two phases of
+  a Move.
+    - TUIPlayer: simple console-based PoC
 
 Note: this package uses PEP-484 style type annotations, and thus needs
-python >=3.5
+python >=3.5.
 """
 
 #pylint: disable=wildcard-import

@@ -4,7 +4,7 @@ import random
 from pylgrum import Card
 from .errors import CardNotFoundError
 
-class CardStack(object):
+class CardStack():
     """A base class for collections of cards (e.g. deck, hand, discard pile).
 
     CardStack supports basic operations on collections of cards. In order to
@@ -31,17 +31,17 @@ class CardStack(object):
     @property
     def cards(self) -> list:
         return self._cards
-        
+
     def size(self) -> int:
-        """Number of cards in the stack."""
+        """Number of Cards in the stack."""
         return len(self._cards)
 
     def add(self, newcard: Card) -> None:
-        """Add a card to the top of the stack."""
+        """Add a Card to the top of the stack."""
         self._cards.append(newcard)
 
     def remove(self, i: int) -> Card:
-        """Remove and return the card at the given index.
+        """Remove and return the Card at the given index.
 
         Raises: CardNotFoundError
         """

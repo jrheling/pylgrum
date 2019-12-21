@@ -1,5 +1,5 @@
 import unittest
-from context import Card, Rank, Suit, CardStack, CardNotFoundError
+from .context import Card, Rank, Suit, CardStack, CardNotFoundError
 
 def get_test_stack() -> CardStack:
     """Returns stack of 12 cards for reference by test cases."""
@@ -57,7 +57,7 @@ class TestStack(unittest.TestCase):
         self.assertEqual(cs.size(), 1)
         cs.remove(cs.find(c))
         self.assertEqual(cs.size(), 0)
-        
+
     def test_stack_remove_miss(self):
         cs = get_test_stack()
 

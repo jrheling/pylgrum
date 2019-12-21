@@ -1,5 +1,5 @@
 import unittest
-from context import Suit, Rank, Card
+from .context import Suit, Rank, Card
 
 class TestCard(unittest.TestCase):
 
@@ -12,7 +12,7 @@ class TestCard(unittest.TestCase):
         self.assertIsInstance(c.rank, Rank)
         self.assertIs(c.suit, Suit.HEART)
         self.assertIs(c.rank, Rank.QUEEN)
-    
+
     def test_royalty_scores_ten(self):
         j = Card(rank=Rank.JACK, suit=Suit.SPADE)
         k = Card(rank=Rank.KING, suit=Suit.DIAMOND)
@@ -39,7 +39,7 @@ class TestCard(unittest.TestCase):
 
         self.assertTrue(four > three)
         self.assertFalse(three > four)
-        
+
         self.assertTrue(four >= three)
         self.assertFalse(three >= four)
         self.assertTrue(three >= otherthree)
@@ -92,7 +92,7 @@ class TestCard(unittest.TestCase):
         expected = [nine, ten, jack, king]
         for i in range(0,len(cards)):
             self.assertTrue(ascending[i].is_same_card(expected[i]))
-        
+
     def test_sort(self):
         nine = Card(rank=Rank.NINE, suit=Suit.CLUB)
         ten = Card(rank=Rank.TEN, suit=Suit.DIAMOND)
@@ -116,6 +116,6 @@ class TestCard(unittest.TestCase):
         dict = {}
         dict[three] = "foo"
         self.assertEqual(dict[otherthree], "foo")
-        
+
 if __name__ == '__main__':
     unittest.main()

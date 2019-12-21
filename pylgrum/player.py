@@ -2,6 +2,7 @@
 
 from pylgrum.move import Move
 from pylgrum import Hand, Card, PylgrumInternalError
+from pylgrum import game
 
 class Player():
     """Abstract base class for a player in a Gin Rummy game.
@@ -21,8 +22,8 @@ class Player():
                 raise PylgrumInternalError("Type {} is not a ".format(handtype)
                                            + "subclass of Hand.")
 
-    def join_game(self, game: 'Game'):
-        ## FUTURE NOTE: as of 3.7, the argument type declaration should be 
+    def join_game(self, game: 'game.Game'):
+        ## FUTURE NOTE: as of 3.7, the argument type declaration should be
         ##   able to be better done with a "from __future__ import ..."
         ##   statement
         self._game = game
@@ -35,7 +36,7 @@ class Player():
         """Called by a Game to begin a turn.
 
         A move involves adding either the discard or the top of the draw
-        pile to the Player's hand, then discarding. 
+        pile to the Player's hand, then discarding.
 
         This method handles the first part of that process, and returns
         an in-progress Move to the Game for execution. The returned Move
@@ -52,12 +53,13 @@ class Player():
     def turn_finish(self, move: Move) -> None:
         """Called by a Game to finish a turn.
 
-        Before calling this method, the Game will have given the Player
-        whatever Card they're acquiring on this turn. Before returning from
-        this method the Player must identify their discard and populate it
-        in the Move.
+        Before calling this method, the Game will have provide
+        whatever Card the Player acquiring on this turn via the Move.
 
-        If the player is "knocking" (finishing the game) they also must 
+        Before returning from this method the Player must identify their
+        discard and populate it in the Move.
+
+        If the player is "knocking" (finishing the game) they also must
         indicate that in the Move object before returning.
 
         Move state should be COMPLETE when this method returns.
@@ -65,4 +67,4 @@ class Player():
         self.receive_card(move.acquired)
 
 
-        
+

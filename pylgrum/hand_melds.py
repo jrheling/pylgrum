@@ -8,7 +8,8 @@ class HandWithMelds(Hand):
     This class lets a user sort the cards in the hand into melds and potential
     melds. For human users this facilitates display of the hand during game
     play. Machine users could further subclass HandWithMelds to support
-    reasoning about mvoe strategy."""
+    reasoning about mvoe strategy.
+    """
 
     def __init__(self) -> None:
         super().__init__()
@@ -18,15 +19,15 @@ class HandWithMelds(Hand):
                              #   _card_to_meld_id map correct)
         self._card_to_meld_id = {}    # map card to set of Melds it belongs to
         self._meld_id_to_meld = {}
-        
+
     @property
     def melds(self) -> list:
         return self._melds
-        
+
     def create_meld(self, *cards) -> None:
         """Create a new [potential] meld within the hand.
 
-        Optionally, initial cards for the meld may be supplied. If they are, 
+        Optionally, initial cards for the meld may be supplied. If they are,
         they must be valid - an attempt to create an invalid meld on init
         will cause the whole thing to be deleted.
 
@@ -53,24 +54,24 @@ class HandWithMelds(Hand):
             self._meld_id_to_meld[id(new_meld)] = new_meld
 
     def remove_meld(self, meld: Meld) -> None:
-        """Remove a meld.
+        """Remove a Meld.
 
-        Removes references to the meld from _card_to_meld_id mapping.
+        Removes references to the Meld from _card_to_meld_id mapping.
         """
         for card in meld.cards:
             self.remove_from_meld(meld, card)
         self._melds.remove(meld)
 
     def add_to_meld(self, meld: Meld, card: Card) -> None:
-        """Add a card to a meld.
+        """Add a Card to a Meld.
 
         Args:
-         * meld: the meld to add to
-         * card: the card to add
+         * meld: the Meld to add to
+         * card: the Card to add
 
         Side effects:
          * Updates _card_to_meld_id map accordingly
-        
+
         Raises InvalidMeldError.
         """
         meld.add(card)
@@ -80,11 +81,11 @@ class HandWithMelds(Hand):
             self._card_to_meld_id[card] = set([id(meld)])
 
     def remove_from_meld(self, meld: Meld, card: Card) -> None:
-        """Remove a card from a meld
+        """Remove a Card from a Meld.
 
         Args:
-         * meld: the meld to add to
-         * card: the card to add
+         * meld: the Meld to add to
+         * card: the Card to add
 
         Side effects:
          * Updates _card_to_meld_id map accordingly
@@ -94,7 +95,7 @@ class HandWithMelds(Hand):
         if len(self._card_to_meld_id[card]) == 0:
             del self._card_to_meld_id[card]
         meld.remove(meld.find(card))
-            
+
     def add_to_meld_by_idx(self, meld_idx: int, card_idx: int) -> None:
         """Wrapper on add_to_meld; works with indices rather than objects."""
         if meld_idx not in range(0,len(self._melds)):
@@ -116,6 +117,6 @@ class HandWithMelds(Hand):
                     for x in self._card_to_meld_id[card]]
         else:
             return None
-    
+
     # note: need to deal with assessing validity given the possiblity of
     #  mutually incompatible melds (i.e. those that use the same card)

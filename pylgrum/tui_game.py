@@ -4,6 +4,8 @@ import time
 from pylgrum import Game, Player
 from pylgrum.tui_util import clear_screen
 
+DELAY = 0.25 # in seconds
+
 class TUIGame(Game):
     """Sub-class of Game, intended for use in console-based game.
 
@@ -14,9 +16,9 @@ class TUIGame(Game):
         print("Starting new game between {} and {}".format(p1, p2))
 
         print("Shuffling...")
-        time.sleep(.25)
+        time.sleep(DELAY)
         print("Dealing...")
-        time.sleep(.25)
+        time.sleep(DELAY)
 
         super().__init__(p1, p2)
 

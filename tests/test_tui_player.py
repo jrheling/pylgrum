@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from context import TUIPlayer
+from .context import TUIPlayer
 
 class TestTUIPlayer(unittest.TestCase):
 

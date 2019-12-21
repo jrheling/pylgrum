@@ -12,6 +12,7 @@ class TUIPlayer(Player):
         """Used to identify the player in the UI."""
 
         super().__init__(handtype=HandWithMelds)
+        self.knocking = False
         self.banner_text = "{}'s turn".format(self.__str__())
 
     def __str__(self):
@@ -73,14 +74,14 @@ class TUIPlayer(Player):
 
         The string uses a single character for each meld the card is part
         of. That string will be:
-        
+
          'S' : complete set
          'R' : complete run
          's' : partial set
          'r' : partial run
          '?' : other partial
 
-        All complete melds will be referenced first. 
+        All complete melds will be referenced first.
 
         If the card is referenced in no melds, an empty string is returned.
         If a non-empty string is returned, it is wrapped in square brackets.
@@ -111,7 +112,7 @@ class TUIPlayer(Player):
                    + "{}".format('r' * partial_r)
                    + "{}]".format('?' * partial_other))
 
-                    
+
     def show_hand(self):
         """Displays the current hand."""
         for (index, card) in enumerate(self._hand.cards):
@@ -151,14 +152,14 @@ class TUIPlayer(Player):
             if meld.size() == 0:
                 type = "null"
                 status = ""
-                    
+
             print("#{idx}:{type}{status}: {cards}".format(
                 idx=i,
                 type=type,
                 status=status,
                 cards=[str(x) for x in meld.cards]
             ))
-            
+
     @staticmethod
     def print_banner(heading: str,
                      width: int = 80,
@@ -168,13 +169,13 @@ class TUIPlayer(Player):
         Arguments:
          * heading - the string to print
          * width - the size of the space in which to center the heading
-         * sep_char - single char repeated as necessary to fill the width 
+         * sep_char - single char repeated as necessary to fill the width
                          of the heading / footing rows
         """
         print("{t:{s}^{w}}".format(t='', s='=', w=80))
         print("{t:^{w}}".format(t=heading, s=sep_char, w=width))
         print("{t:{s}^{w}}".format(t='', s=sep_char, w=width))
-              
+
     @staticmethod
     def print_subheading(heading: str,
                          width: int = 80,
@@ -194,7 +195,7 @@ class TUIPlayer(Player):
         """Prints text, centered with attention-getting prefix & suffix."""
         line = "{} {} {}".format(prefix, text, suffix)
         print("{t:^{w}}".format(t=line, w=width))
-        
+
     @staticmethod
     def context(text: str,
                 prefix: str = "%%%") -> None:
@@ -202,7 +203,7 @@ class TUIPlayer(Player):
         if len(prefix):
             prefix = " {} ".format(prefix)
         print("{}{}".format(prefix, text))
-        
+
     @staticmethod
     def normalize_input(c):
         """Return int version of number chars.
@@ -236,34 +237,29 @@ class TUIPlayer(Player):
         self.show_melds()
         print("\n",)
         self.print_subheading("available action")
-        
+
     def manage_hand(self) -> None:
         """Show hand, let user arrange (potential) melds.
 
         Loops until user chooses to discard.
         """
-        manage_prompt = """
-Manage hand: 
-  [C]reate new meld, 
 
-"""
-        
         ## NOTE: user-facing views index from 1, not 0
-        
+
         while True:
             self.print_turn_screen()
             self.action_text("Update melds as desired, then choose a discard.")
             print()
             self.context("Manage hand: [A]dd card to meld, [R]emove meld")
             self.context("Finish turn: [D]iscard, [K]nock (end game)")
-            print()            
+            print()
             #print(manage_prompt)
-            
+
             command = input("> ")
             if command in ("c","C"):
                 self._hand.create_meld()
                 print("(created new meld)")
-            elif command in ("a","A"):  
+            elif command in ("a","A"):
                 #self.show_melds()
                 m = None
                 while m not in ('n','N',*range(1,len(self._hand.melds)+1)):

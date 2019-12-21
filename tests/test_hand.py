@@ -1,5 +1,5 @@
 import unittest
-from context import Card, Rank, Suit, Hand, OverdealtHandError
+from .context import Card, Rank, Suit, Hand, OverdealtHandError
 
 class TestHand(unittest.TestCase):
 
@@ -22,8 +22,8 @@ class TestHand(unittest.TestCase):
         self.assertEqual(h.size(), 11) ## a full hand
 
         with self.assertRaises(OverdealtHandError):
-            h.add(Card(rank=Rank.SEVEN, suit=Suit.SPADE)) 
-        
-        
+            h.add(Card(rank=Rank.SEVEN, suit=Suit.SPADE))
+
+
 if __name__ == '__main__':
     unittest.main()

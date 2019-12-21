@@ -13,9 +13,9 @@ class PylgrumErrorWithMessage(PylgrumError):
 class PylgrumInternalError(PylgrumErrorWithMessage):
     """Catch-all for low-level errors."""
     pass
-        
+
 class CardNotFoundError(PylgrumError):
-    """Raised when a card isn't found in a stack (or stack subclass)."""
+    """Raised when a card isn't found in a Stack."""
     def __init__(self, message):
         self.message = message
         super().__init__()
@@ -30,7 +30,7 @@ class OverdealtHandError(PylgrumError):
 class IllegalMoveError(PylgrumErrorWithMessage):
     """Raised when a Player does something illegal in a move.
 
-    For example: asking a Move to draw after already asking to draw a 
+    For example: asking a Move to draw after already asking to draw a
     discard would result in IllegalMoveError."""
     pass
 

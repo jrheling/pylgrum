@@ -1,6 +1,6 @@
 """A Meld is a set or run - this class tracks potential or complete melds.
 
-Notably, melds are always sorted by rank value, so unlike their ancestors in 
+Notably, melds are always sorted by rank value, so unlike their ancestors in
 the CardStack class tree, do not behave like stacks in all regards.
 """
 
@@ -14,9 +14,9 @@ class Meld(CardStack):
     same rank."""
 
     def __init__(self, *cards) -> None:
-        """Create a new (potential) meld with the specified cards.
+        """Create a new (potential) Meld with the specified cards.
 
-        Raises InvalidMeldError if cards don't match in suit or rank.
+        Raises InvalidMeldError if Cards don't match in suit or rank.
         """
 
         self.all_same_rank = False # a potential set must be all the same rank
@@ -40,26 +40,25 @@ class Meld(CardStack):
 
     @property
     def complete(self) -> bool:
-        """True for any full, valid meld."""
+        """True for any full, valid Meld."""
         if self.is_run or self.is_set:
             return True
         return False
 
     def _update_validity(self) -> None:
-        """Inspect a meld for validity and potential completeness.
+        """Inspect a Meld for validity and potential completeness.
 
-        A _valid_ meld is any meld that could become a full run or set. In
-        order to be valid, then, a meld needs to either be all the same rank
+        A _valid_ Meld is any Meld that could become a full run or set. In
+        order to be valid, then, a Meld needs to either be all the same rank
         (if it's going to maybe become a set) or be all the same suit (if
         it has a chance of becoming a run).
 
-        Valid melds may also be complete. Completeness requires at least 3
+        Valid Melds may also be complete. Completeness requires at least 3
         cards and, in the case of runs, sequential continuity across all of
         them.
 
         Side effects:
          * updates all_same_suit and all_same_meld
-         *
 
         Raises InvalidMeldError.
         """
@@ -106,7 +105,7 @@ class Meld(CardStack):
 
     @staticmethod
     def _check_same_suit(*cards) -> bool:
-        """True iff all cards passed as argument are of the same suit."""
+        """True iff all cards passed as argument are of the same Suit."""
         cards = [*cards]
         if len(cards) > 0:
             reference_card = cards[0]
@@ -118,7 +117,7 @@ class Meld(CardStack):
 
     @staticmethod
     def _check_same_rank(*cards) -> bool:
-        """True iff all cards passed as argument are of the same rank."""
+        """True iff all cards passed as argument are of the same Rank."""
         cards = [*cards]
         if len(cards) > 0:
             reference_card = cards[0]
@@ -129,7 +128,7 @@ class Meld(CardStack):
         return False
 
     def add(self, newcard: Card) -> None:
-        """Add cards that fit the meld.
+        """Add Cards that fit the Meld.
 
         Raise InvalidMeldError when non-fitting cards are attempted.
         """

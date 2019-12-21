@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from context import HandWithMelds, Card, Meld, Rank, Suit, InvalidMeldError
+from .context import HandWithMelds, Card, Meld, Rank, Suit, InvalidMeldError
 
 class TestHandWithMelds(unittest.TestCase):
 
@@ -18,13 +18,13 @@ class TestHandWithMelds(unittest.TestCase):
         self.h.add(Card(rank=Rank.TEN, suit=Suit.HEART))      # 8 : 10H
         self.h.add(Card(rank=Rank.NINE, suit=Suit.DIAMOND))   # 9 : 9D
         self.h.add(Card(rank=Rank.EIGHT, suit=Suit.CLUB))     # 10: 8C
-        
+
     def test_empty_meld_creation(self):
         self.assertEqual(len(self.h._melds), 0)
         self.h.create_meld()
         self.assertEqual(len(self.h._melds), 1)
         self.assertEqual(len(self.h._card_to_meld_id.keys()), 0)
-        
+
     def test_nonempty_meld_creation(self):
         jack_d = self.h.cards[1]
         three_d = self.h.cards[5]
@@ -96,7 +96,7 @@ class TestHandWithMelds(unittest.TestCase):
                         self.h._card_to_meld_id[jack_d])
         self.assertTrue(id(self.h._melds[0]) in
                         self.h._card_to_meld_id[three_d])
-    
+
     def test_card_in_n_melds(self):
         jack_d = self.h.cards[1]
         three_d = self.h.cards[5]
@@ -134,7 +134,7 @@ class TestHandWithMelds(unittest.TestCase):
         self.assertTrue(self.h._melds[0] in melds_using_jack)
         self.assertTrue(self.h._melds[1] in melds_using_jack)
         self.assertFalse(self.h._melds[2] in melds_using_jack)
-        
+
     def test_card_remove(self):
         jack_d = self.h.cards[1]
         three_d = self.h.cards[5]
@@ -189,6 +189,6 @@ class TestHandWithMelds(unittest.TestCase):
         self.assertEqual(len(self.h._card_to_meld_id[jack_d]), 1)
         with self.assertRaises(KeyError):
             self.h._card_to_meld_id[three_d]
-    
+
 if __name__ == '__main__':
     unittest.main()

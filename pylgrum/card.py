@@ -29,11 +29,11 @@ class Card:
     """Cards have suit+rank, point value, and can be compared (by point value).
 
     Public methods:
-     __init__(suit, rank)
+     __init__(Suit, Rank)
      score_val() - returns point value for cards of that rank.
-     same_suit() - True if both cards share a suit
-     same_rank() - True if both cards share a rank
-     is_same_card() - True if suit and rank match
+     same_suit(Card) - True if both cards share a suit
+     same_rank(Card) - True if both cards share a rank
+     is_same_card(Card) - True if suit and rank match
      overriden operators ==, !=, <, >, <=, >= work on point value
        (e.g. Jack == King)
 
@@ -79,8 +79,8 @@ class Card:
         """Return a sort-able rank value of the card.
 
         Note the differerence between rank_val and score_val: both JACK
-        and TEN are worth 10 points score-wise, but JACK is an 11 in 
-        rank_val and TEN is a 10. rank_val is used to sort potential 
+        and TEN are worth 10 points score-wise, but JACK is an 11 in
+        rank_val and TEN is a 10. rank_val is used to sort potential
         sets.
         """
         if self.rank.value == 'J':
