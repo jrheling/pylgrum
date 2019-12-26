@@ -1,122 +1,137 @@
-from flask import Flask, jsonify, request, abort
+#from flask import Flask, jsonify, request, abort
+import connexion
 import json
 
-from pylgrum import Player
+from pylgrum import Player, Game
 
-app = Flask(__name__)
+NEXT_PLAYER_ID = 1
+PLAYERS = {} # hash of id->{game: id, name: str, player: Player}
+NEXT_GAME_ID = 1
+GAMES = {}   # hash of id->Game
 
-#------------- here are the structures we'll use
-player_ref = {
-    'id': 1,
-    'name': "str"
-}
-
-card_ref = {
-    'suit': 'H', # S, C, H, D
-    'card': 'J'  # A, 2..10, J, Q, K
-}
-
-public_move_ref = {
-    'game_id': 1,
-    'move_id': 1,
-    'player_id': 1,
-    'card_from': 'DISCARD | DECK',
-    'discarded': 'card'
-}
-
-#------------- end of structures
-
-############# globals (very temp)
-next_player_id = 1
-players = {} # hash of id->Player
-games = []
-
-#############
-
-# FIXME - URL route prefix
-@app.route('/players', methods=['GET'])
 def list_players():
-    """Lists players that are ready for games."""
-    global players
+    global PLAYERS
 
     r = []
-    for p in players.keys():
-        r.append({"id": p, "name": "player {}".format(p)})
-    return jsonify(r)
+    for p in PLAYERS.keys():
+        r.append({"id": p, "name": PLAYERS[p]['name']})
+    return { 'players': r }
 
-@app.route('/players', methods=['POST'])
-def register_player():
-    """Tells the server player is ready for games.
+def delete_players():
+    global PLAYERS
+    PLAYERS = {}
+    return None,200
 
-    Parameters:
-    * name (string describing player)
-    Returns:
-    * player_id (int)
+def register_player(body):
+    global NEXT_PLAYER_ID
+    global PLAYERS
 
-    # FIXME: we're ignoring the provided name for now, b/c the base Player
-    #     class doesn't handle it yet
-    # FIXME: add authn here, for retrieving existing players
-    """
-    global next_player_id
-    global players
-
-    if not request.json:
-        print("ERROR: invalid payload in call to /players")
-        abort(400)
-
-    req_data = json.loads(request.json)
-
-    if not 'name' in req_data:
-        print("ERROR: no 'name' in payload of call to /players")
-        abort(400)
-
-    player_name = req_data['name']
-    new_id = next_player_id
-    next_player_id += 1
+    player_name = body['name']
+    new_id = NEXT_PLAYER_ID
+    NEXT_PLAYER_ID += 1
     print("giving player id {} to new player {}".format(new_id, player_name))
-    if next_player_id in players.keys():
-        print("INTERNAL ERROR: player id {} already defined".format(new_id))
-        abort(500)
-    players[new_id] = Player()
-    return jsonify({'id': new_id, 'name': player_name})
+    if NEXT_PLAYER_ID in PLAYERS.keys():
+        err = "INTERNAL ERROR: player id {} already defined".format(new_id)
+        print(err)
+        return err, 500
+    PLAYERS[new_id] = {'name': player_name, 'game': None}
+    return {'id': new_id, 'name': player_name}
 
-@app.route('/players/<int:player_id>/challenge', methods=['POST'])
-def create_game(player_id):
-    """Create a game vs. <player_id>.
+def create_game(body):
+    global NEXT_GAME_ID
+    global GAMES
 
-    Request Body:
-    * "Player" object for self
+    ## make sure player is legit/defined (else 403)
+    player_id = body['player']['id']
+    if player_id not in PLAYERS.keys():
+        print("registered players: {}".format(PLAYERS.keys()))
+        return {
+            'player': {
+                'id': player_id
+            },
+            'details': 'player not registered'
+        }, 403
 
-    Returns game_id
-    """
-    print("unimplemented")
-    abort(404)
+    ## look up opponent
+    opponent_id = body['opponent_id']
+    if opponent_id not in PLAYERS.keys():
+        return {
+            'player': {
+                'id': opponent_id
+            },
+            'details': 'requested opponent not registered'
+        }, 403
 
-@app.route('/games/<int:game_id>/move/<int:move_id>', methods=['GET'])
-def recent_moves(game_id, move_id):
-    """Return moves made since move_id.
+    ## are both players available?
+    busy = None
+    if (PLAYERS[opponent_id]['game'] is not None):
+        busy = str(opponent_id)
+    elif (PLAYERS[player_id]['game'] is not None):
+        busy = str(player_id)
 
-    Parameters:
-    * game_id (int)
-    * move_id (int)
+    if (busy is not None):
+        return {
+            'player': {
+                'id': busy
+            },
+            'details': 'player already in a game'
+        }, 403
 
-    Returns a list of public_move structures.
+    ## create game
+    PLAYERS[player_id]['player'] = Player()
+    PLAYERS[opponent_id]['player'] = Player()
+    game = Game(PLAYERS[player_id]['player'], PLAYERS[opponent_id]['player'])
+    description = "game between {}({}) and {}({})".format(
+        PLAYERS[player_id]['name'],
+        player_id,
+        PLAYERS[opponent_id]['name'],
+        opponent_id
+    )
+    print("Starting {}".format(description))
+    new_game = NEXT_GAME_ID
+    NEXT_GAME_ID += 1
+    GAMES[new_game] = game
+    PLAYERS[player_id]['game'] = new_game
+    PLAYERS[opponent_id]['game'] = new_game
 
-    NOTE (FIXME?): It might make sense to only return public_move structures
-    for the opponents' moves, and to return full move structures for the player's
-    own moves, since this relieves the client of the need to accurately track
-    state. But for now we'll assume the client knows what's up.
-    """
-    pass
+    return {
+        'description': description,
+        'id': new_game
+    }, 200
 
-@app.route('/games/<int:game_id>/move', methods=["POST"])
-def make_move(game_id):
-    """Make a move.
+# @app.route('/games/<int:game_id>/move/<int:move_id>', methods=['GET'])
+# def recent_moves(game_id, move_id):
+#     """Return moves made since move_id.
 
-    Expects a private_move structure in the request, and will return an
-    updated private_move.
-    """
-    pass
+#     Parameters:
+#     * game_id (int)
+#     * move_id (int)
+
+#     Returns a list of public_move structures.
+
+#     NOTE (FIXME?): It might make sense to only return public_move structures
+#     for the opponents' moves, and to return full move structures for the player's
+#     own moves, since this relieves the client of the need to accurately track
+#     state. But for now we'll assume the client knows what's up.
+#     """
+#     pass
+
+# @app.route('/games/<int:game_id>/move', methods=["POST"])
+# def make_move(game_id):
+#     """Make a move.
+
+#     Expects a private_move structure in the request, and will return an
+#     updated private_move.
+#     """
+#     pass
+
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app = connexion.App(__name__, specification_dir='../openapi')
+    app = connexion.App(__name__)
+    app.add_api('../openapi/openapi.yaml')
+    app.run(
+        port=8080,
+        debug=True
+    )

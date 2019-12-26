@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: PyLGRum
+  contact:
+    name: "Josh Heling"
+  version: '1.0'
+servers:
+- url: https://api.server.test/v1
+paths:
+  /players:
+    get:
+      summary: Players_GET
+      description: List available players.
+      operationId: pylgrum.pylgrum_server.list_players
+      parameters: []
+      responses:
+        '200':
+          description: list of available players
+          headers: {}
+          content:
+            application/json:
+              schema:
+                properties:
+                  players:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Player'
+                description: list of available players
+      deprecated: false
+    post:
+      summary: Players_POST
+      description: Register player with server.
+      operationId: pylgrum.pylgrum_server.register_player
+      requestBody:
+        description: Player being registered
+        required: true
+        content:
+          application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                required:
+                  - name
+      responses:
+        '200':
+          description: player accepted, player ID returned
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+      deprecated: false
+    delete:
+      summary: Players_DELETE
+      description: De-registeres all players.
+      operationId: pylgrum.pylgrum_server.delete_players
+      responses:
+        '200':
+          description: players deleted
+  /games:
+    post:
+      summary: Games_POST
+      description: Start a game.
+      operationId: pylgrum.pylgrum_server.create_game
+      requestBody:
+        description: Player starting the game
+        required: true
+        content:
+          application/json:
+              schema:
+                type: object
+                properties:
+                  player:
+                    $ref: '#/components/schemas/Player'
+                  opponent_id:
+                    type: integer
+                required:
+                  - player
+                  - opponent_id
+      responses:
+        '200':
+          description: Game started
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '403':
+          description: Requesting player ID not found
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerNotFoundError'
+      deprecated: false
+components:
+  schemas:
+    Player:
+      title: Player
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+      required:
+        - id
+    Card:
+      title: Card
+      type: object
+      properties:
+        suit:
+          type: string
+        card:
+          type: string
+      required:
+        - suit
+        - card
+    PublicMove:
+      title: PublicMove
+      type: object
+      properties:
+        game_id:
+          type: integer
+          format: int32
+        move_id:
+          type: integer
+          format: int32
+        player_id:
+          type: integer
+          format: int32
+        card_from:
+          type: string
+        card_discarded:
+          type: string
+    Game:
+      title: Game
+      type: object
+      properties:
+        game_id:
+          type: integer
+          format: int32
+        description:
+          type: string
+    PlayerNotFoundError:
+      title: Player not found error
+      type: object
+      properties:
+        player:
+          $ref: '#/components/schemas/Player'
+        details:
+          type: string
+tags: []

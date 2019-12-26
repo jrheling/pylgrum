@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "connexion",
+            "type": "python",
+            "request": "launch",
+            "module": "connexion",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "args": [
+                "run",
+                "${workspaceFolder}/openapi/openapi.yaml",
+                "--port",
+                "8080"
+            ],
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Flask",
             "type": "python",
             "request": "launch",
