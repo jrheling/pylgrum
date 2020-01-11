@@ -29,6 +29,34 @@ def client_with_players(client):
 
     client.delete('/v1/players')
 
+@pytest.fixture
+def client_with_game(client_with_players):
+    players = registered_players(client_with_players)
+    testdata = {}
+
+    # acting as the first player in the list, start a game with
+    #  the last player in the list
+    r = client_with_players.post(
+        '/v1/games',
+        data=json.dumps({
+            "player": {
+                "id": players[0],
+            },
+            "opponent_id": players[-1]
+        }),
+        content_type='application/json'
+    )
+    assert(r.status_code == 200)
+    testdata['player1_id'] = players[0]
+    testdata['player2_id'] = players[-1]
+    testdata['game_id'] = json.loads(r.data)['id']
+    client_with_players.testdata = testdata
+
+    yield client_with_players
+
+    client_with_players.delete('/v1/players')
+
+
 def registered_players(my_fixture):
     """Returns a list of valid player_ids
 
@@ -132,7 +160,8 @@ def test_create_game_with_no_player_specified_fails(client_with_players):
         }),
         content_type='application/json'
     )
-    assert(r.status_code == 400) # 400 b/c it's coming from connexion's validation
+    print(r.status_code)
+    assert(r.status_code == 403)
 
 def test_create_game_with_null_player_specified_fails(client_with_players):
     players = registered_players(client_with_players)
@@ -143,7 +172,8 @@ def test_create_game_with_null_player_specified_fails(client_with_players):
         }),
         content_type='application/json'
     )
-    assert(r.status_code == 400)  # 400 b/c it's coming from connexion's validation
+    print(r.status_code)
+    assert(r.status_code == 400)
 
 def test_create_game_with_bogus_opponent_specified_fails(client_with_players):
     players = registered_players(client_with_players)
@@ -183,6 +213,96 @@ def test_only_one_game_per_player_at_a_time(client_with_players):
         content_type='application/json'
     )
     assert(r.status_code == 403)
+
+def test_game_status_returns(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    rj = json.loads(r.data)
+    assert(isinstance(rj['current_player'], str))
+
+def test_game_status_returns_hand_to_player1(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    rj = json.loads(r.data)
+    assert(len(rj['hand']) == 10)
+
+def test_game_status_returns_hand_to_player2(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player2_id'],
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    rj = json.loads(r.data)
+    assert(len(rj['hand']) == 10)
+
+def test_game_status_request_from_non_player_fails(client_with_game):
+    for n in range(1,100):
+        if (n != client_with_game.testdata['player2_id'] and
+            n != client_with_game.testdata['player1_id']):
+            bogus_player = n
+
+    r = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": bogus_player,
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 401)
+
+def test_game_status_request_with_no_player_fails(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 401)
+
+def test_game_status_for_invalid_gameid_fails(client_with_game):
+    bogus_gameid = str(int(client_with_game.testdata['game_id']) * 2) # hacky
+
+    r = client_with_game.post(
+        '/v1/games/{}'.format(bogus_gameid),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 404)
 
 # FIXME: add test: initial move on a game
 

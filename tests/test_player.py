@@ -33,7 +33,7 @@ class TestPlayer(unittest.TestCase):
 
     def test_bad_handtype(self):
         with self.assertRaises(PylgrumInternalError):
-            player = Player(object)
+            player = Player(name="myplayer", handtype=object)
 
     def test_nondefault_handtype(self):
         """Test instantiation of Player with a non-default hand type.

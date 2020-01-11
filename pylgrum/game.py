@@ -28,6 +28,14 @@ class Game():
 
         self._knocked = False
 
+    @property
+    def current_player(self):
+        return self._current_player
+
+    @property
+    def discard_showing(self):
+        return self._discards.peek()
+
     def _draw(self) -> Card:
         """Draw from the deck."""
         return self._deck.draw()

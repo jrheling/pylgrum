@@ -10,7 +10,8 @@
 
 ## API
 
-* tries to be RESTful
+* for dev, run as `PYTHONPATH=".:${PYTHONPATH}" python pylgrum/pylgrum_server.py`
+* is RESTish (definitely not pedantically so)
   * core objects: players, games
     * setup:
       * POST to /players to register

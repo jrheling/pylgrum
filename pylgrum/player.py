@@ -10,9 +10,10 @@ class Player():
     Subclasses must implement play().
     """
 
-    def __init__(self, handtype: type = None):
+    def __init__(self, name: str = "Anonymous Player", handtype: type = None):
         """Create a new player using the [optionally] specified type of Hand."""
         self._game = None
+        self.name = name
         if handtype is None:
             self._hand = Hand()
         else:
@@ -21,6 +22,10 @@ class Player():
             else:
                 raise PylgrumInternalError("Type {} is not a ".format(handtype)
                                            + "subclass of Hand.")
+
+    @property
+    def hand(self):
+        return self._hand
 
     def join_game(self, game: 'game.Game'):
         ## FUTURE NOTE: as of 3.7, the argument type declaration should be
