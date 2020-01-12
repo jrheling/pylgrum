@@ -1,5 +1,6 @@
 import pytest
 import json
+import uuid
 
 import connexion
 
@@ -7,6 +8,15 @@ from .context import pylgrum_server
 
 flask_app = connexion.FlaskApp(__name__)
 flask_app.add_api('../openapi/openapi.yaml')
+
+def is_UUID(s: str) -> bool:
+    """True if parameter looks like a valid UUID."""
+    try:
+        uuid.UUID(s)
+    except ValueError:
+        return False
+
+    return True
 
 @pytest.fixture
 def client():
@@ -31,7 +41,7 @@ def client_with_players(client):
 
 @pytest.fixture
 def client_with_game(client_with_players):
-    players = registered_players(client_with_players)
+    players = registered_player_ids(client_with_players)
     testdata = {}
 
     # acting as the first player in the list, start a game with
@@ -50,6 +60,7 @@ def client_with_game(client_with_players):
     testdata['player1_id'] = players[0]
     testdata['player2_id'] = players[-1]
     testdata['game_id'] = json.loads(r.data)['id']
+    testdata['players'] = players
     client_with_players.testdata = testdata
 
     yield client_with_players
@@ -57,7 +68,7 @@ def client_with_game(client_with_players):
     client_with_players.delete('/v1/players')
 
 
-def registered_players(my_fixture):
+def registered_player_ids(my_fixture):
     """Returns a list of valid player_ids
 
     Utility function to keep tests DRY
@@ -92,14 +103,14 @@ def test_null_new_player_fails(client):
 
 def test_delete_players(client_with_players):
     # confirm that we have non-zero players now
-    assert(len(registered_players(client_with_players)) > 0)
+    assert(len(registered_player_ids(client_with_players)) > 0)
 
     # delete them
     r = client_with_players.delete('/v1/players')
     assert(r.status_code == 200)
 
     # verify that it's now zero
-    assert(len(registered_players(client_with_players)) == 0)
+    assert(len(registered_player_ids(client_with_players)) == 0)
 
 def test_list_players(client_with_players):
     r = client_with_players.get('/v1/players')
@@ -128,10 +139,10 @@ def test_create_game(client_with_players):
 
     assert(r.status_code == 200)
     rj = json.loads(r.data)
-    assert(isinstance(rj['id'], int))
+    assert(is_UUID(rj['id']))
 
 def test_create_game_with_just_id(client_with_players):
-    players = registered_players(client_with_players)
+    players = registered_player_ids(client_with_players)
 
     # acting as the first player in the list, start a game with
     #  the last player in the list
@@ -148,15 +159,17 @@ def test_create_game_with_just_id(client_with_players):
 
     assert(r.status_code == 200)
     rj = json.loads(r.data)
-    assert(isinstance(rj['id'], int))
+    assert(is_UUID(rj['id']))
 
 def test_create_game_with_no_player_specified_fails(client_with_players):
+    players = registered_player_ids(client_with_players)
+
     r = client_with_players.post(
         '/v1/games',
         data=json.dumps({
             "player": {
             },
-            "opponent_id": 1
+            "opponent_id": players[0]
         }),
         content_type='application/json'
     )
@@ -164,7 +177,7 @@ def test_create_game_with_no_player_specified_fails(client_with_players):
     assert(r.status_code == 403)
 
 def test_create_game_with_null_player_specified_fails(client_with_players):
-    players = registered_players(client_with_players)
+    players = registered_player_ids(client_with_players)
     r = client_with_players.post(
         '/v1/games',
         data=json.dumps({
@@ -176,21 +189,21 @@ def test_create_game_with_null_player_specified_fails(client_with_players):
     assert(r.status_code == 400)
 
 def test_create_game_with_bogus_opponent_specified_fails(client_with_players):
-    players = registered_players(client_with_players)
+    players = registered_player_ids(client_with_players)
     r = client_with_players.post(
         '/v1/games',
         data=json.dumps({
             "player": {
                 "id": players[0]
             },
-            "opponent_id": 8573223
+            "opponent_id": str(uuid.uuid4())
         }),
         content_type='application/json'
     )
     assert(r.status_code == 403)
 
 def test_only_one_game_per_player_at_a_time(client_with_players):
-    players = registered_players(client_with_players)
+    players = registered_player_ids(client_with_players)
     r = client_with_players.post(
         '/v1/games',
         data=json.dumps({
@@ -260,10 +273,31 @@ def test_game_status_returns_hand_to_player2(client_with_game):
     assert(len(rj['hand']) == 10)
 
 def test_game_status_request_from_non_player_fails(client_with_game):
-    for n in range(1,100):
-        if (n != client_with_game.testdata['player2_id'] and
-            n != client_with_game.testdata['player1_id']):
-            bogus_player = n
+    td = client_with_game.testdata
+
+    # find a player who is legit but isn't in this game
+    for p in td['players']:
+        if p == td['player1_id']:
+            continue
+        if p == td['player2_id']:
+            continue
+        non_player = p
+        break
+
+    r = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": non_player,
+            },
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 401)
+
+def test_game_status_request_from_bogus_player_fails(client_with_game):
+    bogus_player = str(uuid.uuid4())
 
     r = client_with_game.post(
         '/v1/games/{}'.format(client_with_game.testdata['game_id']),
@@ -275,7 +309,7 @@ def test_game_status_request_from_non_player_fails(client_with_game):
         content_type='application/json'
     )
 
-    assert(r.status_code == 401)
+    assert(r.status_code == 403)
 
 def test_game_status_request_with_no_player_fails(client_with_game):
     r = client_with_game.post(
@@ -287,10 +321,10 @@ def test_game_status_request_with_no_player_fails(client_with_game):
         content_type='application/json'
     )
 
-    assert(r.status_code == 401)
+    assert(r.status_code == 403)
 
 def test_game_status_for_invalid_gameid_fails(client_with_game):
-    bogus_gameid = str(int(client_with_game.testdata['game_id']) * 2) # hacky
+    bogus_gameid = str(uuid.uuid4())
 
     r = client_with_game.post(
         '/v1/games/{}'.format(bogus_gameid),
@@ -303,6 +337,113 @@ def test_game_status_for_invalid_gameid_fails(client_with_game):
     )
 
     assert(r.status_code == 404)
+
+def test_illegal_card_source_fails(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+            "cardsource": "schmorpful"
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 400) # is a 400 b/c connexion validation should catch it
+
+def test_choose_discard(client_with_game):
+    discard = json.loads(client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    ).data)['visible_discard']
+
+    r = client_with_game.post(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+            "cardsource": "discard"
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    assert(json.loads(r.data)['new_card'] == discard)
+
+def test_choose_draw(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+            "cardsource": "deck"
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    # that the correct card is acquired here is tested at a lower level - here
+    #   we're ok just knowing a card came back.
+    assert(isinstance(json.loads(r.data)['new_card']['suit'], str))
+    assert(isinstance(json.loads(r.data)['new_card']['card'], str))
+
+def test_start_move_when_not_your_turn_fails(client_with_game):
+    r = client_with_game.post(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player2_id'],
+            },
+            "cardsource": "discard"
+        }),
+        content_type='application/json'
+    )
+    assert(r.status_code == 403)
+
+def test_status_after_acquisition_works(client_with_game):
+    discard = json.loads(client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    ).data)['visible_discard']
+
+    r = client_with_game.post(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+            "cardsource": "discard"
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    assert(json.loads(r.data)['new_card'] == discard)
+
+    new_game_status = client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    )
+    assert(new_game_status.status_code == 200)
+
 
 # FIXME: add test: initial move on a game
 

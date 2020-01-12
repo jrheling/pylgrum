@@ -48,10 +48,10 @@ class TUIPlayer(Player):
 
         if new_card_from == "1":
             print("... taking discard into hand")
-            move.draw_discard()
+            move.choose_card_from_discard()
         elif new_card_from == "2":
             print("... taking card from draw pile")
-            move.draw_card()
+            move.choose_card_from_draw()
 
     def turn_finish(self, move: Move) -> Move:
         """See acquired card, choose discard."""

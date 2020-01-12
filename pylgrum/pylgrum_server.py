@@ -2,162 +2,166 @@
 import connexion
 import json
 
-from pylgrum import Player, Game
+from functools import wraps
 
-NEXT_PLAYER_ID = 1
-PLAYERS = {} # hash of id->{game: id, name: str, player: Player}
-NEXT_GAME_ID = 1
-GAMES = {}   # hash of id->Game
+from pylgrum import Player, Game, GameManager, Contestant
 
 #### FIXME
-# - name/id thing for players is a mess
 # - add auth
-# - can these be driven by a set of game/player subclasses that emit the expected JSON?
 
+gm = GameManager()
+
+## Decorators to validate parameters / game state
+def player_exists(func):
+    """Return 403 if body['player']['id] is not a valid player."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        fail = False
+        try:
+            if kwargs['body']['player']['id'] not in gm.contestants:
+                fail = True
+        except KeyError:
+            fail = True
+
+        if fail:
+            return {
+                'details': 'Specified player not found'
+            }, 403
+        return func(*args, **kwargs)
+    return wrapper
+
+def opponent_exists(func):
+    """Return 403 if body['opponent_id'] is not a valid player."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        fail = False
+        try:
+            if kwargs['body']['opponent_id'] not in gm.contestants:
+                fail = True
+        except KeyError:
+            fail = True
+
+        if fail:
+            return {
+                'details': 'Specified player not found'
+            }, 403
+        return func(*args, **kwargs)
+    return wrapper
+
+def game_exists(func):
+    """Return 404 if 'game_id' param is legit."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        fail = False
+        try:
+            if kwargs['game_id'] not in gm.games:
+                fail = True
+        except KeyError:
+            fail = True
+
+        if fail:
+            return {
+                'details': 'Specified game not found'
+            }, 404
+        return func(*args, **kwargs)
+    return wrapper
+
+def player_in_game(func):
+    """Return 401 if specified player isn't in specified game.
+
+    Assumes valid player/game.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        player_id = kwargs['body']['player']['id']
+        game = gm.games[kwargs['game_id']]
+        if player_id not in game.contestant_ids:
+            return {
+                'details': "Player ID {} requesting status on unrelated game {}".format(
+                    player_id, kwargs['game_id'])
+            }, 401
+        return func(*args, **kwargs)
+    return wrapper
+
+def is_players_turn(func):
+    """Return 403 if it isn't the specified player's turn to make a move.
+
+    Assumes valid player who is part of the specified game.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        player_id = kwargs['body']['player']['id']
+        player = gm.contestants[player_id].current_player
+        game = gm.games[kwargs['game_id']]
+        if player != game.current_player:
+            return {
+                'details': "It's not that player's turn to move."
+            }, 403
+        return func(*args, **kwargs)
+    return wrapper
+
+## API method handlers
 def list_players():
-    global PLAYERS
-
-    r = []
-    for p in PLAYERS.keys():
-        r.append({"id": p, "name": PLAYERS[p]['name']})
-    return { 'players': r }
+    return { "players": gm.list_contestants() }
 
 def delete_players():
-    global PLAYERS
-    PLAYERS = {}
+    gm.delete_contestants()
     return None,200
 
 def register_player(body):
-    global NEXT_PLAYER_ID
-    global PLAYERS
-
     player_name = body['name']
-    new_id = NEXT_PLAYER_ID
-    NEXT_PLAYER_ID += 1
-    print("giving player id {} to new player {}".format(new_id, player_name))
-    if NEXT_PLAYER_ID in PLAYERS.keys():
-        err = "INTERNAL ERROR: player id {} already defined".format(new_id)
-        print(err)
-        return err, 500
-    PLAYERS[new_id] = {'name': player_name, 'game': None}
-    return {'id': new_id, 'name': player_name}
+    c = gm.add_contestant(player_name)
+    return {
+            "id": c.id,
+            "name": c.name,
+            "currently_playing": c.is_playing
+    }
 
+@player_exists
+@opponent_exists
 def create_game(body):
-    global NEXT_GAME_ID
-    global GAMES
-
-    ## make sure player is legit/defined (else 403)
-    try:
-        player_id = body['player']['id']
-    except KeyError:
-        return {
-            'details': 'player not specified'
-        }, 403
-    if player_id not in PLAYERS.keys():
-        print("registered players: {}".format(PLAYERS.keys()))
-        return {
-            'player': {
-                'id': player_id
-            },
-            'details': 'player not registered'
-        }, 403
-
-    ## look up opponent
+    player_id = body['player']['id']
     opponent_id = body['opponent_id']
-    if opponent_id not in PLAYERS.keys():
-        return {
-            'player': {
-                'id': opponent_id
-            },
-            'details': 'requested opponent not registered'
-        }, 403
-
-    ## are both players available?
-    busy = None
-    if (PLAYERS[opponent_id]['game'] is not None):
-        busy = str(opponent_id)
-    elif (PLAYERS[player_id]['game'] is not None):
-        busy = str(player_id)
-
-    if (busy is not None):
-        return {
-            'player': {
-                'id': busy
-            },
-            'details': 'player already in a game'
-        }, 403
-
-    ## create game
-    PLAYERS[player_id]['player'] = Player(name=PLAYERS[player_id]['name'])
-    PLAYERS[opponent_id]['player'] = Player(name=PLAYERS[opponent_id]['name'])
-    game = Game(PLAYERS[player_id]['player'], PLAYERS[opponent_id]['player'])
-    description = "game between {}({}) and {}({})".format(
-        PLAYERS[player_id]['name'],
-        player_id,
-        PLAYERS[opponent_id]['name'],
-        opponent_id
-    )
-    print("Starting {}".format(description))
-    new_game = NEXT_GAME_ID
-    NEXT_GAME_ID += 1
-    GAMES[new_game] = game
-    PLAYERS[player_id]['game'] = new_game
-    PLAYERS[opponent_id]['game'] = new_game
-
-    return {
-        'description': description,
-        'id': new_game
-    }, 200
-
-def game_status(game_id, body):
-    if game_id not in GAMES.keys():
-        return {
-            'game': {
-                'id': game_id
-            },
-            'details': 'game not found'
-        }, 404
-
-    # the 'hand' part of status depends on who's asking
-    player_in_specified_game = False
-    errstr = ""
     try:
-        player_id = body['player']['id']
-    except KeyError:
-        errstr = "Request from non-existent player"
-    else:
-        try:
-            if PLAYERS[player_id]['game'] == game_id:
-                player_in_specified_game = True
-        except KeyError:
-            errstr = "Player ID {} requesting status on unrelated game {}".format(
-                        player_id, game_id
-            )
-    if not player_in_specified_game:
+        new_game = gm.create_game(player_id, opponent_id)
+    except (Contestant.ContestantAlreadyPlaying) as e:
         return {
-            'details': errstr
-        }, 401
+            'details': str(e)
+        }, 403
 
-    if PLAYERS[player_id]['name'] == GAMES[game_id].player1.name:
-        hand = GAMES[game_id].player1.hand
-    elif PLAYERS[player_id]['name'] == GAMES[game_id].player2.name:
-        hand = GAMES[game_id].player2.hand
+    return new_game
+
+@player_exists
+@game_exists
+@player_in_game
+def game_status(game_id, body):
+    player_id = body['player']['id']
+    return gm.games[game_id].status_for(
+        gm.contestants[player_id].current_player
+    )
+
+@player_exists
+@game_exists
+@player_in_game
+@is_players_turn
+def turn_start(game_id, body):
+    player_id = body['player']['id']
+
+    gm.games[game_id].start_new_move()
+
+    # connexion + our api spec will reject other cardsource values
+    if body['cardsource'] == "discard":
+        gm.games[game_id].current_move.choose_card_from_discard()
     else:
-        errstr = "seemingly impossible error - player in game but w/ mismatched name"
-        print(errstr)
-        return {"error": errstr}, 401
+        gm.games[game_id].current_move.choose_card_from_draw()
 
-    return {
-        'game_id': game_id,
-        'description': "game between {} and {}".format(GAMES[game_id].player1.name, GAMES[game_id].player2.name),
-        'current_player': GAMES[game_id].current_player.name,
-        'discard_showing': {
-            'suit': str(GAMES[game_id].discard_showing.suit),
-            'card': str(GAMES[game_id].discard_showing.rank)
-        },
-        'hand': [{"suit": str(x.suit), "rank": str(x.rank)} for x in hand.cards]
-    }, 200
+    gm.games[game_id].acquire_card()
 
+    return gm.games[game_id].status_for(
+        gm.contestants[player_id].current_player
+    )
+
+########## these are probably cruft
 # @app.route('/games/<int:game_id>/move/<int:move_id>', methods=['GET'])
 # def recent_moves(game_id, move_id):
 #     """Return moves made since move_id.
@@ -183,7 +187,6 @@ def game_status(game_id, body):
 #     updated private_move.
 #     """
 #     pass
-
 
 
 if __name__ == "__main__":

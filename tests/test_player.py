@@ -8,11 +8,11 @@ class TestPlayer(unittest.TestCase):
         self.p = Player()
 
     def test_initial_hand_size(self):
-        self.assertEqual(self.p._hand.size(), 0)
+        self.assertEqual(self.p.hand.size(), 0)
 
     def test_receive_card(self):
         self.p.receive_card(Card(rank=Rank.TEN, suit=Suit.HEART))
-        self.assertEqual(self.p._hand.size(), 1)
+        self.assertEqual(self.p.hand.size(), 1)
 
     def test_too_many_cards(self):
         self.p.receive_card(Card(rank=Rank.QUEEN, suit=Suit.HEART))    # 0 : QH
@@ -26,14 +26,14 @@ class TestPlayer(unittest.TestCase):
         self.p.receive_card(Card(rank=Rank.TEN, suit=Suit.HEART))      # 8 : 10H
         self.p.receive_card(Card(rank=Rank.NINE, suit=Suit.DIAMOND))   # 9 : 9D
         self.p.receive_card(Card(rank=Rank.EIGHT, suit=Suit.CLUB))     # 10: 8C
-        self.assertEqual(self.p._hand.size(), 11) ## a full hand
+        self.assertEqual(self.p.hand.size(), 11) ## a full hand
 
         with self.assertRaises(OverdealtHandError):
             self.p.receive_card(Card(rank=Rank.SEVEN, suit=Suit.SPADE))
 
     def test_bad_handtype(self):
         with self.assertRaises(PylgrumInternalError):
-            player = Player(name="myplayer", handtype=object)
+            player = Player(handtype=object) # pylint: disable=unused-variable
 
     def test_nondefault_handtype(self):
         """Test instantiation of Player with a non-default hand type.
@@ -42,6 +42,11 @@ class TestPlayer(unittest.TestCase):
         want to make sure the Player can be instantiated.
         """
         player = Player(HandWithMelds)
+        self.assertIsInstance(player, Player)
+
+    def test_contestant_id(self):
+        player = Player(contestant_id='foo bar baz')
+        self.assertEqual(player.contestant_id, "foo bar baz")
 
 if __name__ == '__main__':
     unittest.main()

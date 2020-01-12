@@ -1,7 +1,7 @@
 """One player in a game of GinRummy."""
 
 from pylgrum.move import Move
-from pylgrum import Hand, Card, PylgrumInternalError
+from pylgrum import Hand, Card, PylgrumError, PylgrumInternalError
 from pylgrum import game
 
 class Player():
@@ -10,32 +10,27 @@ class Player():
     Subclasses must implement play().
     """
 
-    def __init__(self, name: str = "Anonymous Player", handtype: type = None):
+    def __init__(self, contestant_id: str = None, handtype: type = None):
         """Create a new player using the [optionally] specified type of Hand."""
-        self._game = None
-        self.name = name
+        self.game = None
+        self.contestant_id = contestant_id
         if handtype is None:
-            self._hand = Hand()
+            self.hand = Hand()
         else:
             if issubclass(handtype, Hand):
-                self._hand = handtype()
+                self.hand = handtype()
             else:
                 raise PylgrumInternalError("Type {} is not a ".format(handtype)
                                            + "subclass of Hand.")
 
-    @property
-    def hand(self):
-        return self._hand
-
     def join_game(self, game: 'game.Game'):
-        ## FUTURE NOTE: as of 3.7, the argument type declaration should be
-        ##   able to be better done with a "from __future__ import ..."
-        ##   statement
-        self._game = game
+        if not game:
+            raise PylgrumError("Can't join game with None value")
+        self.game = game
 
     def receive_card(self, card: Card) -> None:
         """Adds a card to the hand."""
-        self._hand.add(card)
+        self.hand.add(card)
 
     def turn_start(self, move: Move) -> None:
         """Called by a Game to begin a turn.
@@ -58,7 +53,7 @@ class Player():
     def turn_finish(self, move: Move) -> None:
         """Called by a Game to finish a turn.
 
-        Before calling this method, the Game will have provide
+        Before calling this method, the Game will have provided
         whatever Card the Player acquiring on this turn via the Move.
 
         Before returning from this method the Player must identify their

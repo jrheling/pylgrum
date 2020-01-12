@@ -8,8 +8,8 @@ class TestGame(unittest.TestCase):
         self.g = Game(Player(), Player())
 
     def test_game_init(self):
-        self.assertEqual(self.g.player1._hand.size(), 10)
-        self.assertEqual(self.g.player2._hand.size(), 10)
+        self.assertEqual(self.g.player1.hand.size(), 10)
+        self.assertEqual(self.g.player2.hand.size(), 10)
         self.assertEqual(self.g._discards.size(), 1)
         self.assertEqual(self.g._deck.size(), 31)
 
@@ -26,6 +26,14 @@ class TestGame(unittest.TestCase):
         self.g._draw_discard()
         self.assertEqual(self.g._deck.size(), 31)
         self.assertEqual(self.g._discards.size(), 0)
+
+    @skip("needs rest of turn lifecycle to work first?")
+    def test_move_with_empty_discard(self):
+        # if the first move draws the discard, the discard pile will be empty
+        self.g.start_new_move()
+        self.g._draw_discard()
+        self.g.acquire_card()
+        self.g.start_new_move()
 
     def test_alternate_player(self):
         self.assertEqual(self.g.player1, self.g._current_player)

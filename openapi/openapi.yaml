@@ -75,7 +75,7 @@ paths:
                   player:
                     $ref: '#/components/schemas/Player'
                   opponent_id:
-                    type: integer
+                    type: string
                 required:
                   - player
                   - opponent_id
@@ -117,7 +117,7 @@ paths:
           description: ID of the game being played
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: Game status returned
@@ -140,6 +140,61 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFoundError'
+  /games/{game_id}/move:
+    post:
+      summary: Move_POST
+      description: Phase 1 of a move - draw or discard_showing
+      operationId: pylgrum.pylgrum_server.turn_start
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                player:
+                  $ref: '#/components/schemas/Player'
+                cardsource:
+                  type: string
+                  enum:
+                    - discard
+                    - deck
+      parameters:
+        - name: game_id
+          in: path
+          description: ID of the game being played
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game status returned
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '401':
+          description: Unauthorized
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '404':
+          description: Requested game ID not found
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal error
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Player:
@@ -147,8 +202,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
-          format: int32
+          type: string
         name:
           type: string
     Card:
@@ -174,34 +228,33 @@ components:
       type: object
       properties:
         game_id:
-          type: integer
-          format: int32
+          type: string
         description:
           type: string
         current_player:
           $ref: '#/components/schemas/Player'
-        discard_showing:
+        visible_discard:
           $ref: '#/components/schemas/Card'
         hand:
           $ref: '#/components/schemas/Hand'
+        new_card:
+          $ref: '#/components/schemas/Card'
       required:
         - game_id
         - current_player
-        - discard_showing
+        - visible_discard
         - hand
     PublicMove:
       title: PublicMove
       type: object
       properties:
         game_id:
-          type: integer
-          format: int32
+          type: string
         move_id:
           type: integer
           format: int32
         player_id:
-          type: integer
-          format: int32
+          type: string
         card_from:
           type: string
         card_discarded:
@@ -220,4 +273,11 @@ components:
           $ref: '#/components/schemas/Player'
         details:
           type: string
+    Error:
+      title: Generic internal error
+      type: object
+      properties:
+        details:
+          type: string
+
 tags: []

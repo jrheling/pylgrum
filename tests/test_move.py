@@ -17,29 +17,29 @@ class TestMove(unittest.TestCase):
         self.assertEqual(str(self.m), "(move still in progress)")
 
     def test_draw(self):
-        self.m.draw_card()
+        self.m.choose_card_from_draw()
         self.assertEqual(self.m.state, MoveState.IN_PROGRESS)
         self.assertEqual(self.m.card_source, CardSource.DRAW_STACK)
 
-    def test_draw_discard(self):
-        self.m.draw_discard()
+    def test_choose_card_from_discard(self):
+        self.m.choose_card_from_discard()
         self.assertEqual(self.m.state, MoveState.IN_PROGRESS)
         self.assertEqual(self.m.card_source, CardSource.DISCARD_STACK)
 
     def test_double_draw(self):
-        self.m.draw_card()
+        self.m.choose_card_from_draw()
         with self.assertRaises(IllegalMoveError):
-            self.m.draw_card()
+            self.m.choose_card_from_draw()
 
     def test_draw_and_discard(self):
-        self.m.draw_card()
+        self.m.choose_card_from_draw()
         with self.assertRaises(IllegalMoveError):
-            self.m.draw_discard()
+            self.m.choose_card_from_discard()
 
     def test_double_discard(self):
-        self.m.draw_discard()
+        self.m.choose_card_from_discard()
         with self.assertRaises(IllegalMoveError):
-            self.m.draw_discard()
+            self.m.choose_card_from_discard()
 
     def test_early_discard(self):
         with self.assertRaises(IllegalMoveError):

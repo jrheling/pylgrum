@@ -7,4 +7,5 @@ sys.path.insert(0, os.path.abspath(os.path.join(
 from pylgrum import Card, Rank, Suit, CardStack, CardNotFoundError, \
     OverdealtHandError, Deck, Player, Hand, Game, Move, MoveState, \
     CardSource, IllegalMoveError, Meld, InvalidMeldError, \
-    PylgrumInternalError, HandWithMelds, TUIPlayer, pylgrum_server
+    PylgrumInternalError, HandWithMelds, TUIPlayer, pylgrum_server, \
+    Contestant, GameManager

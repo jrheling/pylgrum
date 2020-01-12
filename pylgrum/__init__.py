@@ -39,7 +39,9 @@ from .meld import *
 from .hand_melds import *
 from .tui_player import *
 from .tui_game import *
+from .game_manager import *
 from .pylgrum_server import *
 
 __all__ = ['Suit', 'Rank', 'Card', 'CardStack', 'PylgrumError',
-           'CardNotFoundError', 'Deck', 'Player']
+           'CardNotFoundError', 'Deck', 'Player', 'Contestant',
+           'GameManager']

@@ -36,14 +36,14 @@ class Move():
         self.knocking = False
         """Set to True when the player is ending the game ("knocking")."""
 
-    def draw_card(self) -> None:
+    def choose_card_from_draw(self) -> None:
         """Configure the Move to take a card from the draw pile."""
         if self.card_source is not None:
             raise IllegalMoveError("Asked to draw after already drawing or taking the discard.")
         self.card_source = CardSource.DRAW_STACK
         self.state = MoveState.IN_PROGRESS
 
-    def draw_discard(self) -> None:
+    def choose_card_from_discard(self) -> None:
         """Configure the Move to take a card from the discard pile."""
         if self.card_source is not None:
             raise IllegalMoveError("Asked to draw discard after already "
