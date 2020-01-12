@@ -88,7 +88,7 @@ class TestStack(unittest.TestCase):
 
         self.assertEqual(cs.size(), 11)
 
-    def test_stack_peek(self):
+    def test_stack_peek_sees_top(self):
         cs = get_test_stack()
 
         self.assertEqual(cs.size(), 12)
@@ -113,6 +113,16 @@ class TestStack(unittest.TestCase):
         self.assertTrue(cs1 == cs2)
         cs2.remove(2)
         self.assertFalse(cs1 == cs2)
+
+    def test_peek_empty_stack(self):
+        cs = CardStack()
+        with self.assertRaises(CardNotFoundError):
+            cs.peek()
+
+    def test_draw_empty_stack(self):
+        cs = CardStack()
+        with self.assertRaises(CardNotFoundError):
+            cs.draw()
 
 if __name__ == '__main__':
     unittest.main()

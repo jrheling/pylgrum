@@ -74,10 +74,14 @@ class CardStack():
 
     def draw(self) -> Card:
         """Remove and return the top card on the stack."""
+        if len(self._cards) < 1:
+            raise CardNotFoundError("Empty stack.")
         return self._cards.pop()
 
     def peek(self) -> Card:
         """Return but do not remove the top card on the stack."""
+        if len(self._cards) < 1:
+            raise CardNotFoundError("Empty stack.")
         return self._cards[len(self._cards)-1]
 
     def shuffle(self) -> None:
