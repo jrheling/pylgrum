@@ -28,16 +28,16 @@ class TestGame(unittest.TestCase):
         self.assertEqual(self.g._discards.size(), 0)
 
     @skip("needs rest of turn lifecycle to work first?")
-    def test_move_with_empty_discard(self):
+    def test_move_with_empty_discard_pile(self):
         # if the first move draws the discard, the discard pile will be empty
         self.g.start_new_move()
         self.g._draw_discard()
         self.g.acquire_card()
         self.g.start_new_move()
 
-    def test_alternate_player(self):
+    def test_next_turn(self):
         self.assertEqual(self.g.player1, self.g._current_player)
-        self.g._alternate_player()
+        self.g.next_turn()
         self.assertEqual(self.g.player2, self.g._current_player)
 
     @skip("Cannot implement play test yet - need computer player.")

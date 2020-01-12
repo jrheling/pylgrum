@@ -444,6 +444,55 @@ def test_status_after_acquisition_works(client_with_game):
     )
     assert(new_game_status.status_code == 200)
 
+def test_do_discard(client_with_game):
+    # take card from discard pile, then discard first card from hand
+    starting_status = json.loads(client_with_game.post(
+        '/v1/games/{}'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+        }),
+        content_type='application/json'
+    ).data)
+
+    acquired_card = starting_status['visible_discard']
+    discarded_card = starting_status['hand'][0]
+
+    ## take from the discard pile
+    r = client_with_game.post(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+            "cardsource": "discard"
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    assert(json.loads(r.data)['new_card'] == acquired_card)
+
+    ## disard the first card in hand
+    r = client_with_game.patch(
+        '/v1/games/{}/move'.format(client_with_game.testdata['game_id']),
+        data=json.dumps({
+            "player": {
+                "id": client_with_game.testdata['player1_id'],
+            },
+            "discard": discarded_card
+        }),
+        content_type='application/json'
+    )
+
+    assert(r.status_code == 200)
+    rj = json.loads(r.data)
+    # play should have shifted to the other player
+    assert(rj['current_player'] != client_with_game.testdata['player1_id'])
+    # the currently showing discard should be the card we just discarded
+    assert(rj['visible_discard'] == discarded_card)
+
 
 # FIXME: add test: initial move on a game
 

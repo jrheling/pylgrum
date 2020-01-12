@@ -58,6 +58,18 @@ class TestStack(unittest.TestCase):
         cs.remove(cs.find(c))
         self.assertEqual(cs.size(), 0)
 
+    def test_stack_get(self):
+        cs = get_test_stack()
+        two_h = Card(rank=Rank.TWO, suit=Suit.HEART)
+        three_d = Card(rank=Rank.THREE, suit=Suit.DIAMOND)
+
+        self.assertEqual(cs.size(), 12)
+        self.assertEqual(cs.get(4),two_h)
+
+        self.assertEqual(cs.size(), 12)
+        self.assertEqual(cs.get(5),three_d)
+        self.assertEqual(cs.size(), 12)
+
     def test_stack_remove_miss(self):
         cs = get_test_stack()
 

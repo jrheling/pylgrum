@@ -54,7 +54,7 @@ class Player():
         """Called by a Game to finish a turn.
 
         Before calling this method, the Game will have provided
-        whatever Card the Player acquiring on this turn via the Move.
+        whatever Card the Player is acquiring on this turn via the Move.
 
         Before returning from this method the Player must identify their
         discard and populate it in the Move.
@@ -64,7 +64,6 @@ class Player():
 
         Move state should be COMPLETE when this method returns.
         """
-        self.receive_card(move.acquired)
-
+        pass
 
 

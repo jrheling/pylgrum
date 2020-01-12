@@ -67,7 +67,7 @@ class TUIPlayer(Player):
             #print("DB: discard = {}".format(discard))
             discard = self._prompt_discard()
 
-        move.discard(self._hand.remove(discard - 1))
+        move.discard(self.hand.get(discard - 1))
 
     def meld_references(self, card: Card) -> str:
         """Returns a string characterizing the melds in which a Card is used.

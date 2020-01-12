@@ -4,7 +4,7 @@ import json
 
 from functools import wraps
 
-from pylgrum import Player, Game, GameManager, Contestant
+from pylgrum import Player, Game, GameManager, Contestant, Card, Rank, Suit
 
 #### FIXME
 # - add auth
@@ -135,8 +135,9 @@ def create_game(body):
 @game_exists
 @player_in_game
 def game_status(game_id, body):
+    game = gm.games[game_id]
     player_id = body['player']['id']
-    return gm.games[game_id].status_for(
+    return game.status_for(
         gm.contestants[player_id].current_player
     )
 
@@ -145,48 +146,45 @@ def game_status(game_id, body):
 @player_in_game
 @is_players_turn
 def turn_start(game_id, body):
+    game = gm.games[game_id]
     player_id = body['player']['id']
 
-    gm.games[game_id].start_new_move()
+    game.start_new_move()
 
     # connexion + our api spec will reject other cardsource values
     if body['cardsource'] == "discard":
-        gm.games[game_id].current_move.choose_card_from_discard()
+        game.current_move.choose_card_from_discard()
     else:
-        gm.games[game_id].current_move.choose_card_from_draw()
+        game.current_move.choose_card_from_draw()
 
-    gm.games[game_id].acquire_card()
+    game.acquire_card()
 
-    return gm.games[game_id].status_for(
+    return game.status_for(
         gm.contestants[player_id].current_player
     )
 
-########## these are probably cruft
-# @app.route('/games/<int:game_id>/move/<int:move_id>', methods=['GET'])
-# def recent_moves(game_id, move_id):
-#     """Return moves made since move_id.
+@player_exists
+@game_exists
+@player_in_game
+@is_players_turn
+def turn_finish(game_id, body):
+    game = gm.games[game_id]
+    player_id = body['player']['id']
+    discard = body['discard']
 
-#     Parameters:
-#     * game_id (int)
-#     * move_id (int)
+    game.current_move.discard(
+        Card(
+            rank = Rank[discard['card']],
+            suit = Suit[discard['suit']]
+        )
+    )
+    game.finalize_move()
 
-#     Returns a list of public_move structures.
+    game.next_turn()
 
-#     NOTE (FIXME?): It might make sense to only return public_move structures
-#     for the opponents' moves, and to return full move structures for the player's
-#     own moves, since this relieves the client of the need to accurately track
-#     state. But for now we'll assume the client knows what's up.
-#     """
-#     pass
-
-# @app.route('/games/<int:game_id>/move', methods=["POST"])
-# def make_move(game_id):
-#     """Make a move.
-
-#     Expects a private_move structure in the request, and will return an
-#     updated private_move.
-#     """
-#     pass
+    return game.status_for(
+        gm.contestants[player_id].current_player
+    )
 
 
 if __name__ == "__main__":

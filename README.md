@@ -1,6 +1,6 @@
 # PyLGRum - A Python Library for Gin Rummy
 
-## What is PyLGRum?
+## Overview
 
 PyLGRum aims to be a comprehensive Python language library for the card game [Gin Rummy](https://en.wikipedia.org/wiki/Gin_rummy).
 
@@ -22,15 +22,15 @@ As somebody who both enjoys playing Gin Rummy and making things with software, I
 
 ## Technical Notes
 
-### Project Details:
+### Project Details
 
 * There is fairly comprehensive pydoc.
 * Much of PyLGRum uses PEP-484 style type annotations.
 * Uses `pytest`, with `pytest-randomly`. (Older modules use `unittest`, but can be discovered/run by `pytest`.)
 
-## Overview
+## Implementation
 
-... classes, server w/ API
+... classes, server w/ API (this probably gets replaced w/ pydoc/sphinx)
 
 Terminological Note: in general, the PyLGRum classes use Player to refer to one side
 of a single specific game, and Contestant to refer to the entity that might play a
@@ -41,6 +41,17 @@ Contestants, because "Player" seems like a much more natural way to describe thi
 encoding an awkward term like Contestants in the API contract seems regrettable. Something
 needs to change here - either a new term for Player in the classes or perhaps a refactoring
 to eliminate the Player/Contestant difference. Until then, you've been warned.
+
+...
+basic game-play concept
+
+Move objects are exchanged btwn Game and Players
+Game enforces state
+
+in sync model, player app may derive directly from Player class
+in async model, API impl maintains a proxy of Player - user-facing version is the API client's concern
+
+Note: this means the Player class isn't trusted with game state / rules enforcement (even in sync model)
 
 ### TODO
 

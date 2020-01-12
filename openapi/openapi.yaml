@@ -195,6 +195,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    patch:
+      summary: Move_PATCH
+      description: Phase 2 of a move - discard
+      operationId: pylgrum.pylgrum_server.turn_finish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                player:
+                  $ref: '#/components/schemas/Player'
+                discard:
+                  $ref: '#/components/schemas/Card'
+      parameters:
+        - name: game_id
+          in: path
+          description: ID of the game being played
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Game status returned
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        '401':
+          description: Unauthorized
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+        '404':
+          description: Requested game ID not found
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+        '500':
+          description: Internal error
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Player:

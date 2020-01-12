@@ -54,8 +54,20 @@ class CardStack():
         self._cards = before_the_card + after_the_card
         return target_card
 
+    def get(self, i: int) -> Card:
+        """Return the Card at the given index.
+
+        Raises: CardNotFoundError
+        """
+        try:
+            target_card = self._cards[i]
+        except IndexError:
+            raise CardNotFoundError("Index value {} out of range".format(i))
+        return target_card
+
+
     def find(self, targetcard: Card) -> int:
-        """find() searches the stack for a specified card and returns it.
+        """find() searches the stack for a specified card and returns its index.
 
         Args:
          c (Card): the card to search for.

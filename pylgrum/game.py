@@ -53,7 +53,7 @@ class Game():
         """Take the visible discarded card."""
         return self._discards.draw()
 
-    def _alternate_player(self) -> None:
+    def next_turn(self) -> None:
         """Called between moves.
 
         Side effects:
@@ -104,6 +104,26 @@ class Game():
             self.current_move.acquired = self._draw()
         elif self.current_move.card_source == CardSource.DISCARD_STACK:
             self.current_move.acquired = self._draw_discard()
+        self.current_player.receive_card(self.current_move.acquired)
+
+    def finalize_move(self) -> None:
+        """Complete a move by processing the specified discard.
+
+        If called for a move that is not complete, raises IllegalMoveError.
+        """
+        if (self.current_move.state != MoveState.COMPLETE):
+            raise IllegalMoveError("Got to finalize_move in Move state {}".format(self.current_move.state))
+        if (not self.current_move.discard):
+            raise IllegalMoveError("No discard specified.")
+
+        try:
+            discard_idx = self.current_player.hand.find(self.current_move.discarded)
+        except CardNotFoundError:
+            raise IllegalMoveError("Specified discard not in player's hand.")
+        else:
+            self.current_player.hand.remove(discard_idx)
+            self._discards.add(self.current_move.discarded)
+
 
     def _do_turn(self):
         """Interact with a Player to make a Move.
@@ -118,6 +138,7 @@ class Game():
         self.acquire_card()
 
         self._current_player.turn_finish(self.current_move)
+        self.finalize_move()
 
         if self.current_move.knocking is True:
             #### game is ending
@@ -129,7 +150,6 @@ class Game():
             return
 
         assert self.current_move.state == MoveState.COMPLETE
-        self._discards.add(self.current_move.discarded)
         self.post_turn_hook()
 
     def play(self) -> None:
@@ -142,7 +162,7 @@ class Game():
                       format(self._current_player))
                 # FIXME - add validity checking & scoring
                 break
-            self._alternate_player()
+            self.next_turn()
 
     def status_for(self, player) -> dict:
         """Return a game status structure for the specified player.
@@ -185,16 +205,16 @@ class Game():
             }
         else:
             r['visible_discard'] = {
-                'suit': str(visible_discard.suit),
-                'card': str(visible_discard.rank)
+                'suit': visible_discard.suit.name,
+                'card': visible_discard.rank.name
             }
         ## only the curent player can see the acquired card
         if self.current_player == player:
             if (self.current_move is not None and
                 self.current_move.acquired is not None):
                 r['new_card'] = {
-                    'suit': str(self.current_move.acquired.suit),
-                    'card': str(self.current_move.acquired.rank)
+                    'suit': self.current_move.acquired.suit.name,
+                    'card': self.current_move.acquired.rank.name
                 }
-        r['hand'] = [{"suit": str(x.suit), "rank": str(x.rank)} for x in player.hand.cards]
+        r['hand'] = [{"suit": x.suit.name, "card": x.rank.name} for x in player.hand.cards]
         return r
