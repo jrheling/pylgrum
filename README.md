@@ -10,7 +10,7 @@ It currently includes:
 * Classes that model a game and the players in that game, supporting two operating modes:
   * A *synchronous* mode driven by a Game object that calls hooks in Player objects to advance the game
   * An *asynchronous* mode appropriate for play through an API
-* A loosely REST-ish API supporting networked play
+* A loosely RESTful API supporting networked play
 
 ## Motivation & Project Goals
 
@@ -19,6 +19,10 @@ Gin Rummy is a fine game and all, but I hope you have better things to do with y
 So why PyLGRum?
 
 As somebody who both enjoys playing Gin Rummy and making things with software, I wanted a platform in which I could experiment at scale with different strategies for game play. Basically, I want a way to define and test different Gin Rummy playing algorithms. It also serves as a playground project for different programming and system design techniques.
+
+## Current Status
+
+... what can you do now? later? etc.?
 
 ## Technical Notes
 
