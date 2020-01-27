@@ -11,7 +11,7 @@ paths:
     get:
       summary: Players_GET
       description: List available players.
-      operationId: pylgrum.server.pylgrum_server.list_players
+      operationId: pylgrum.server.server.list_players
       parameters: []
       responses:
         '200':
@@ -30,7 +30,7 @@ paths:
     post:
       summary: Players_POST
       description: Register player with server.
-      operationId: pylgrum.server.pylgrum_server.register_player
+      operationId: pylgrum.server.server.register_player
       requestBody:
         description: Player being registered
         required: true
@@ -55,7 +55,7 @@ paths:
     delete:
       summary: Players_DELETE
       description: De-registers all players.
-      operationId: pylgrum.server.pylgrum_server.delete_players
+      operationId: pylgrum.server.server.delete_players
       responses:
         '200':
           description: players deleted
@@ -63,7 +63,7 @@ paths:
     post:
       summary: Games_POST
       description: Start a game.
-      operationId: pylgrum.server.pylgrum_server.create_game
+      operationId: pylgrum.server.server.create_game
       requestBody:
         description: Player starting the game
         required: true
@@ -99,7 +99,7 @@ paths:
     post:
       summary: Game_POST
       description: Get current status of a game.
-      operationId: pylgrum.server.pylgrum_server.game_status
+      operationId: pylgrum.server.server.game_status
       requestBody:
         required: true
         content:
@@ -144,7 +144,7 @@ paths:
     post:
       summary: Move_POST
       description: Phase 1 of a move - draw or discard_showing
-      operationId: pylgrum.server.pylgrum_server.turn_start
+      operationId: pylgrum.server.server.turn_start
       requestBody:
         required: true
         content:
@@ -198,7 +198,7 @@ paths:
     patch:
       summary: Move_PATCH
       description: Phase 2 of a move - discard
-      operationId: pylgrum.server.pylgrum_server.turn_finish
+      operationId: pylgrum.server.server.turn_finish
       requestBody:
         required: true
         content:

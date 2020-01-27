@@ -1,6 +1,6 @@
 import unittest
 from unittest import skip
-from pylgrum.tui.tui_player import TUIPlayer
+from pylgrum.tui.player import TUIPlayer
 
 class TestTUIPlayer(unittest.TestCase):
 

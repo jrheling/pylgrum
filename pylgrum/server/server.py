@@ -194,7 +194,7 @@ def turn_finish(game_id, body):
 if __name__ == "__main__":
     # app = connexion.App(__name__, specification_dir='../openapi')
     app = connexion.App(__name__)
-    app.add_api('../openapi/openapi.yaml')
+    app.add_api('../../openapi/openapi.yaml')
     app.run(
         port=8080,
         debug=True

@@ -4,7 +4,7 @@ import uuid
 
 import connexion
 
-from pylgrum.server import pylgrum_server
+from pylgrum.server import server
 
 flask_app = connexion.FlaskApp(__name__)
 flask_app.add_api('../../../openapi/openapi.yaml')

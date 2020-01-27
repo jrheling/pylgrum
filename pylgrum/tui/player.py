@@ -7,7 +7,7 @@ from pylgrum.player import Player
 from pylgrum.tui.hand_melds import HandWithMelds
 from pylgrum.errors import InvalidMeldError
 
-from pylgrum.tui.tui_util import clear_screen
+from pylgrum.tui.util import clear_screen
 
 class TUIPlayer(Player):
     """Terminal-based interface for a human Gin Rummy player."""
