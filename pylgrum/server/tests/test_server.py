@@ -4,10 +4,10 @@ import uuid
 
 import connexion
 
-from .context import pylgrum_server
+from pylgrum.server import pylgrum_server
 
 flask_app = connexion.FlaskApp(__name__)
-flask_app.add_api('../openapi/openapi.yaml')
+flask_app.add_api('../../../openapi/openapi.yaml')
 
 def is_UUID(s: str) -> bool:
     """True if parameter looks like a valid UUID."""

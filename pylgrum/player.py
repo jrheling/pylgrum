@@ -1,8 +1,11 @@
 """One player in a game of GinRummy."""
 
+
+from pylgrum.card import Card
+from pylgrum.hand import Hand
 from pylgrum.move import Move
-from pylgrum import Hand, Card, PylgrumError, PylgrumInternalError
-from pylgrum import game
+from pylgrum.errors import PylgrumError, PylgrumInternalError
+# from pylgrum.game import Game
 
 class Player():
     """Abstract base class for a player in a Gin Rummy game.

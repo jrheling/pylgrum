@@ -1,5 +1,7 @@
 import unittest
-from .context import Card, Rank, Suit, Hand, OverdealtHandError
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.hand import Hand
+from pylgrum.errors import OverdealtHandError
 
 class TestHand(unittest.TestCase):
 

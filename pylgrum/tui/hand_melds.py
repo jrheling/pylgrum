@@ -1,6 +1,10 @@
 """Hand subclass that allows the user to arrange cards by potential meld."""
 
-from pylgrum import Hand, CardStack, Card, InvalidMeldError, Meld
+from pylgrum.card import Card
+from pylgrum.hand import Hand
+from pylgrum.stack import CardStack
+from pylgrum.meld import Meld
+from pylgrum.errors import InvalidMeldError
 
 class HandWithMelds(Hand):
     """Builds on Hand to track partial/complete melds within a hand.

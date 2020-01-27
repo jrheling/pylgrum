@@ -1,6 +1,9 @@
 import unittest
 from unittest import skip
-from .context import HandWithMelds, Card, Meld, Rank, Suit, InvalidMeldError
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.meld import Meld
+from pylgrum.tui.hand_melds import HandWithMelds
+from pylgrum.errors import InvalidMeldError
 
 class TestHandWithMelds(unittest.TestCase):
 

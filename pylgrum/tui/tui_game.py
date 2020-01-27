@@ -1,8 +1,9 @@
 """Text-mode game controller."""
 import time
 
-from pylgrum import Game, Player
-from pylgrum.tui_util import clear_screen
+from pylgrum.game import Game
+from pylgrum.player import Player
+from pylgrum.tui.tui_util import clear_screen
 
 DELAY = 0.25 # in seconds
 
@@ -32,4 +33,4 @@ class TUIGame(Game):
     def post_turn_hook(self):
         clear_screen()
         print("{}'s move:\n  {}".
-              format(self._current_player, self._current_move.public_str()))
+              format(self._current_player, self.current_move.public_str()))

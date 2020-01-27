@@ -1,5 +1,7 @@
 import unittest
-from .context import Card, Rank, Suit, CardStack, CardNotFoundError
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.stack import CardStack
+from pylgrum.errors import CardNotFoundError
 
 def get_test_stack() -> CardStack:
     """Returns stack of 12 cards for reference by test cases."""

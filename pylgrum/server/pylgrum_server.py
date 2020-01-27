@@ -4,7 +4,11 @@ import json
 
 from functools import wraps
 
-from pylgrum import Player, Game, GameManager, Contestant, Card, Rank, Suit
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.player import Player
+from pylgrum.game import Game
+from pylgrum.server.game_manager import GameManager, Contestant
+
 
 #### FIXME
 # - add auth

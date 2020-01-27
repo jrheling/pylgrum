@@ -1,5 +1,5 @@
 import unittest
-from .context import Suit, Rank, Card
+from pylgrum.card import Suit, Rank, Card
 
 class TestCard(unittest.TestCase):
 

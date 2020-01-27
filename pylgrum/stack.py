@@ -1,8 +1,8 @@
 """CardStack class implementation."""
 import random
 
-from pylgrum import Card
-from .errors import CardNotFoundError
+from pylgrum.card import Card
+from pylgrum.errors import CardNotFoundError
 
 class CardStack():
     """A base class for collections of cards (e.g. deck, hand, discard pile).

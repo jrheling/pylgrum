@@ -5,7 +5,8 @@ execution, and returned from the Game to the Player completed.
 """
 from enum import Enum
 
-from pylgrum import IllegalMoveError, Card
+from pylgrum.errors import IllegalMoveError
+from pylgrum.card import Card
 
 class MoveState(Enum):
     """Tracks the state of a given move."""

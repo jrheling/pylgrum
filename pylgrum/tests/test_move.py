@@ -1,7 +1,8 @@
 import unittest
 from unittest import skip
-from .context import Move, MoveState, CardSource, IllegalMoveError, Card, \
-    Rank, Suit
+from pylgrum.move import Move, MoveState, CardSource
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.errors import IllegalMoveError
 
 class TestMove(unittest.TestCase):
 

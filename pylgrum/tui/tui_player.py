@@ -1,8 +1,13 @@
 """Text UI (TUI) implementation of Gin Rummy player."""
 
-from pylgrum import Player, Hand, HandWithMelds, Card, Move, \
-    InvalidMeldError
-from pylgrum.tui_util import clear_screen
+from pylgrum.card import Card
+from pylgrum.hand import Hand
+from pylgrum.move import Move
+from pylgrum.player import Player
+from pylgrum.tui.hand_melds import HandWithMelds
+from pylgrum.errors import InvalidMeldError
+
+from pylgrum.tui.tui_util import clear_screen
 
 class TUIPlayer(Player):
     """Terminal-based interface for a human Gin Rummy player."""

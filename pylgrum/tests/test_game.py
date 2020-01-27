@@ -1,6 +1,7 @@
 import unittest
 from unittest import skip
-from .context import Game, Player
+from pylgrum.game import Game
+from pylgrum.player import Player
 
 class TestGame(unittest.TestCase):
 

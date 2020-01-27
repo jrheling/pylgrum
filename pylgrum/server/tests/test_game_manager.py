@@ -2,7 +2,7 @@ import pytest
 import json
 import uuid
 
-from .context import GameManager, Contestant
+from pylgrum.server.game_manager import GameManager, Contestant
 
 @pytest.fixture
 def gm_with_contestants():

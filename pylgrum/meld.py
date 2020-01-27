@@ -4,7 +4,9 @@ Notably, melds are always sorted by rank value, so unlike their ancestors in
 the CardStack class tree, do not behave like stacks in all regards.
 """
 
-from pylgrum import CardStack, Card, InvalidMeldError
+from pylgrum.card import Card
+from pylgrum.stack import CardStack
+from pylgrum.errors import InvalidMeldError
 
 class Meld(CardStack):
     """Referenceable data-structure to store melds and potential melds.

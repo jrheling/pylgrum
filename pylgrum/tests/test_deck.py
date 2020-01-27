@@ -1,5 +1,6 @@
 import unittest
-from .context import Card, Rank, Suit, Deck
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.deck import Deck
 
 class TestDeck(unittest.TestCase):
 

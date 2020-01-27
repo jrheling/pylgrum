@@ -3,7 +3,8 @@
 import uuid
 import json
 
-from pylgrum import Player, Game
+from pylgrum.player import Player
+from pylgrum.game import Game
 
 # Note: "Player" refers to a player _in a specific game_, so would be a confusing
 # term to refer to the humans or bots who might play on a GameServer.

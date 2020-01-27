@@ -2,7 +2,12 @@
 
 from pylgrum.player import Player
 from pylgrum.move import Move, CardSource, MoveState
-from pylgrum import Deck, Card, CardStack, IllegalMoveError, PylgrumInternalError, CardNotFoundError
+from pylgrum.deck import Deck
+from pylgrum.card import Card
+from pylgrum.stack import CardStack
+from pylgrum.errors import IllegalMoveError, PylgrumInternalError, CardNotFoundError
+
+
 
 class Game():
     """Base class for a game of gin rummy."""

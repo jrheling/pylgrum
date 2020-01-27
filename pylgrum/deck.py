@@ -1,6 +1,7 @@
 """A standard 52-card deck of cards."""
 
-from pylgrum import Card, Rank, Suit, CardStack
+from pylgrum.card import Card, Rank, Suit
+from pylgrum.stack import CardStack
 
 class Deck(CardStack):
     """A deck has 52 cards in 4 suits (no jokers)."""

@@ -25,23 +25,3 @@ Primary classes:
 Note: this package uses PEP-484 style type annotations, and thus needs
 python >=3.5.
 """
-
-#pylint: disable=wildcard-import
-from .card import *
-from .stack import *
-from .errors import *
-from .deck import *
-from .hand import *
-from .game import *
-from .player import *
-from .move import *
-from .meld import *
-from .hand_melds import *
-from .tui_player import *
-from .tui_game import *
-from .game_manager import *
-from .pylgrum_server import *
-
-__all__ = ['Suit', 'Rank', 'Card', 'CardStack', 'PylgrumError',
-           'CardNotFoundError', 'Deck', 'Player', 'Contestant',
-           'GameManager']

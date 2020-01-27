@@ -1,6 +1,8 @@
 """One player's hand."""
 
-from pylgrum import CardStack, Card, OverdealtHandError
+from pylgrum.card import Card
+from pylgrum.stack import CardStack
+from pylgrum.errors import OverdealtHandError
 
 class Hand(CardStack):
     """A Hand represents the cards a player is holding.
