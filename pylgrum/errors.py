@@ -34,3 +34,10 @@ class IllegalMoveError(PylgrumErrorWithMessage):
 class InvalidMeldError(PylgrumErrorWithMessage):
     """Raised when a meld or potential meld that isn't either all the same
     suit or all the same rank is encountered."""
+
+class InvalidHand(PylgrumErrorWithMessage):
+    """Raised when an invalid hand is asked to do something that needs validity.
+
+    An example of an invalid hand is one where some cards are part of >1
+    complete meld.
+    """

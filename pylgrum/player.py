@@ -6,10 +6,7 @@ from pylgrum.move import Move
 from pylgrum.errors import PylgrumError, PylgrumInternalError
 
 class Player():
-    """Abstract base class for a player in a Gin Rummy game.
-
-    Subclasses must implement play().
-    """
+    """Base class for a player in a Gin Rummy game."""
 
     def __init__(self, contestant_id: str = None, handtype: type = None):
         """Create a new Player using the [optionally] specified type of Hand.

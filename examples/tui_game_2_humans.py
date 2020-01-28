@@ -1,5 +1,5 @@
-from pylgrum.tui.tui_game import TUIGame
-from pylgrum.tui.tui_player import TUIPlayer
+from pylgrum.tui.game import TUIGame
+from pylgrum.tui.player import TUIPlayer
 
 print("""
 This is a two-player console-mode game of Gin Rummy. It can be used for

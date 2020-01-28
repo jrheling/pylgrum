@@ -3,7 +3,7 @@
 from pylgrum.card import Card
 from pylgrum.move import Move
 from pylgrum.player import Player
-from pylgrum.tui.hand_melds import HandWithMelds
+from pylgrum.hand_melds import HandWithMelds
 from pylgrum.errors import InvalidMeldError
 
 from pylgrum.tui.util import clear_screen
@@ -36,7 +36,7 @@ class TUIPlayer(Player):
         return TUIPlayer.normalize_input(input(
             "Enter the number of the card you want to discard: "))
 
-    def turn_start(self, move: Move) -> Move:
+    def turn_start(self, move: Move) -> None:
         """Show available discard, choose where to get card.
 
         Args:
@@ -61,7 +61,7 @@ class TUIPlayer(Player):
             print("... taking card from draw pile")
             move.choose_card_from_draw()
 
-    def turn_finish(self, move: Move) -> Move:
+    def turn_finish(self, move: Move) -> None:
         """Show acquired card, choose card to discard.
 
         Args:
