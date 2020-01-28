@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pylgrum.tui.hand_melds API documentation</title>
+<meta name="description" content="Hand subclass that allows the user to arrange cards by potential meld." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pylgrum.tui.hand_melds</code></h1>
+</header>
+<section id="section-intro">
+<p>Hand subclass that allows the user to arrange cards by potential meld.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Hand subclass that allows the user to arrange cards by potential meld.&#34;&#34;&#34;
+
+from pylgrum.card import Card
+from pylgrum.hand import Hand
+from pylgrum.meld import Meld
+from pylgrum.errors import InvalidMeldError
+
+class HandWithMelds(Hand):
+    &#34;&#34;&#34;Extends Hand to track partial/complete melds within a hand.
+
+    This class lets a user sort the cards in the hand into melds and potential
+    melds. For human users this facilitates display of the hand during game
+    play. Machine users could further subclass HandWithMelds to support
+    reasoning about move strategy.
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Create and initialize an empty hand.&#34;&#34;&#34;
+        super().__init__()
+        self._melds = []     # list of Melds - NOTE - do not add cards to
+                             #   these melds directly - *only* use the
+                             #   below methods (in order to keep the
+                             #   _card_to_meld_id map correct)
+        self._card_to_meld_id = {}    # map card to set of Melds it belongs to
+        self._meld_id_to_meld = {}
+
+    @property
+    def melds(self) -&gt; list:
+        &#34;&#34;&#34;The melds in the hand.
+
+        This is another view of the cards contained in the hand. Note that a
+        single card might be part of &gt;1 meld.
+
+        **The returned melds should never be modified directly.**
+        &#34;&#34;&#34;
+        return self._melds
+
+    def create_meld(self, *cards) -&gt; None:
+        &#34;&#34;&#34;Create a new [potential] meld within the hand.
+
+        Args:
+            *cards (Card list): [optional] cards to add to the meld
+
+        Any cards added must be valid - an attempt to create an invalid meld
+        will fail completely (i.e. no cards will be added, no meld created).
+
+        Raises InvalidMeldError.
+        &#34;&#34;&#34;
+        # note: no check against redundant melds
+        new_meld = Meld()
+        added = []
+        valid = True
+        for card in cards:
+            try:
+                self.add_to_meld(new_meld, card)
+            except InvalidMeldError:
+                valid = False
+            else:
+                added.append(card)
+        if not valid:
+            for card in added:
+                self.remove_from_meld(new_meld, card)
+            raise InvalidMeldError(&#34;non-meld passed &#34;
+                                   + &#34;to HandWithMeld:create_meld()&#34;)
+
+        self._melds.append(new_meld)
+        self._meld_id_to_meld[id(new_meld)] = new_meld
+
+    def remove_meld(self, meld: Meld) -&gt; None:
+        &#34;&#34;&#34;Remove a Meld.
+
+        Args:
+            meld (Meld): the meld to remove
+
+        Side-effects:
+            Removes references to the Meld from _card_to_meld_id mapping.
+        &#34;&#34;&#34;
+        for card in meld.cards:
+            self.remove_from_meld(meld, card)
+        self._melds.remove(meld)
+
+    def add_to_meld(self, meld: Meld, card: Card) -&gt; None:
+        &#34;&#34;&#34;Add a card to a meld.
+
+        Args:
+            meld (Meld): the meld to add to
+            card (Card): the card to add
+
+        Side effects:
+            Updates _card_to_meld_id map accordingly
+
+        Raises InvalidMeldError.
+        &#34;&#34;&#34;
+        meld.add(card)
+        if card in self._card_to_meld_id.keys():
+            self._card_to_meld_id[card].add(id(meld))
+        else:
+            self._card_to_meld_id[card] = set([id(meld)])
+
+    def remove_from_meld(self, meld: Meld, card: Card) -&gt; None:
+        &#34;&#34;&#34;Remove a card from a meld.
+
+        Args:
+            meld (Meld): the meld to add to
+            card (Card): the card to add
+
+        Side effects:
+         * Updates _card_to_meld_id map accordingly
+         * Removes entry from _card_to_meld_id if empty
+        &#34;&#34;&#34;
+        self._card_to_meld_id[card].remove(id(meld))
+        if len(self._card_to_meld_id[card]) == 0:
+            del self._card_to_meld_id[card]
+        meld.remove(meld.find(card))
+
+    def add_to_meld_by_idx(self, meld_idx: int, card_idx: int) -&gt; None:
+        &#34;&#34;&#34;Add a card to a meld by index.
+
+        Args:
+            meld (Meld): the meld to add to
+            card (Card): the card to add
+
+        Side effects:
+            Updates _card_to_meld_id map accordingly
+
+        Raises InvalidMeldError.
+
+        See also: add_to_meld()
+        &#34;&#34;&#34;
+        if meld_idx not in range(0, len(self._melds)):
+            print(&#34;DB: idx = {}, len == {}&#34;.format(meld_idx, len(self._melds)))
+            raise InvalidMeldError(&#34;No meld at index position {}&#34;.
+                                   format(meld_idx))
+        if card_idx not in range(0, self.size()):
+            raise InvalidMeldError(&#34;No card at index position {}&#34;.
+                                   format(card_idx))
+        return self.add_to_meld(
+            self._melds[meld_idx],
+            self.cards[card_idx]
+        )
+
+    def melds_using_card(self, card: Card) -&gt; list:
+        &#34;&#34;&#34;Return melds that reference the given card.
+
+        Args:
+            card (Card): the card to find in melds
+        &#34;&#34;&#34;
+        if card in self._card_to_meld_id.keys():
+            return [self._meld_id_to_meld[x]
+                    for x in self._card_to_meld_id[card]]
+        return None
+
+    # note: need to deal with assessing validity given the possiblity of
+    #  mutually incompatible melds (i.e. those that use the same card)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds"><code class="flex name class">
+<span>class <span class="ident">HandWithMelds</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>Extends Hand to track partial/complete melds within a hand.</p>
+<p>This class lets a user sort the cards in the hand into melds and potential
+melds. For human users this facilitates display of the hand during game
+play. Machine users could further subclass HandWithMelds to support
+reasoning about move strategy.</p>
+<p>Create and initialize an empty hand.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HandWithMelds(Hand):
+    &#34;&#34;&#34;Extends Hand to track partial/complete melds within a hand.
+
+    This class lets a user sort the cards in the hand into melds and potential
+    melds. For human users this facilitates display of the hand during game
+    play. Machine users could further subclass HandWithMelds to support
+    reasoning about move strategy.
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        &#34;&#34;&#34;Create and initialize an empty hand.&#34;&#34;&#34;
+        super().__init__()
+        self._melds = []     # list of Melds - NOTE - do not add cards to
+                             #   these melds directly - *only* use the
+                             #   below methods (in order to keep the
+                             #   _card_to_meld_id map correct)
+        self._card_to_meld_id = {}    # map card to set of Melds it belongs to
+        self._meld_id_to_meld = {}
+
+    @property
+    def melds(self) -&gt; list:
+        &#34;&#34;&#34;The melds in the hand.
+
+        This is another view of the cards contained in the hand. Note that a
+        single card might be part of &gt;1 meld.
+
+        **The returned melds should never be modified directly.**
+        &#34;&#34;&#34;
+        return self._melds
+
+    def create_meld(self, *cards) -&gt; None:
+        &#34;&#34;&#34;Create a new [potential] meld within the hand.
+
+        Args:
+            *cards (Card list): [optional] cards to add to the meld
+
+        Any cards added must be valid - an attempt to create an invalid meld
+        will fail completely (i.e. no cards will be added, no meld created).
+
+        Raises InvalidMeldError.
+        &#34;&#34;&#34;
+        # note: no check against redundant melds
+        new_meld = Meld()
+        added = []
+        valid = True
+        for card in cards:
+            try:
+                self.add_to_meld(new_meld, card)
+            except InvalidMeldError:
+                valid = False
+            else:
+                added.append(card)
+        if not valid:
+            for card in added:
+                self.remove_from_meld(new_meld, card)
+            raise InvalidMeldError(&#34;non-meld passed &#34;
+                                   + &#34;to HandWithMeld:create_meld()&#34;)
+
+        self._melds.append(new_meld)
+        self._meld_id_to_meld[id(new_meld)] = new_meld
+
+    def remove_meld(self, meld: Meld) -&gt; None:
+        &#34;&#34;&#34;Remove a Meld.
+
+        Args:
+            meld (Meld): the meld to remove
+
+        Side-effects:
+            Removes references to the Meld from _card_to_meld_id mapping.
+        &#34;&#34;&#34;
+        for card in meld.cards:
+            self.remove_from_meld(meld, card)
+        self._melds.remove(meld)
+
+    def add_to_meld(self, meld: Meld, card: Card) -&gt; None:
+        &#34;&#34;&#34;Add a card to a meld.
+
+        Args:
+            meld (Meld): the meld to add to
+            card (Card): the card to add
+
+        Side effects:
+            Updates _card_to_meld_id map accordingly
+
+        Raises InvalidMeldError.
+        &#34;&#34;&#34;
+        meld.add(card)
+        if card in self._card_to_meld_id.keys():
+            self._card_to_meld_id[card].add(id(meld))
+        else:
+            self._card_to_meld_id[card] = set([id(meld)])
+
+    def remove_from_meld(self, meld: Meld, card: Card) -&gt; None:
+        &#34;&#34;&#34;Remove a card from a meld.
+
+        Args:
+            meld (Meld): the meld to add to
+            card (Card): the card to add
+
+        Side effects:
+         * Updates _card_to_meld_id map accordingly
+         * Removes entry from _card_to_meld_id if empty
+        &#34;&#34;&#34;
+        self._card_to_meld_id[card].remove(id(meld))
+        if len(self._card_to_meld_id[card]) == 0:
+            del self._card_to_meld_id[card]
+        meld.remove(meld.find(card))
+
+    def add_to_meld_by_idx(self, meld_idx: int, card_idx: int) -&gt; None:
+        &#34;&#34;&#34;Add a card to a meld by index.
+
+        Args:
+            meld (Meld): the meld to add to
+            card (Card): the card to add
+
+        Side effects:
+            Updates _card_to_meld_id map accordingly
+
+        Raises InvalidMeldError.
+
+        See also: add_to_meld()
+        &#34;&#34;&#34;
+        if meld_idx not in range(0, len(self._melds)):
+            print(&#34;DB: idx = {}, len == {}&#34;.format(meld_idx, len(self._melds)))
+            raise InvalidMeldError(&#34;No meld at index position {}&#34;.
+                                   format(meld_idx))
+        if card_idx not in range(0, self.size()):
+            raise InvalidMeldError(&#34;No card at index position {}&#34;.
+                                   format(card_idx))
+        return self.add_to_meld(
+            self._melds[meld_idx],
+            self.cards[card_idx]
+        )
+
+    def melds_using_card(self, card: Card) -&gt; list:
+        &#34;&#34;&#34;Return melds that reference the given card.
+
+        Args:
+            card (Card): the card to find in melds
+        &#34;&#34;&#34;
+        if card in self._card_to_meld_id.keys():
+            return [self._meld_id_to_meld[x]
+                    for x in self._card_to_meld_id[card]]
+        return None</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pylgrum.hand.Hand" href="../hand.html#pylgrum.hand.Hand">Hand</a></li>
+<li><a title="pylgrum.stack.CardStack" href="../stack.html#pylgrum.stack.CardStack">CardStack</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.melds"><code class="name">var <span class="ident">melds</span></code></dt>
+<dd>
+<section class="desc"><p>The melds in the hand.</p>
+<p>This is another view of the cards contained in the hand. Note that a
+single card might be part of &gt;1 meld.</p>
+<p><strong>The returned melds should never be modified directly.</strong></p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def melds(self) -&gt; list:
+    &#34;&#34;&#34;The melds in the hand.
+
+    This is another view of the cards contained in the hand. Note that a
+    single card might be part of &gt;1 meld.
+
+    **The returned melds should never be modified directly.**
+    &#34;&#34;&#34;
+    return self._melds</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.add_to_meld"><code class="name flex">
+<span>def <span class="ident">add_to_meld</span></span>(<span>self, meld, card)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Add a card to a meld.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>meld</code></strong> :&ensp;<code>Meld</code></dt>
+<dd>the meld to add to</dd>
+<dt><strong><code>card</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card to add</dd>
+</dl>
+<p>Side effects:
+Updates _card_to_meld_id map accordingly</p>
+<p>Raises InvalidMeldError.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_to_meld(self, meld: Meld, card: Card) -&gt; None:
+    &#34;&#34;&#34;Add a card to a meld.
+
+    Args:
+        meld (Meld): the meld to add to
+        card (Card): the card to add
+
+    Side effects:
+        Updates _card_to_meld_id map accordingly
+
+    Raises InvalidMeldError.
+    &#34;&#34;&#34;
+    meld.add(card)
+    if card in self._card_to_meld_id.keys():
+        self._card_to_meld_id[card].add(id(meld))
+    else:
+        self._card_to_meld_id[card] = set([id(meld)])</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.add_to_meld_by_idx"><code class="name flex">
+<span>def <span class="ident">add_to_meld_by_idx</span></span>(<span>self, meld_idx, card_idx)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Add a card to a meld by index.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>meld</code></strong> :&ensp;<code>Meld</code></dt>
+<dd>the meld to add to</dd>
+<dt><strong><code>card</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card to add</dd>
+</dl>
+<p>Side effects:
+Updates _card_to_meld_id map accordingly</p>
+<p>Raises InvalidMeldError.</p>
+<p>See also: add_to_meld()</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_to_meld_by_idx(self, meld_idx: int, card_idx: int) -&gt; None:
+    &#34;&#34;&#34;Add a card to a meld by index.
+
+    Args:
+        meld (Meld): the meld to add to
+        card (Card): the card to add
+
+    Side effects:
+        Updates _card_to_meld_id map accordingly
+
+    Raises InvalidMeldError.
+
+    See also: add_to_meld()
+    &#34;&#34;&#34;
+    if meld_idx not in range(0, len(self._melds)):
+        print(&#34;DB: idx = {}, len == {}&#34;.format(meld_idx, len(self._melds)))
+        raise InvalidMeldError(&#34;No meld at index position {}&#34;.
+                               format(meld_idx))
+    if card_idx not in range(0, self.size()):
+        raise InvalidMeldError(&#34;No card at index position {}&#34;.
+                               format(card_idx))
+    return self.add_to_meld(
+        self._melds[meld_idx],
+        self.cards[card_idx]
+    )</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.create_meld"><code class="name flex">
+<span>def <span class="ident">create_meld</span></span>(<span>self, *cards)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Create a new [potential] meld within the hand.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>*cards</code></strong> :&ensp;<code>Card</code> <code>list</code></dt>
+<dd>[optional] cards to add to the meld</dd>
+</dl>
+<p>Any cards added must be valid - an attempt to create an invalid meld
+will fail completely (i.e. no cards will be added, no meld created).</p>
+<p>Raises InvalidMeldError.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_meld(self, *cards) -&gt; None:
+    &#34;&#34;&#34;Create a new [potential] meld within the hand.
+
+    Args:
+        *cards (Card list): [optional] cards to add to the meld
+
+    Any cards added must be valid - an attempt to create an invalid meld
+    will fail completely (i.e. no cards will be added, no meld created).
+
+    Raises InvalidMeldError.
+    &#34;&#34;&#34;
+    # note: no check against redundant melds
+    new_meld = Meld()
+    added = []
+    valid = True
+    for card in cards:
+        try:
+            self.add_to_meld(new_meld, card)
+        except InvalidMeldError:
+            valid = False
+        else:
+            added.append(card)
+    if not valid:
+        for card in added:
+            self.remove_from_meld(new_meld, card)
+        raise InvalidMeldError(&#34;non-meld passed &#34;
+                               + &#34;to HandWithMeld:create_meld()&#34;)
+
+    self._melds.append(new_meld)
+    self._meld_id_to_meld[id(new_meld)] = new_meld</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.melds_using_card"><code class="name flex">
+<span>def <span class="ident">melds_using_card</span></span>(<span>self, card)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return melds that reference the given card.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>card</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card to find in melds</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def melds_using_card(self, card: Card) -&gt; list:
+    &#34;&#34;&#34;Return melds that reference the given card.
+
+    Args:
+        card (Card): the card to find in melds
+    &#34;&#34;&#34;
+    if card in self._card_to_meld_id.keys():
+        return [self._meld_id_to_meld[x]
+                for x in self._card_to_meld_id[card]]
+    return None</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.remove_from_meld"><code class="name flex">
+<span>def <span class="ident">remove_from_meld</span></span>(<span>self, meld, card)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Remove a card from a meld.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>meld</code></strong> :&ensp;<code>Meld</code></dt>
+<dd>the meld to add to</dd>
+<dt><strong><code>card</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card to add</dd>
+</dl>
+<p>Side effects:
+* Updates _card_to_meld_id map accordingly
+* Removes entry from _card_to_meld_id if empty</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_from_meld(self, meld: Meld, card: Card) -&gt; None:
+    &#34;&#34;&#34;Remove a card from a meld.
+
+    Args:
+        meld (Meld): the meld to add to
+        card (Card): the card to add
+
+    Side effects:
+     * Updates _card_to_meld_id map accordingly
+     * Removes entry from _card_to_meld_id if empty
+    &#34;&#34;&#34;
+    self._card_to_meld_id[card].remove(id(meld))
+    if len(self._card_to_meld_id[card]) == 0:
+        del self._card_to_meld_id[card]
+    meld.remove(meld.find(card))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.hand_melds.HandWithMelds.remove_meld"><code class="name flex">
+<span>def <span class="ident">remove_meld</span></span>(<span>self, meld)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Remove a Meld.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>meld</code></strong> :&ensp;<code>Meld</code></dt>
+<dd>the meld to remove</dd>
+</dl>
+<p>Side-effects:
+Removes references to the Meld from _card_to_meld_id mapping.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_meld(self, meld: Meld) -&gt; None:
+    &#34;&#34;&#34;Remove a Meld.
+
+    Args:
+        meld (Meld): the meld to remove
+
+    Side-effects:
+        Removes references to the Meld from _card_to_meld_id mapping.
+    &#34;&#34;&#34;
+    for card in meld.cards:
+        self.remove_from_meld(meld, card)
+    self._melds.remove(meld)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pylgrum.hand.Hand" href="../hand.html#pylgrum.hand.Hand">Hand</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pylgrum.hand.Hand.add" href="../hand.html#pylgrum.hand.Hand.add">add</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.cards" href="../stack.html#pylgrum.stack.CardStack.cards">cards</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.draw" href="../stack.html#pylgrum.stack.CardStack.draw">draw</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.find" href="../stack.html#pylgrum.stack.CardStack.find">find</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.get" href="../stack.html#pylgrum.stack.CardStack.get">get</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.peek" href="../stack.html#pylgrum.stack.CardStack.peek">peek</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.remove" href="../stack.html#pylgrum.stack.CardStack.remove">remove</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.shuffle" href="../stack.html#pylgrum.stack.CardStack.shuffle">shuffle</a></code></li>
+<li><code><a title="pylgrum.hand.Hand.size" href="../stack.html#pylgrum.stack.CardStack.size">size</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pylgrum.tui" href="index.html">pylgrum.tui</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pylgrum.tui.hand_melds.HandWithMelds" href="#pylgrum.tui.hand_melds.HandWithMelds">HandWithMelds</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.add_to_meld" href="#pylgrum.tui.hand_melds.HandWithMelds.add_to_meld">add_to_meld</a></code></li>
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.add_to_meld_by_idx" href="#pylgrum.tui.hand_melds.HandWithMelds.add_to_meld_by_idx">add_to_meld_by_idx</a></code></li>
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.create_meld" href="#pylgrum.tui.hand_melds.HandWithMelds.create_meld">create_meld</a></code></li>
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.melds" href="#pylgrum.tui.hand_melds.HandWithMelds.melds">melds</a></code></li>
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.melds_using_card" href="#pylgrum.tui.hand_melds.HandWithMelds.melds_using_card">melds_using_card</a></code></li>
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.remove_from_meld" href="#pylgrum.tui.hand_melds.HandWithMelds.remove_from_meld">remove_from_meld</a></code></li>
+<li><code><a title="pylgrum.tui.hand_melds.HandWithMelds.remove_meld" href="#pylgrum.tui.hand_melds.HandWithMelds.remove_meld">remove_meld</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,1223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pylgrum.tui.player API documentation</title>
+<meta name="description" content="Text-mode player subclass, implements very basic console UI." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pylgrum.tui.player</code></h1>
+</header>
+<section id="section-intro">
+<p>Text-mode player subclass, implements very basic console UI.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Text-mode player subclass, implements very basic console UI.&#34;&#34;&#34;
+
+from pylgrum.card import Card
+from pylgrum.move import Move
+from pylgrum.player import Player
+from pylgrum.tui.hand_melds import HandWithMelds
+from pylgrum.errors import InvalidMeldError
+
+from pylgrum.tui.util import clear_screen
+
+class TUIPlayer(Player):
+    &#34;&#34;&#34;Terminal-based interface for a human Gin Rummy player.&#34;&#34;&#34;
+
+    def __init__(self, player_id: str):
+        &#34;&#34;&#34;Create and initialize a player.
+
+        Args:
+            player_id (str): display name for the player
+        &#34;&#34;&#34;
+        self._player_id = player_id
+        &#34;&#34;&#34;Used to identify the player in the UI.&#34;&#34;&#34;
+
+        super().__init__(handtype=HandWithMelds)
+        self.knocking = False
+        self.banner_text = &#34;{}&#39;s turn&#34;.format(self.__str__())
+
+    def __str__(self):
+        return self._player_id
+
+    @staticmethod
+    def _prompt_card_from() -&gt; str:
+        return input(&#34;Press 1 to take the discard, 2 to draw: &#34;)
+
+    @staticmethod
+    def _prompt_discard() -&gt; str:
+        return TUIPlayer.normalize_input(input(
+            &#34;Enter the number of the card you want to discard: &#34;))
+
+    def turn_start(self, move: Move) -&gt; Move:
+        &#34;&#34;&#34;Show available discard, choose where to get card.
+
+        Args:
+            move (Move): the move object used for this turn
+
+        This implements the abstract base method (hook).
+        &#34;&#34;&#34;
+        self.print_turn_screen()
+        self.action_text(&#34;Take discard or draw?&#34;)
+        print()
+        self.context(&#34;Available discard: {}&#34;.
+                     format(move.available_discard))
+        print()
+        new_card_from = None
+        while new_card_from not in [&#34;1&#34;, &#34;2&#34;]:
+            new_card_from = self._prompt_card_from()
+
+        if new_card_from == &#34;1&#34;:
+            print(&#34;... taking discard into hand&#34;)
+            move.choose_card_from_discard()
+        elif new_card_from == &#34;2&#34;:
+            print(&#34;... taking card from draw pile&#34;)
+            move.choose_card_from_draw()
+
+    def turn_finish(self, move: Move) -&gt; Move:
+        &#34;&#34;&#34;Show acquired card, choose card to discard.
+
+        Args:
+            move (Move): the move object used for this turn
+
+        This implements the abstract base method (hook).
+        &#34;&#34;&#34;
+        super().turn_finish(move) # need to call to put new card in hand
+        print(&#34;Current hand:\n&#34;)
+        self.show_hand()
+        self.manage_hand()
+        if self.knocking:
+            move.knocking = True
+        # FIXME: allow super-gin by making post-knock discard optional
+        discard = None
+        while discard not in range(1, 12):
+            #print(&#34;DB: discard = {}&#34;.format(discard))
+            discard = self._prompt_discard()
+
+        move.discard(self.hand.get(discard - 1))
+
+    def meld_references(self, card: Card) -&gt; str:
+        &#34;&#34;&#34;Returns a string characterizing the melds in which a Card is used.
+
+        Args:
+            card (Card): the card whose references are sought
+
+        The string uses a single character for each meld the card is part
+        of. That string will be:
+
+         &#39;S&#39; : complete set
+         &#39;R&#39; : complete run
+         &#39;s&#39; : partial set
+         &#39;r&#39; : partial run
+         &#39;?&#39; : other partial
+
+        All complete melds will be referenced first.
+
+        If the card is referenced in no melds, an empty string is returned.
+        If a non-empty string is returned, it is wrapped in square brackets.
+        &#34;&#34;&#34;
+        melds = self.hand.melds_using_card(card)
+        if melds is not None:
+            complete_s = 0
+            complete_r = 0
+            partial_s = 0
+            partial_r = 0
+            partial_other = 0
+            for meld in melds:
+                if meld.is_set:
+                    complete_s += 1
+                elif meld.is_run:
+                    complete_r += 1
+                elif meld.all_same_suit and meld.all_same_rank:
+                    partial_other += 1
+                elif meld.all_same_suit:
+                    partial_r += 1
+                elif meld.all_same_rank:
+                    partial_s += 1
+            return(&#34;[{}&#34;.format(&#39;S&#39; * complete_s)
+                   + &#34;{}&#34;.format(&#39;R&#39; * complete_r)
+                   + &#34;{}&#34;.format(&#39;s&#39; * partial_s)
+                   + &#34;{}&#34;.format(&#39;r&#39; * partial_r)
+                   + &#34;{}]&#34;.format(&#39;?&#39; * partial_other))
+        return &#34;&#34;
+
+    def show_hand(self):
+        &#34;&#34;&#34;Display the current hand.&#34;&#34;&#34;
+        for (index, card) in enumerate(self.hand.cards):
+            print(&#34;{}: {} {}&#34;.format(
+                index+1,
+                card,
+                self.meld_references(card)
+            ))
+
+    def show_melds(self) -&gt; None:
+        &#34;&#34;&#34;Display current melds so user can manage their hand.
+
+        Lists every potential or actual meld and its contents, and
+        shows user which cards are being used in multiple melds (these
+        cards represent choices they&#39;ll have to make).
+        &#34;&#34;&#34;
+        if len(self.hand.melds) == 0:
+            print(&#34;No melds defined.&#34;)
+
+        for i in range(1, len(self.hand.melds)+1):
+            meld = self.hand.melds[i-1]
+            if meld.complete:
+                status = &#34; &#34;
+                if meld.is_run:
+                    meld_type = &#34;run&#34;
+                elif meld.is_set:
+                    meld_type = &#34;set&#34;
+            else:
+                status = &#34;?&#34;
+                if meld.all_same_suit and meld.all_same_rank:
+                    meld_type = &#34;???&#34;
+                elif meld.all_same_suit:
+                    meld_type = &#34;run&#34;
+                elif meld.all_same_rank:
+                    meld_type = &#34;set&#34;
+
+            if meld.size() == 0:
+                meld_type = &#34;null&#34;
+                status = &#34;&#34;
+
+            print(&#34;#{idx}:{meld_type}{status}: {cards}&#34;.format(
+                idx=i,
+                meld_type=meld_type,
+                status=status,
+                cards=[str(x) for x in meld.cards]
+            ))
+
+    @staticmethod
+    def print_banner(heading: str,
+                     width: int = 80,
+                     sep_char: str = &#39;=&#39;) -&gt; None:
+        &#34;&#34;&#34;Print a banner with centered text and heading/footing rows.
+
+        Arguments:
+            heading (str): the string to print
+            width (int): the size of the space in which to center the heading
+            sep_char (str): single char repeated as necessary to fill the width
+                            of the heading / footing rows
+        &#34;&#34;&#34;
+        print(&#34;{t:{s}^{w}}&#34;.format(t=&#39;&#39;, s=&#39;=&#39;, w=80))
+        print(&#34;{t:^{w}}&#34;.format(t=heading, w=width))
+        print(&#34;{t:{s}^{w}}&#34;.format(t=&#39;&#39;, s=sep_char, w=width))
+
+    @staticmethod
+    def print_subheading(heading: str,
+                         width: int = 80,
+                         sep_char: str = &#39;-&#39;) -&gt; None:
+        &#34;&#34;&#34;Print text centered on a single line filled with specified char.&#34;&#34;&#34;
+        if len(heading) &gt; 0:
+            heading = &#34; {} &#34;.format(heading)
+        print(&#34;  {t:{s}^{w}}  &#34;.format(t=heading,
+                                       s=sep_char,
+                                       w=width - 4))
+
+    @staticmethod
+    def action_text(text: str,
+                    width: int = 80,
+                    prefix: str = &#34;==&gt;&#34;,
+                    suffix: str = &#34;&lt;==&#34;) -&gt; None:
+        &#34;&#34;&#34;Print text, centered with attention-getting prefix &amp; suffix.&#34;&#34;&#34;
+        line = &#34;{} {} {}&#34;.format(prefix, text, suffix)
+        print(&#34;{t:^{w}}&#34;.format(t=line, w=width))
+
+    @staticmethod
+    def context(text: str,
+                prefix: str = &#34;%%%&#34;) -&gt; None:
+        &#34;&#34;&#34;Print specified text with attention-getting prefix.&#34;&#34;&#34;
+        if len(prefix) &gt; 0:
+            prefix = &#34; {} &#34;.format(prefix)
+        print(&#34;{}{}&#34;.format(prefix, text))
+
+    @staticmethod
+    def normalize_input(input_char):
+        &#34;&#34;&#34;Return int version of number chars.
+
+        Args:
+            input_char (str): a single character
+
+        This is used to simplify input checking that uses range(). It takes
+        a character and returns the int equivalent for number characters,
+        and returns the input unchanged for non-number characters.
+
+        For example:
+        normalize_input(&#39;c&#39;) -&gt; &#39;c&#39;   # str
+        normalize_input(&#39;1&#39;) -&gt; 1     # int
+        normalize_input(&#39;D&#39;) -&gt; &#39;D&#39;   # str
+        normalize_input(&#39;42&#39;) -&gt; 42   # int
+        &#34;&#34;&#34;
+        try:
+            r_val = int(input_char)
+        except ValueError:
+            # get here if c was a string
+            r_val = input_char
+
+        return r_val
+
+    def print_turn_screen(self) -&gt; None:
+        &#34;&#34;&#34;Clear screen, show hand, show melds.&#34;&#34;&#34;
+        clear_screen()
+        self.print_banner(self.banner_text)
+        self.print_subheading(&#34;current hand&#34;)
+        self.show_hand()
+        print(&#34;\n&#34;,)
+        self.print_subheading(&#34;current melds&#34;)
+        self.show_melds()
+        print(&#34;\n&#34;,)
+        self.print_subheading(&#34;available action&#34;)
+
+    #pylint: disable=too-many-branches
+    def manage_hand(self) -&gt; None:
+        &#34;&#34;&#34;Show hand, let user arrange (potential) melds.
+
+        Loops until user chooses to discard.
+        &#34;&#34;&#34;
+        ## NOTE: user-facing views index from 1, not 0
+
+        while True:
+            self.print_turn_screen()
+            self.action_text(&#34;Update melds as desired, then choose a discard.&#34;)
+            print()
+            self.context(&#34;Manage hand: [A]dd card to meld, [R]emove meld&#34;)
+            self.context(&#34;Finish turn: [D]iscard, [K]nock (end game)&#34;)
+            print()
+            #print(manage_prompt)
+
+            command = input(&#34;&gt; &#34;)
+            if command in (&#34;c&#34;, &#34;C&#34;):
+                self.hand.create_meld()
+                print(&#34;(created new meld)&#34;)
+            elif command in (&#34;a&#34;, &#34;A&#34;):
+                #self.show_melds()
+                meld_num = None
+                while meld_num not in (&#39;n&#39;, &#39;N&#39;, *range(1, len(self.hand.melds)+1)):
+                    meld_num = self.normalize_input(input(
+                        &#34;Enter the number of the meld to &#34;
+                        + &#34;add to, or &#39;N&#39; for a new meld: &#34;))
+                    if meld_num in (&#39;n&#39;, &#39;N&#39;):
+                        self.hand.create_meld()
+                        meld_num = len(self.hand.melds) # len() is 1-indexed
+                        break ## loop stopping condition was computed
+                              ##  before we added to the meld list
+                    # print(&#34;debug: end of while m loop m=={} ({})&#34;.
+                    #       format(m, type(m)))
+                # it should only be possible to get here with m set to
+                #  one more than the index of the target meld
+                card_num = None
+                while card_num not in (&#39;x&#39;, &#39;X&#39;):
+                    card_num = self.normalize_input(input(
+                        &#34;card to add? (x when finished) &#34;))
+                    if card_num in range(1, 12):
+                        try:
+                            self.hand.add_to_meld_by_idx(meld_num - 1, card_num - 1)
+                        except InvalidMeldError:
+                            print(&#34;Can&#39;t add {} &#34;.
+                                  format(self.hand.cards[card_num-1])
+                                  + &#34; to meld {}&#34;.
+                                  format(self.hand.melds[meld_num-1]))
+                        else:
+                            print(&#34;Added {} &#34;.format(self.hand.cards[card_num-1])
+                                  + &#34;to meld {}.&#34;.format(
+                                      self.hand.melds[meld_num-1]
+                                  ))
+            elif command in (&#34;r&#34;, &#34;R&#34;):
+                meld_num = None
+                while meld_num not in range(1, len(self.hand.melds)+1):
+                    meld_num = self.normalize_input(input(
+                        &#34;Enter the number of the meld to remove: &#34;))
+                self.hand.remove_meld(self.hand.melds[meld_num-1])
+            elif command in (&#34;d&#34;, &#34;D&#34;):
+                break
+            elif command in (&#34;k&#34;, &#34;K&#34;):
+                # FIXME: add check to make sure knock will be legal
+                self.knocking = True
+                break
+            #else invalid command</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pylgrum.tui.player.TUIPlayer"><code class="flex name class">
+<span>class <span class="ident">TUIPlayer</span></span>
+<span>(</span><span>player_id)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Terminal-based interface for a human Gin Rummy player.</p>
+<p>Create and initialize a player.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>player_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>display name for the player</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TUIPlayer(Player):
+    &#34;&#34;&#34;Terminal-based interface for a human Gin Rummy player.&#34;&#34;&#34;
+
+    def __init__(self, player_id: str):
+        &#34;&#34;&#34;Create and initialize a player.
+
+        Args:
+            player_id (str): display name for the player
+        &#34;&#34;&#34;
+        self._player_id = player_id
+        &#34;&#34;&#34;Used to identify the player in the UI.&#34;&#34;&#34;
+
+        super().__init__(handtype=HandWithMelds)
+        self.knocking = False
+        self.banner_text = &#34;{}&#39;s turn&#34;.format(self.__str__())
+
+    def __str__(self):
+        return self._player_id
+
+    @staticmethod
+    def _prompt_card_from() -&gt; str:
+        return input(&#34;Press 1 to take the discard, 2 to draw: &#34;)
+
+    @staticmethod
+    def _prompt_discard() -&gt; str:
+        return TUIPlayer.normalize_input(input(
+            &#34;Enter the number of the card you want to discard: &#34;))
+
+    def turn_start(self, move: Move) -&gt; Move:
+        &#34;&#34;&#34;Show available discard, choose where to get card.
+
+        Args:
+            move (Move): the move object used for this turn
+
+        This implements the abstract base method (hook).
+        &#34;&#34;&#34;
+        self.print_turn_screen()
+        self.action_text(&#34;Take discard or draw?&#34;)
+        print()
+        self.context(&#34;Available discard: {}&#34;.
+                     format(move.available_discard))
+        print()
+        new_card_from = None
+        while new_card_from not in [&#34;1&#34;, &#34;2&#34;]:
+            new_card_from = self._prompt_card_from()
+
+        if new_card_from == &#34;1&#34;:
+            print(&#34;... taking discard into hand&#34;)
+            move.choose_card_from_discard()
+        elif new_card_from == &#34;2&#34;:
+            print(&#34;... taking card from draw pile&#34;)
+            move.choose_card_from_draw()
+
+    def turn_finish(self, move: Move) -&gt; Move:
+        &#34;&#34;&#34;Show acquired card, choose card to discard.
+
+        Args:
+            move (Move): the move object used for this turn
+
+        This implements the abstract base method (hook).
+        &#34;&#34;&#34;
+        super().turn_finish(move) # need to call to put new card in hand
+        print(&#34;Current hand:\n&#34;)
+        self.show_hand()
+        self.manage_hand()
+        if self.knocking:
+            move.knocking = True
+        # FIXME: allow super-gin by making post-knock discard optional
+        discard = None
+        while discard not in range(1, 12):
+            #print(&#34;DB: discard = {}&#34;.format(discard))
+            discard = self._prompt_discard()
+
+        move.discard(self.hand.get(discard - 1))
+
+    def meld_references(self, card: Card) -&gt; str:
+        &#34;&#34;&#34;Returns a string characterizing the melds in which a Card is used.
+
+        Args:
+            card (Card): the card whose references are sought
+
+        The string uses a single character for each meld the card is part
+        of. That string will be:
+
+         &#39;S&#39; : complete set
+         &#39;R&#39; : complete run
+         &#39;s&#39; : partial set
+         &#39;r&#39; : partial run
+         &#39;?&#39; : other partial
+
+        All complete melds will be referenced first.
+
+        If the card is referenced in no melds, an empty string is returned.
+        If a non-empty string is returned, it is wrapped in square brackets.
+        &#34;&#34;&#34;
+        melds = self.hand.melds_using_card(card)
+        if melds is not None:
+            complete_s = 0
+            complete_r = 0
+            partial_s = 0
+            partial_r = 0
+            partial_other = 0
+            for meld in melds:
+                if meld.is_set:
+                    complete_s += 1
+                elif meld.is_run:
+                    complete_r += 1
+                elif meld.all_same_suit and meld.all_same_rank:
+                    partial_other += 1
+                elif meld.all_same_suit:
+                    partial_r += 1
+                elif meld.all_same_rank:
+                    partial_s += 1
+            return(&#34;[{}&#34;.format(&#39;S&#39; * complete_s)
+                   + &#34;{}&#34;.format(&#39;R&#39; * complete_r)
+                   + &#34;{}&#34;.format(&#39;s&#39; * partial_s)
+                   + &#34;{}&#34;.format(&#39;r&#39; * partial_r)
+                   + &#34;{}]&#34;.format(&#39;?&#39; * partial_other))
+        return &#34;&#34;
+
+    def show_hand(self):
+        &#34;&#34;&#34;Display the current hand.&#34;&#34;&#34;
+        for (index, card) in enumerate(self.hand.cards):
+            print(&#34;{}: {} {}&#34;.format(
+                index+1,
+                card,
+                self.meld_references(card)
+            ))
+
+    def show_melds(self) -&gt; None:
+        &#34;&#34;&#34;Display current melds so user can manage their hand.
+
+        Lists every potential or actual meld and its contents, and
+        shows user which cards are being used in multiple melds (these
+        cards represent choices they&#39;ll have to make).
+        &#34;&#34;&#34;
+        if len(self.hand.melds) == 0:
+            print(&#34;No melds defined.&#34;)
+
+        for i in range(1, len(self.hand.melds)+1):
+            meld = self.hand.melds[i-1]
+            if meld.complete:
+                status = &#34; &#34;
+                if meld.is_run:
+                    meld_type = &#34;run&#34;
+                elif meld.is_set:
+                    meld_type = &#34;set&#34;
+            else:
+                status = &#34;?&#34;
+                if meld.all_same_suit and meld.all_same_rank:
+                    meld_type = &#34;???&#34;
+                elif meld.all_same_suit:
+                    meld_type = &#34;run&#34;
+                elif meld.all_same_rank:
+                    meld_type = &#34;set&#34;
+
+            if meld.size() == 0:
+                meld_type = &#34;null&#34;
+                status = &#34;&#34;
+
+            print(&#34;#{idx}:{meld_type}{status}: {cards}&#34;.format(
+                idx=i,
+                meld_type=meld_type,
+                status=status,
+                cards=[str(x) for x in meld.cards]
+            ))
+
+    @staticmethod
+    def print_banner(heading: str,
+                     width: int = 80,
+                     sep_char: str = &#39;=&#39;) -&gt; None:
+        &#34;&#34;&#34;Print a banner with centered text and heading/footing rows.
+
+        Arguments:
+            heading (str): the string to print
+            width (int): the size of the space in which to center the heading
+            sep_char (str): single char repeated as necessary to fill the width
+                            of the heading / footing rows
+        &#34;&#34;&#34;
+        print(&#34;{t:{s}^{w}}&#34;.format(t=&#39;&#39;, s=&#39;=&#39;, w=80))
+        print(&#34;{t:^{w}}&#34;.format(t=heading, w=width))
+        print(&#34;{t:{s}^{w}}&#34;.format(t=&#39;&#39;, s=sep_char, w=width))
+
+    @staticmethod
+    def print_subheading(heading: str,
+                         width: int = 80,
+                         sep_char: str = &#39;-&#39;) -&gt; None:
+        &#34;&#34;&#34;Print text centered on a single line filled with specified char.&#34;&#34;&#34;
+        if len(heading) &gt; 0:
+            heading = &#34; {} &#34;.format(heading)
+        print(&#34;  {t:{s}^{w}}  &#34;.format(t=heading,
+                                       s=sep_char,
+                                       w=width - 4))
+
+    @staticmethod
+    def action_text(text: str,
+                    width: int = 80,
+                    prefix: str = &#34;==&gt;&#34;,
+                    suffix: str = &#34;&lt;==&#34;) -&gt; None:
+        &#34;&#34;&#34;Print text, centered with attention-getting prefix &amp; suffix.&#34;&#34;&#34;
+        line = &#34;{} {} {}&#34;.format(prefix, text, suffix)
+        print(&#34;{t:^{w}}&#34;.format(t=line, w=width))
+
+    @staticmethod
+    def context(text: str,
+                prefix: str = &#34;%%%&#34;) -&gt; None:
+        &#34;&#34;&#34;Print specified text with attention-getting prefix.&#34;&#34;&#34;
+        if len(prefix) &gt; 0:
+            prefix = &#34; {} &#34;.format(prefix)
+        print(&#34;{}{}&#34;.format(prefix, text))
+
+    @staticmethod
+    def normalize_input(input_char):
+        &#34;&#34;&#34;Return int version of number chars.
+
+        Args:
+            input_char (str): a single character
+
+        This is used to simplify input checking that uses range(). It takes
+        a character and returns the int equivalent for number characters,
+        and returns the input unchanged for non-number characters.
+
+        For example:
+        normalize_input(&#39;c&#39;) -&gt; &#39;c&#39;   # str
+        normalize_input(&#39;1&#39;) -&gt; 1     # int
+        normalize_input(&#39;D&#39;) -&gt; &#39;D&#39;   # str
+        normalize_input(&#39;42&#39;) -&gt; 42   # int
+        &#34;&#34;&#34;
+        try:
+            r_val = int(input_char)
+        except ValueError:
+            # get here if c was a string
+            r_val = input_char
+
+        return r_val
+
+    def print_turn_screen(self) -&gt; None:
+        &#34;&#34;&#34;Clear screen, show hand, show melds.&#34;&#34;&#34;
+        clear_screen()
+        self.print_banner(self.banner_text)
+        self.print_subheading(&#34;current hand&#34;)
+        self.show_hand()
+        print(&#34;\n&#34;,)
+        self.print_subheading(&#34;current melds&#34;)
+        self.show_melds()
+        print(&#34;\n&#34;,)
+        self.print_subheading(&#34;available action&#34;)
+
+    #pylint: disable=too-many-branches
+    def manage_hand(self) -&gt; None:
+        &#34;&#34;&#34;Show hand, let user arrange (potential) melds.
+
+        Loops until user chooses to discard.
+        &#34;&#34;&#34;
+        ## NOTE: user-facing views index from 1, not 0
+
+        while True:
+            self.print_turn_screen()
+            self.action_text(&#34;Update melds as desired, then choose a discard.&#34;)
+            print()
+            self.context(&#34;Manage hand: [A]dd card to meld, [R]emove meld&#34;)
+            self.context(&#34;Finish turn: [D]iscard, [K]nock (end game)&#34;)
+            print()
+            #print(manage_prompt)
+
+            command = input(&#34;&gt; &#34;)
+            if command in (&#34;c&#34;, &#34;C&#34;):
+                self.hand.create_meld()
+                print(&#34;(created new meld)&#34;)
+            elif command in (&#34;a&#34;, &#34;A&#34;):
+                #self.show_melds()
+                meld_num = None
+                while meld_num not in (&#39;n&#39;, &#39;N&#39;, *range(1, len(self.hand.melds)+1)):
+                    meld_num = self.normalize_input(input(
+                        &#34;Enter the number of the meld to &#34;
+                        + &#34;add to, or &#39;N&#39; for a new meld: &#34;))
+                    if meld_num in (&#39;n&#39;, &#39;N&#39;):
+                        self.hand.create_meld()
+                        meld_num = len(self.hand.melds) # len() is 1-indexed
+                        break ## loop stopping condition was computed
+                              ##  before we added to the meld list
+                    # print(&#34;debug: end of while m loop m=={} ({})&#34;.
+                    #       format(m, type(m)))
+                # it should only be possible to get here with m set to
+                #  one more than the index of the target meld
+                card_num = None
+                while card_num not in (&#39;x&#39;, &#39;X&#39;):
+                    card_num = self.normalize_input(input(
+                        &#34;card to add? (x when finished) &#34;))
+                    if card_num in range(1, 12):
+                        try:
+                            self.hand.add_to_meld_by_idx(meld_num - 1, card_num - 1)
+                        except InvalidMeldError:
+                            print(&#34;Can&#39;t add {} &#34;.
+                                  format(self.hand.cards[card_num-1])
+                                  + &#34; to meld {}&#34;.
+                                  format(self.hand.melds[meld_num-1]))
+                        else:
+                            print(&#34;Added {} &#34;.format(self.hand.cards[card_num-1])
+                                  + &#34;to meld {}.&#34;.format(
+                                      self.hand.melds[meld_num-1]
+                                  ))
+            elif command in (&#34;r&#34;, &#34;R&#34;):
+                meld_num = None
+                while meld_num not in range(1, len(self.hand.melds)+1):
+                    meld_num = self.normalize_input(input(
+                        &#34;Enter the number of the meld to remove: &#34;))
+                self.hand.remove_meld(self.hand.melds[meld_num-1])
+            elif command in (&#34;d&#34;, &#34;D&#34;):
+                break
+            elif command in (&#34;k&#34;, &#34;K&#34;):
+                # FIXME: add check to make sure knock will be legal
+                self.knocking = True
+                break</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="pylgrum.player.Player" href="../player.html#pylgrum.player.Player">Player</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="pylgrum.tui.player.TUIPlayer.action_text"><code class="name flex">
+<span>def <span class="ident">action_text</span></span>(<span>text, width=80, prefix=&#x27;==&gt;&#x27;, suffix=&#x27;&lt;==&#x27;)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print text, centered with attention-getting prefix &amp; suffix.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def action_text(text: str,
+                width: int = 80,
+                prefix: str = &#34;==&gt;&#34;,
+                suffix: str = &#34;&lt;==&#34;) -&gt; None:
+    &#34;&#34;&#34;Print text, centered with attention-getting prefix &amp; suffix.&#34;&#34;&#34;
+    line = &#34;{} {} {}&#34;.format(prefix, text, suffix)
+    print(&#34;{t:^{w}}&#34;.format(t=line, w=width))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.context"><code class="name flex">
+<span>def <span class="ident">context</span></span>(<span>text, prefix='%%%')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print specified text with attention-getting prefix.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def context(text: str,
+            prefix: str = &#34;%%%&#34;) -&gt; None:
+    &#34;&#34;&#34;Print specified text with attention-getting prefix.&#34;&#34;&#34;
+    if len(prefix) &gt; 0:
+        prefix = &#34; {} &#34;.format(prefix)
+    print(&#34;{}{}&#34;.format(prefix, text))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.normalize_input"><code class="name flex">
+<span>def <span class="ident">normalize_input</span></span>(<span>input_char)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return int version of number chars.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>input_char</code></strong> :&ensp;<code>str</code></dt>
+<dd>a single character</dd>
+</dl>
+<p>This is used to simplify input checking that uses range(). It takes
+a character and returns the int equivalent for number characters,
+and returns the input unchanged for non-number characters.</p>
+<p>For example:
+normalize_input('c') -&gt; 'c'
+# str
+normalize_input('1') -&gt; 1
+# int
+normalize_input('D') -&gt; 'D'
+# str
+normalize_input('42') -&gt; 42
+# int</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def normalize_input(input_char):
+    &#34;&#34;&#34;Return int version of number chars.
+
+    Args:
+        input_char (str): a single character
+
+    This is used to simplify input checking that uses range(). It takes
+    a character and returns the int equivalent for number characters,
+    and returns the input unchanged for non-number characters.
+
+    For example:
+    normalize_input(&#39;c&#39;) -&gt; &#39;c&#39;   # str
+    normalize_input(&#39;1&#39;) -&gt; 1     # int
+    normalize_input(&#39;D&#39;) -&gt; &#39;D&#39;   # str
+    normalize_input(&#39;42&#39;) -&gt; 42   # int
+    &#34;&#34;&#34;
+    try:
+        r_val = int(input_char)
+    except ValueError:
+        # get here if c was a string
+        r_val = input_char
+
+    return r_val</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.print_banner"><code class="name flex">
+<span>def <span class="ident">print_banner</span></span>(<span>heading, width=80, sep_char='=')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print a banner with centered text and heading/footing rows.</p>
+<h2 id="arguments">Arguments</h2>
+<dl>
+<dt><strong><code>heading</code></strong> :&ensp;<code>str</code></dt>
+<dd>the string to print</dd>
+<dt><strong><code>width</code></strong> :&ensp;<code>int</code></dt>
+<dd>the size of the space in which to center the heading</dd>
+<dt><strong><code>sep_char</code></strong> :&ensp;<code>str</code></dt>
+<dd>single char repeated as necessary to fill the width
+of the heading / footing rows</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def print_banner(heading: str,
+                 width: int = 80,
+                 sep_char: str = &#39;=&#39;) -&gt; None:
+    &#34;&#34;&#34;Print a banner with centered text and heading/footing rows.
+
+    Arguments:
+        heading (str): the string to print
+        width (int): the size of the space in which to center the heading
+        sep_char (str): single char repeated as necessary to fill the width
+                        of the heading / footing rows
+    &#34;&#34;&#34;
+    print(&#34;{t:{s}^{w}}&#34;.format(t=&#39;&#39;, s=&#39;=&#39;, w=80))
+    print(&#34;{t:^{w}}&#34;.format(t=heading, w=width))
+    print(&#34;{t:{s}^{w}}&#34;.format(t=&#39;&#39;, s=sep_char, w=width))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.print_subheading"><code class="name flex">
+<span>def <span class="ident">print_subheading</span></span>(<span>heading, width=80, sep_char='-')</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Print text centered on a single line filled with specified char.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def print_subheading(heading: str,
+                     width: int = 80,
+                     sep_char: str = &#39;-&#39;) -&gt; None:
+    &#34;&#34;&#34;Print text centered on a single line filled with specified char.&#34;&#34;&#34;
+    if len(heading) &gt; 0:
+        heading = &#34; {} &#34;.format(heading)
+    print(&#34;  {t:{s}^{w}}  &#34;.format(t=heading,
+                                   s=sep_char,
+                                   w=width - 4))</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pylgrum.tui.player.TUIPlayer.manage_hand"><code class="name flex">
+<span>def <span class="ident">manage_hand</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Show hand, let user arrange (potential) melds.</p>
+<p>Loops until user chooses to discard.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def manage_hand(self) -&gt; None:
+    &#34;&#34;&#34;Show hand, let user arrange (potential) melds.
+
+    Loops until user chooses to discard.
+    &#34;&#34;&#34;
+    ## NOTE: user-facing views index from 1, not 0
+
+    while True:
+        self.print_turn_screen()
+        self.action_text(&#34;Update melds as desired, then choose a discard.&#34;)
+        print()
+        self.context(&#34;Manage hand: [A]dd card to meld, [R]emove meld&#34;)
+        self.context(&#34;Finish turn: [D]iscard, [K]nock (end game)&#34;)
+        print()
+        #print(manage_prompt)
+
+        command = input(&#34;&gt; &#34;)
+        if command in (&#34;c&#34;, &#34;C&#34;):
+            self.hand.create_meld()
+            print(&#34;(created new meld)&#34;)
+        elif command in (&#34;a&#34;, &#34;A&#34;):
+            #self.show_melds()
+            meld_num = None
+            while meld_num not in (&#39;n&#39;, &#39;N&#39;, *range(1, len(self.hand.melds)+1)):
+                meld_num = self.normalize_input(input(
+                    &#34;Enter the number of the meld to &#34;
+                    + &#34;add to, or &#39;N&#39; for a new meld: &#34;))
+                if meld_num in (&#39;n&#39;, &#39;N&#39;):
+                    self.hand.create_meld()
+                    meld_num = len(self.hand.melds) # len() is 1-indexed
+                    break ## loop stopping condition was computed
+                          ##  before we added to the meld list
+                # print(&#34;debug: end of while m loop m=={} ({})&#34;.
+                #       format(m, type(m)))
+            # it should only be possible to get here with m set to
+            #  one more than the index of the target meld
+            card_num = None
+            while card_num not in (&#39;x&#39;, &#39;X&#39;):
+                card_num = self.normalize_input(input(
+                    &#34;card to add? (x when finished) &#34;))
+                if card_num in range(1, 12):
+                    try:
+                        self.hand.add_to_meld_by_idx(meld_num - 1, card_num - 1)
+                    except InvalidMeldError:
+                        print(&#34;Can&#39;t add {} &#34;.
+                              format(self.hand.cards[card_num-1])
+                              + &#34; to meld {}&#34;.
+                              format(self.hand.melds[meld_num-1]))
+                    else:
+                        print(&#34;Added {} &#34;.format(self.hand.cards[card_num-1])
+                              + &#34;to meld {}.&#34;.format(
+                                  self.hand.melds[meld_num-1]
+                              ))
+        elif command in (&#34;r&#34;, &#34;R&#34;):
+            meld_num = None
+            while meld_num not in range(1, len(self.hand.melds)+1):
+                meld_num = self.normalize_input(input(
+                    &#34;Enter the number of the meld to remove: &#34;))
+            self.hand.remove_meld(self.hand.melds[meld_num-1])
+        elif command in (&#34;d&#34;, &#34;D&#34;):
+            break
+        elif command in (&#34;k&#34;, &#34;K&#34;):
+            # FIXME: add check to make sure knock will be legal
+            self.knocking = True
+            break</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.meld_references"><code class="name flex">
+<span>def <span class="ident">meld_references</span></span>(<span>self, card)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a string characterizing the melds in which a Card is used.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>card</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card whose references are sought</dd>
+</dl>
+<p>The string uses a single character for each meld the card is part
+of. That string will be:</p>
+<p>'S' : complete set
+'R' : complete run
+'s' : partial set
+'r' : partial run
+'?' : other partial</p>
+<p>All complete melds will be referenced first.</p>
+<p>If the card is referenced in no melds, an empty string is returned.
+If a non-empty string is returned, it is wrapped in square brackets.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def meld_references(self, card: Card) -&gt; str:
+    &#34;&#34;&#34;Returns a string characterizing the melds in which a Card is used.
+
+    Args:
+        card (Card): the card whose references are sought
+
+    The string uses a single character for each meld the card is part
+    of. That string will be:
+
+     &#39;S&#39; : complete set
+     &#39;R&#39; : complete run
+     &#39;s&#39; : partial set
+     &#39;r&#39; : partial run
+     &#39;?&#39; : other partial
+
+    All complete melds will be referenced first.
+
+    If the card is referenced in no melds, an empty string is returned.
+    If a non-empty string is returned, it is wrapped in square brackets.
+    &#34;&#34;&#34;
+    melds = self.hand.melds_using_card(card)
+    if melds is not None:
+        complete_s = 0
+        complete_r = 0
+        partial_s = 0
+        partial_r = 0
+        partial_other = 0
+        for meld in melds:
+            if meld.is_set:
+                complete_s += 1
+            elif meld.is_run:
+                complete_r += 1
+            elif meld.all_same_suit and meld.all_same_rank:
+                partial_other += 1
+            elif meld.all_same_suit:
+                partial_r += 1
+            elif meld.all_same_rank:
+                partial_s += 1
+        return(&#34;[{}&#34;.format(&#39;S&#39; * complete_s)
+               + &#34;{}&#34;.format(&#39;R&#39; * complete_r)
+               + &#34;{}&#34;.format(&#39;s&#39; * partial_s)
+               + &#34;{}&#34;.format(&#39;r&#39; * partial_r)
+               + &#34;{}]&#34;.format(&#39;?&#39; * partial_other))
+    return &#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.print_turn_screen"><code class="name flex">
+<span>def <span class="ident">print_turn_screen</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Clear screen, show hand, show melds.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_turn_screen(self) -&gt; None:
+    &#34;&#34;&#34;Clear screen, show hand, show melds.&#34;&#34;&#34;
+    clear_screen()
+    self.print_banner(self.banner_text)
+    self.print_subheading(&#34;current hand&#34;)
+    self.show_hand()
+    print(&#34;\n&#34;,)
+    self.print_subheading(&#34;current melds&#34;)
+    self.show_melds()
+    print(&#34;\n&#34;,)
+    self.print_subheading(&#34;available action&#34;)</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.show_hand"><code class="name flex">
+<span>def <span class="ident">show_hand</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Display the current hand.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_hand(self):
+    &#34;&#34;&#34;Display the current hand.&#34;&#34;&#34;
+    for (index, card) in enumerate(self.hand.cards):
+        print(&#34;{}: {} {}&#34;.format(
+            index+1,
+            card,
+            self.meld_references(card)
+        ))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.show_melds"><code class="name flex">
+<span>def <span class="ident">show_melds</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Display current melds so user can manage their hand.</p>
+<p>Lists every potential or actual meld and its contents, and
+shows user which cards are being used in multiple melds (these
+cards represent choices they'll have to make).</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_melds(self) -&gt; None:
+    &#34;&#34;&#34;Display current melds so user can manage their hand.
+
+    Lists every potential or actual meld and its contents, and
+    shows user which cards are being used in multiple melds (these
+    cards represent choices they&#39;ll have to make).
+    &#34;&#34;&#34;
+    if len(self.hand.melds) == 0:
+        print(&#34;No melds defined.&#34;)
+
+    for i in range(1, len(self.hand.melds)+1):
+        meld = self.hand.melds[i-1]
+        if meld.complete:
+            status = &#34; &#34;
+            if meld.is_run:
+                meld_type = &#34;run&#34;
+            elif meld.is_set:
+                meld_type = &#34;set&#34;
+        else:
+            status = &#34;?&#34;
+            if meld.all_same_suit and meld.all_same_rank:
+                meld_type = &#34;???&#34;
+            elif meld.all_same_suit:
+                meld_type = &#34;run&#34;
+            elif meld.all_same_rank:
+                meld_type = &#34;set&#34;
+
+        if meld.size() == 0:
+            meld_type = &#34;null&#34;
+            status = &#34;&#34;
+
+        print(&#34;#{idx}:{meld_type}{status}: {cards}&#34;.format(
+            idx=i,
+            meld_type=meld_type,
+            status=status,
+            cards=[str(x) for x in meld.cards]
+        ))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.turn_finish"><code class="name flex">
+<span>def <span class="ident">turn_finish</span></span>(<span>self, move)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Show acquired card, choose card to discard.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>move</code></strong> :&ensp;<code>Move</code></dt>
+<dd>the move object used for this turn</dd>
+</dl>
+<p>This implements the abstract base method (hook).</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def turn_finish(self, move: Move) -&gt; Move:
+    &#34;&#34;&#34;Show acquired card, choose card to discard.
+
+    Args:
+        move (Move): the move object used for this turn
+
+    This implements the abstract base method (hook).
+    &#34;&#34;&#34;
+    super().turn_finish(move) # need to call to put new card in hand
+    print(&#34;Current hand:\n&#34;)
+    self.show_hand()
+    self.manage_hand()
+    if self.knocking:
+        move.knocking = True
+    # FIXME: allow super-gin by making post-knock discard optional
+    discard = None
+    while discard not in range(1, 12):
+        #print(&#34;DB: discard = {}&#34;.format(discard))
+        discard = self._prompt_discard()
+
+    move.discard(self.hand.get(discard - 1))</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.tui.player.TUIPlayer.turn_start"><code class="name flex">
+<span>def <span class="ident">turn_start</span></span>(<span>self, move)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Show available discard, choose where to get card.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>move</code></strong> :&ensp;<code>Move</code></dt>
+<dd>the move object used for this turn</dd>
+</dl>
+<p>This implements the abstract base method (hook).</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def turn_start(self, move: Move) -&gt; Move:
+    &#34;&#34;&#34;Show available discard, choose where to get card.
+
+    Args:
+        move (Move): the move object used for this turn
+
+    This implements the abstract base method (hook).
+    &#34;&#34;&#34;
+    self.print_turn_screen()
+    self.action_text(&#34;Take discard or draw?&#34;)
+    print()
+    self.context(&#34;Available discard: {}&#34;.
+                 format(move.available_discard))
+    print()
+    new_card_from = None
+    while new_card_from not in [&#34;1&#34;, &#34;2&#34;]:
+        new_card_from = self._prompt_card_from()
+
+    if new_card_from == &#34;1&#34;:
+        print(&#34;... taking discard into hand&#34;)
+        move.choose_card_from_discard()
+    elif new_card_from == &#34;2&#34;:
+        print(&#34;... taking card from draw pile&#34;)
+        move.choose_card_from_draw()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="pylgrum.player.Player" href="../player.html#pylgrum.player.Player">Player</a></b></code>:
+<ul class="hlist">
+<li><code><a title="pylgrum.player.Player.join_game" href="../player.html#pylgrum.player.Player.join_game">join_game</a></code></li>
+<li><code><a title="pylgrum.player.Player.receive_card" href="../player.html#pylgrum.player.Player.receive_card">receive_card</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pylgrum.tui" href="index.html">pylgrum.tui</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pylgrum.tui.player.TUIPlayer" href="#pylgrum.tui.player.TUIPlayer">TUIPlayer</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pylgrum.tui.player.TUIPlayer.action_text" href="#pylgrum.tui.player.TUIPlayer.action_text">action_text</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.context" href="#pylgrum.tui.player.TUIPlayer.context">context</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.manage_hand" href="#pylgrum.tui.player.TUIPlayer.manage_hand">manage_hand</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.meld_references" href="#pylgrum.tui.player.TUIPlayer.meld_references">meld_references</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.normalize_input" href="#pylgrum.tui.player.TUIPlayer.normalize_input">normalize_input</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.print_banner" href="#pylgrum.tui.player.TUIPlayer.print_banner">print_banner</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.print_subheading" href="#pylgrum.tui.player.TUIPlayer.print_subheading">print_subheading</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.print_turn_screen" href="#pylgrum.tui.player.TUIPlayer.print_turn_screen">print_turn_screen</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.show_hand" href="#pylgrum.tui.player.TUIPlayer.show_hand">show_hand</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.show_melds" href="#pylgrum.tui.player.TUIPlayer.show_melds">show_melds</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.turn_finish" href="#pylgrum.tui.player.TUIPlayer.turn_finish">turn_finish</a></code></li>
+<li><code><a title="pylgrum.tui.player.TUIPlayer.turn_start" href="#pylgrum.tui.player.TUIPlayer.turn_start">turn_start</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

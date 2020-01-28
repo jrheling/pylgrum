@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pylgrum.move API documentation</title>
+<meta name="description" content="Represents a single move in a game …" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pylgrum.move</code></h1>
+</header>
+<section id="section-intro">
+<p>Represents a single move in a game.</p>
+<p>The Move object is prepared by the Player, then submitted to the Game for
+execution, and returned from the Game to the Player completed.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Represents a single move in a game.
+
+The Move object is prepared by the Player, then submitted to the Game for
+execution, and returned from the Game to the Player completed.
+&#34;&#34;&#34;
+from enum import Enum
+
+from pylgrum.errors import IllegalMoveError
+from pylgrum.card import Card
+
+class MoveState(Enum):
+    &#34;&#34;&#34;Tracks the state of a given move.&#34;&#34;&#34;
+    NEW = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3
+
+class CardSource(Enum):
+    &#34;&#34;&#34;Describes where a Card acquired in a Move is taken from.&#34;&#34;&#34;
+    DRAW_STACK = 1
+    DISCARD_STACK = 2
+
+class Move():
+    &#34;&#34;&#34;A Move tracks cards acquired/discarded in a single turn in a game.
+
+    The combination of initial hand states and discard and sequence of moves
+    should be sufficient to re-create the game as perceived by either player.
+    &#34;&#34;&#34;
+
+    def __init__(self, available_discard: Card) -&gt; None:
+        &#34;&#34;&#34;Create and initialize new Move.
+
+        Args:
+            available_discard (Card): the card showing on top of the discard pile
+        &#34;&#34;&#34;
+        self.state = MoveState.NEW
+        self.available_discard = available_discard
+        self.card_source = None  # CardSource
+        &#34;&#34;&#34;Indicate if new card is to come from the draw or discard pile.&#34;&#34;&#34;
+        self.acquired = None     # Card
+        &#34;&#34;&#34;The card added to a player&#39;s hand during the move.&#34;&#34;&#34;
+        self.discarded = None   # Card
+        &#34;&#34;&#34;The card discarded by the player during the move.&#34;&#34;&#34;
+        self.knocking = False
+        &#34;&#34;&#34;Set to True when the player is ending the game (&#34;knocking&#34;).&#34;&#34;&#34;
+
+    def choose_card_from_draw(self) -&gt; None:
+        &#34;&#34;&#34;Configure the Move to take a card from the draw pile.&#34;&#34;&#34;
+        if self.card_source is not None:
+            raise IllegalMoveError(&#34;Asked to draw after already drawing or taking the discard.&#34;)
+        self.card_source = CardSource.DRAW_STACK
+        self.state = MoveState.IN_PROGRESS
+
+    def choose_card_from_discard(self) -&gt; None:
+        &#34;&#34;&#34;Configure the Move to take a card from the discard pile.&#34;&#34;&#34;
+        if self.card_source is not None:
+            raise IllegalMoveError(&#34;Asked to draw discard after already &#34;
+                                   + &#34;drawing or taking the discard.&#34;)
+        self.card_source = CardSource.DISCARD_STACK
+        self.state = MoveState.IN_PROGRESS
+
+    def discard(self, discarded: Card) -&gt; None:
+        &#34;&#34;&#34;Identify the card that will be discarded to finish this move.
+
+        Args:
+            discarded (Card): the card to be discarded
+        &#34;&#34;&#34;
+        if self.state != MoveState.IN_PROGRESS:
+            raise IllegalMoveError(&#34;Can&#39;t discard from state {}&#34;.format(
+                self.state))
+        if self.discarded is not None:
+            raise IllegalMoveError(
+                &#34;Unexpectedly non-None discarded card in discard()&#34;)
+        self.discarded = discarded
+        self.state = MoveState.COMPLETE
+
+    def __str__(self):
+        if self.state != MoveState.COMPLETE:
+            return &#34;(move still in progress)&#34;
+        return &#34;Took {} from {} and discarded {}&#34;.format(
+            self.acquired,
+            self.card_source,
+            self.discarded)
+
+    def public_str(self):
+        &#34;&#34;&#34;Show summary of move that doesn&#39;t reveal player-private details.
+
+        If a player took a discard, it&#39;s fair for their opponent to see what
+        the card was. But if a player drew from the draw stack, the opponent
+        does not know what card was drawn.
+        &#34;&#34;&#34;
+        if self.card_source == CardSource.DISCARD_STACK:
+            source = &#34;discard&#34;
+            card = self.acquired
+        elif self.card_source == CardSource.DRAW_STACK:
+            source = &#34;draw&#34;
+            card = &#34;a card&#34;
+
+        return &#34;Took {} from the {} pile and discarded {}&#34;.format(
+            card, source, self.discarded)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pylgrum.move.CardSource"><code class="flex name class">
+<span>class <span class="ident">CardSource</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Describes where a Card acquired in a Move is taken from.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CardSource(Enum):
+    &#34;&#34;&#34;Describes where a Card acquired in a Move is taken from.&#34;&#34;&#34;
+    DRAW_STACK = 1
+    DISCARD_STACK = 2</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pylgrum.move.CardSource.DISCARD_STACK"><code class="name">var <span class="ident">DISCARD_STACK</span></code></dt>
+<dd>
+<section class="desc"><p>Describes where a Card acquired in a Move is taken from.</p></section>
+</dd>
+<dt id="pylgrum.move.CardSource.DRAW_STACK"><code class="name">var <span class="ident">DRAW_STACK</span></code></dt>
+<dd>
+<section class="desc"><p>Describes where a Card acquired in a Move is taken from.</p></section>
+</dd>
+</dl>
+</dd>
+<dt id="pylgrum.move.Move"><code class="flex name class">
+<span>class <span class="ident">Move</span></span>
+<span>(</span><span>available_discard)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>A Move tracks cards acquired/discarded in a single turn in a game.</p>
+<p>The combination of initial hand states and discard and sequence of moves
+should be sufficient to re-create the game as perceived by either player.</p>
+<p>Create and initialize new Move.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>available_discard</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card showing on top of the discard pile</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Move():
+    &#34;&#34;&#34;A Move tracks cards acquired/discarded in a single turn in a game.
+
+    The combination of initial hand states and discard and sequence of moves
+    should be sufficient to re-create the game as perceived by either player.
+    &#34;&#34;&#34;
+
+    def __init__(self, available_discard: Card) -&gt; None:
+        &#34;&#34;&#34;Create and initialize new Move.
+
+        Args:
+            available_discard (Card): the card showing on top of the discard pile
+        &#34;&#34;&#34;
+        self.state = MoveState.NEW
+        self.available_discard = available_discard
+        self.card_source = None  # CardSource
+        &#34;&#34;&#34;Indicate if new card is to come from the draw or discard pile.&#34;&#34;&#34;
+        self.acquired = None     # Card
+        &#34;&#34;&#34;The card added to a player&#39;s hand during the move.&#34;&#34;&#34;
+        self.discarded = None   # Card
+        &#34;&#34;&#34;The card discarded by the player during the move.&#34;&#34;&#34;
+        self.knocking = False
+        &#34;&#34;&#34;Set to True when the player is ending the game (&#34;knocking&#34;).&#34;&#34;&#34;
+
+    def choose_card_from_draw(self) -&gt; None:
+        &#34;&#34;&#34;Configure the Move to take a card from the draw pile.&#34;&#34;&#34;
+        if self.card_source is not None:
+            raise IllegalMoveError(&#34;Asked to draw after already drawing or taking the discard.&#34;)
+        self.card_source = CardSource.DRAW_STACK
+        self.state = MoveState.IN_PROGRESS
+
+    def choose_card_from_discard(self) -&gt; None:
+        &#34;&#34;&#34;Configure the Move to take a card from the discard pile.&#34;&#34;&#34;
+        if self.card_source is not None:
+            raise IllegalMoveError(&#34;Asked to draw discard after already &#34;
+                                   + &#34;drawing or taking the discard.&#34;)
+        self.card_source = CardSource.DISCARD_STACK
+        self.state = MoveState.IN_PROGRESS
+
+    def discard(self, discarded: Card) -&gt; None:
+        &#34;&#34;&#34;Identify the card that will be discarded to finish this move.
+
+        Args:
+            discarded (Card): the card to be discarded
+        &#34;&#34;&#34;
+        if self.state != MoveState.IN_PROGRESS:
+            raise IllegalMoveError(&#34;Can&#39;t discard from state {}&#34;.format(
+                self.state))
+        if self.discarded is not None:
+            raise IllegalMoveError(
+                &#34;Unexpectedly non-None discarded card in discard()&#34;)
+        self.discarded = discarded
+        self.state = MoveState.COMPLETE
+
+    def __str__(self):
+        if self.state != MoveState.COMPLETE:
+            return &#34;(move still in progress)&#34;
+        return &#34;Took {} from {} and discarded {}&#34;.format(
+            self.acquired,
+            self.card_source,
+            self.discarded)
+
+    def public_str(self):
+        &#34;&#34;&#34;Show summary of move that doesn&#39;t reveal player-private details.
+
+        If a player took a discard, it&#39;s fair for their opponent to see what
+        the card was. But if a player drew from the draw stack, the opponent
+        does not know what card was drawn.
+        &#34;&#34;&#34;
+        if self.card_source == CardSource.DISCARD_STACK:
+            source = &#34;discard&#34;
+            card = self.acquired
+        elif self.card_source == CardSource.DRAW_STACK:
+            source = &#34;draw&#34;
+            card = &#34;a card&#34;
+
+        return &#34;Took {} from the {} pile and discarded {}&#34;.format(
+            card, source, self.discarded)</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="pylgrum.move.Move.acquired"><code class="name">var <span class="ident">acquired</span></code></dt>
+<dd>
+<section class="desc"><p>The card added to a player's hand during the move.</p></section>
+</dd>
+<dt id="pylgrum.move.Move.card_source"><code class="name">var <span class="ident">card_source</span></code></dt>
+<dd>
+<section class="desc"><p>Indicate if new card is to come from the draw or discard pile.</p></section>
+</dd>
+<dt id="pylgrum.move.Move.discarded"><code class="name">var <span class="ident">discarded</span></code></dt>
+<dd>
+<section class="desc"><p>The card discarded by the player during the move.</p></section>
+</dd>
+<dt id="pylgrum.move.Move.knocking"><code class="name">var <span class="ident">knocking</span></code></dt>
+<dd>
+<section class="desc"><p>Set to True when the player is ending the game ("knocking").</p></section>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pylgrum.move.Move.choose_card_from_discard"><code class="name flex">
+<span>def <span class="ident">choose_card_from_discard</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Configure the Move to take a card from the discard pile.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def choose_card_from_discard(self) -&gt; None:
+    &#34;&#34;&#34;Configure the Move to take a card from the discard pile.&#34;&#34;&#34;
+    if self.card_source is not None:
+        raise IllegalMoveError(&#34;Asked to draw discard after already &#34;
+                               + &#34;drawing or taking the discard.&#34;)
+    self.card_source = CardSource.DISCARD_STACK
+    self.state = MoveState.IN_PROGRESS</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.move.Move.choose_card_from_draw"><code class="name flex">
+<span>def <span class="ident">choose_card_from_draw</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Configure the Move to take a card from the draw pile.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def choose_card_from_draw(self) -&gt; None:
+    &#34;&#34;&#34;Configure the Move to take a card from the draw pile.&#34;&#34;&#34;
+    if self.card_source is not None:
+        raise IllegalMoveError(&#34;Asked to draw after already drawing or taking the discard.&#34;)
+    self.card_source = CardSource.DRAW_STACK
+    self.state = MoveState.IN_PROGRESS</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.move.Move.discard"><code class="name flex">
+<span>def <span class="ident">discard</span></span>(<span>self, discarded)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Identify the card that will be discarded to finish this move.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>discarded</code></strong> :&ensp;<code>Card</code></dt>
+<dd>the card to be discarded</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def discard(self, discarded: Card) -&gt; None:
+    &#34;&#34;&#34;Identify the card that will be discarded to finish this move.
+
+    Args:
+        discarded (Card): the card to be discarded
+    &#34;&#34;&#34;
+    if self.state != MoveState.IN_PROGRESS:
+        raise IllegalMoveError(&#34;Can&#39;t discard from state {}&#34;.format(
+            self.state))
+    if self.discarded is not None:
+        raise IllegalMoveError(
+            &#34;Unexpectedly non-None discarded card in discard()&#34;)
+    self.discarded = discarded
+    self.state = MoveState.COMPLETE</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.move.Move.public_str"><code class="name flex">
+<span>def <span class="ident">public_str</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Show summary of move that doesn't reveal player-private details.</p>
+<p>If a player took a discard, it's fair for their opponent to see what
+the card was. But if a player drew from the draw stack, the opponent
+does not know what card was drawn.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def public_str(self):
+    &#34;&#34;&#34;Show summary of move that doesn&#39;t reveal player-private details.
+
+    If a player took a discard, it&#39;s fair for their opponent to see what
+    the card was. But if a player drew from the draw stack, the opponent
+    does not know what card was drawn.
+    &#34;&#34;&#34;
+    if self.card_source == CardSource.DISCARD_STACK:
+        source = &#34;discard&#34;
+        card = self.acquired
+    elif self.card_source == CardSource.DRAW_STACK:
+        source = &#34;draw&#34;
+        card = &#34;a card&#34;
+
+    return &#34;Took {} from the {} pile and discarded {}&#34;.format(
+        card, source, self.discarded)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pylgrum.move.MoveState"><code class="flex name class">
+<span>class <span class="ident">MoveState</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Tracks the state of a given move.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MoveState(Enum):
+    &#34;&#34;&#34;Tracks the state of a given move.&#34;&#34;&#34;
+    NEW = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pylgrum.move.MoveState.COMPLETE"><code class="name">var <span class="ident">COMPLETE</span></code></dt>
+<dd>
+<section class="desc"><p>Tracks the state of a given move.</p></section>
+</dd>
+<dt id="pylgrum.move.MoveState.IN_PROGRESS"><code class="name">var <span class="ident">IN_PROGRESS</span></code></dt>
+<dd>
+<section class="desc"><p>Tracks the state of a given move.</p></section>
+</dd>
+<dt id="pylgrum.move.MoveState.NEW"><code class="name">var <span class="ident">NEW</span></code></dt>
+<dd>
+<section class="desc"><p>Tracks the state of a given move.</p></section>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pylgrum" href="index.html">pylgrum</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pylgrum.move.CardSource" href="#pylgrum.move.CardSource">CardSource</a></code></h4>
+<ul class="">
+<li><code><a title="pylgrum.move.CardSource.DISCARD_STACK" href="#pylgrum.move.CardSource.DISCARD_STACK">DISCARD_STACK</a></code></li>
+<li><code><a title="pylgrum.move.CardSource.DRAW_STACK" href="#pylgrum.move.CardSource.DRAW_STACK">DRAW_STACK</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pylgrum.move.Move" href="#pylgrum.move.Move">Move</a></code></h4>
+<ul class="">
+<li><code><a title="pylgrum.move.Move.acquired" href="#pylgrum.move.Move.acquired">acquired</a></code></li>
+<li><code><a title="pylgrum.move.Move.card_source" href="#pylgrum.move.Move.card_source">card_source</a></code></li>
+<li><code><a title="pylgrum.move.Move.choose_card_from_discard" href="#pylgrum.move.Move.choose_card_from_discard">choose_card_from_discard</a></code></li>
+<li><code><a title="pylgrum.move.Move.choose_card_from_draw" href="#pylgrum.move.Move.choose_card_from_draw">choose_card_from_draw</a></code></li>
+<li><code><a title="pylgrum.move.Move.discard" href="#pylgrum.move.Move.discard">discard</a></code></li>
+<li><code><a title="pylgrum.move.Move.discarded" href="#pylgrum.move.Move.discarded">discarded</a></code></li>
+<li><code><a title="pylgrum.move.Move.knocking" href="#pylgrum.move.Move.knocking">knocking</a></code></li>
+<li><code><a title="pylgrum.move.Move.public_str" href="#pylgrum.move.Move.public_str">public_str</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pylgrum.move.MoveState" href="#pylgrum.move.MoveState">MoveState</a></code></h4>
+<ul class="">
+<li><code><a title="pylgrum.move.MoveState.COMPLETE" href="#pylgrum.move.MoveState.COMPLETE">COMPLETE</a></code></li>
+<li><code><a title="pylgrum.move.MoveState.IN_PROGRESS" href="#pylgrum.move.MoveState.IN_PROGRESS">IN_PROGRESS</a></code></li>
+<li><code><a title="pylgrum.move.MoveState.NEW" href="#pylgrum.move.MoveState.NEW">NEW</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>pylgrum.card API documentation</title>
+<meta name="description" content="Implementation of Card class, and supporting enums Rank and Suit." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>pylgrum.card</code></h1>
+</header>
+<section id="section-intro">
+<p>Implementation of Card class, and supporting enums Rank and Suit.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Implementation of Card class, and supporting enums Rank and Suit.&#34;&#34;&#34;
+
+from enum import Enum
+
+class Rank(Enum):
+    &#34;&#34;&#34;Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).&#34;&#34;&#34;
+    ACE = &#39;1&#39;
+    TWO = &#39;2&#39;
+    THREE = &#39;3&#39;
+    FOUR = &#39;4&#39;
+    FIVE = &#39;5&#39;
+    SIX = &#39;6&#39;
+    SEVEN = &#39;7&#39;
+    EIGHT = &#39;8&#39;
+    NINE = &#39;9&#39;
+    TEN = &#39;10&#39;
+    JACK = &#39;J&#39;
+    QUEEN = &#39;Q&#39;
+    KING = &#39;K&#39;
+
+class Suit(Enum):
+    &#34;&#34;&#34;Trivial enum of card suits.&#34;&#34;&#34;
+    SPADE = &#39;S&#39;
+    HEART = &#39;H&#39;
+    CLUB = &#39;C&#39;
+    DIAMOND = &#39;D&#39;
+
+class Card:
+    &#34;&#34;&#34;Cards have suit+rank, point value, and can be compared (by point value).
+
+    Attributes:
+        rank (Rank): the face value of the card (Ace, 2..10, Jack, Queen, King)
+        suit (Suit): the suit of the card (Heart, Club, Spade, Diamond)
+
+    In addition to Rank, Cards have a point value that maps the Rank to the
+    effect the card has on scoring in Gin Rummy (e.g. boht Jack and King are
+    worth 10 points).
+
+    This class overrides basic comparison operators with regard to point value,
+    *not* Rank.
+
+    WARNING: it is arguably bad that &#34;==&#34; operates on point value as opposed
+    to suit/rank. On the other hand, it might be strange if all comparison
+    operators _other than_ &#34;==&#34; worked on point value, and &#34;==&#34; didn&#39;t.
+    &#34;&#34;&#34;
+
+    def __init__(self, rank: Rank, suit: Suit) -&gt; None:
+        &#34;&#34;&#34;Create a new Card.
+
+        Args:
+            rank (Rank): the new Card&#39;s rank
+            suit (Suit): the suit of the new card
+        &#34;&#34;&#34;
+        self.suit: Suit = suit
+        self.rank: Rank = rank
+
+    def __eq__(self, other) -&gt; bool:
+        return self.score_val() == other.score_val()
+
+    def __ne__(self, other) -&gt; bool:
+        return self.score_val() != other.score_val()
+
+    def __lt__(self, other) -&gt; bool:
+        return self.score_val() &lt; other.score_val()
+
+    def __le__(self, other) -&gt; bool:
+        return self.score_val() &lt;= other.score_val()
+
+    def __gt__(self, other) -&gt; bool:
+        return self.score_val() &gt; other.score_val()
+
+    def __ge__(self, other) -&gt; bool:
+        return self.score_val() &gt;= other.score_val()
+
+    def score_val(self) -&gt; int:
+        &#34;&#34;&#34;Return the point value of a card.&#34;&#34;&#34;
+        val = None
+        if self.rank == Rank.ACE:
+            val = 1
+        elif self.rank in (Rank.JACK, Rank.QUEEN, Rank.KING):
+            val = 10
+        else:
+            val = int(self.rank.value)
+        return val
+
+    def rank_val(self) -&gt; int:
+        &#34;&#34;&#34;Return a sort-able rank value of the card.
+
+        Note the differerence between rank_val and score_val: both JACK
+        and TEN are worth 10 points score-wise, but JACK is an 11 in
+        rank_val and TEN is a 10. rank_val is used to sort potential
+        sets.
+        &#34;&#34;&#34;
+        val = None
+        if self.rank == Rank.JACK:
+            val = 11
+        elif self.rank == Rank.QUEEN:
+            val = 12
+        elif self.rank == Rank.KING:
+            val = 13
+        else:
+            val = int(self.rank.value)
+        return val
+
+    def same_suit(self, other) -&gt; bool:
+        &#34;&#34;&#34;Compare card with another and return true if both have the same suit.
+
+        Args:
+            other (Card): the card to compare
+        &#34;&#34;&#34;
+        if self.suit == other.suit:
+            return True
+        return False
+
+    def same_rank(self, other) -&gt; bool:
+        &#34;&#34;&#34;Compare card with another and return true if both have the same rank.
+
+        Args:
+            other (Card): the card to compare
+        &#34;&#34;&#34;
+        if self.rank == other.rank:
+            return True
+        return False
+
+    def is_same_card(self, other) -&gt; bool:
+        &#34;&#34;&#34;Compare card with another and return true if theyq have the rank and suit.
+
+        Args:
+            other (Card): the card to compare
+
+        Note: also see overridden == operator.
+        &#34;&#34;&#34;
+        if self.same_suit(other) and self.same_rank(other):
+            return True
+        return False
+
+    def __str__(self):
+        rank_str = self.rank.name[0] + self.rank.name[1:].lower()
+        suit_str = self.suit.name[0] + self.suit.name[1:].lower() + &#39;s&#39;
+        return &#34;{} of {}&#34;.format(rank_str, suit_str)
+
+    def __hash__(self):
+        return hash(self.rank) ^ hash(self.suit)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="pylgrum.card.Card"><code class="flex name class">
+<span>class <span class="ident">Card</span></span>
+<span>(</span><span>rank, suit)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Cards have suit+rank, point value, and can be compared (by point value).</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>rank</code></strong> :&ensp;<a title="pylgrum.card.Rank" href="#pylgrum.card.Rank"><code>Rank</code></a></dt>
+<dd>the face value of the card (Ace, 2..10, Jack, Queen, King)</dd>
+<dt><strong><code>suit</code></strong> :&ensp;<a title="pylgrum.card.Suit" href="#pylgrum.card.Suit"><code>Suit</code></a></dt>
+<dd>the suit of the card (Heart, Club, Spade, Diamond)</dd>
+</dl>
+<p>In addition to Rank, Cards have a point value that maps the Rank to the
+effect the card has on scoring in Gin Rummy (e.g. boht Jack and King are
+worth 10 points).</p>
+<p>This class overrides basic comparison operators with regard to point value,
+<em>not</em> Rank.</p>
+<dl>
+<dt><strong><code>WARNING</code></strong> :&ensp;<code>it</code> <code>is</code> <code>arguably</code> <code>bad</code> <code>that</code> <code>"</code>==<code>"</code> <code>operates</code> <code>on</code> <code>point</code> <code>value</code> <code>as</code> <code>opposed</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<p>to suit/rank. On the other hand, it might be strange if all comparison
+operators <em>other than</em> "==" worked on point value, and "==" didn't.</p>
+<p>Create a new Card.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>rank</code></strong> :&ensp;<a title="pylgrum.card.Rank" href="#pylgrum.card.Rank"><code>Rank</code></a></dt>
+<dd>the new Card's rank</dd>
+<dt><strong><code>suit</code></strong> :&ensp;<a title="pylgrum.card.Suit" href="#pylgrum.card.Suit"><code>Suit</code></a></dt>
+<dd>the suit of the new card</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Card:
+    &#34;&#34;&#34;Cards have suit+rank, point value, and can be compared (by point value).
+
+    Attributes:
+        rank (Rank): the face value of the card (Ace, 2..10, Jack, Queen, King)
+        suit (Suit): the suit of the card (Heart, Club, Spade, Diamond)
+
+    In addition to Rank, Cards have a point value that maps the Rank to the
+    effect the card has on scoring in Gin Rummy (e.g. boht Jack and King are
+    worth 10 points).
+
+    This class overrides basic comparison operators with regard to point value,
+    *not* Rank.
+
+    WARNING: it is arguably bad that &#34;==&#34; operates on point value as opposed
+    to suit/rank. On the other hand, it might be strange if all comparison
+    operators _other than_ &#34;==&#34; worked on point value, and &#34;==&#34; didn&#39;t.
+    &#34;&#34;&#34;
+
+    def __init__(self, rank: Rank, suit: Suit) -&gt; None:
+        &#34;&#34;&#34;Create a new Card.
+
+        Args:
+            rank (Rank): the new Card&#39;s rank
+            suit (Suit): the suit of the new card
+        &#34;&#34;&#34;
+        self.suit: Suit = suit
+        self.rank: Rank = rank
+
+    def __eq__(self, other) -&gt; bool:
+        return self.score_val() == other.score_val()
+
+    def __ne__(self, other) -&gt; bool:
+        return self.score_val() != other.score_val()
+
+    def __lt__(self, other) -&gt; bool:
+        return self.score_val() &lt; other.score_val()
+
+    def __le__(self, other) -&gt; bool:
+        return self.score_val() &lt;= other.score_val()
+
+    def __gt__(self, other) -&gt; bool:
+        return self.score_val() &gt; other.score_val()
+
+    def __ge__(self, other) -&gt; bool:
+        return self.score_val() &gt;= other.score_val()
+
+    def score_val(self) -&gt; int:
+        &#34;&#34;&#34;Return the point value of a card.&#34;&#34;&#34;
+        val = None
+        if self.rank == Rank.ACE:
+            val = 1
+        elif self.rank in (Rank.JACK, Rank.QUEEN, Rank.KING):
+            val = 10
+        else:
+            val = int(self.rank.value)
+        return val
+
+    def rank_val(self) -&gt; int:
+        &#34;&#34;&#34;Return a sort-able rank value of the card.
+
+        Note the differerence between rank_val and score_val: both JACK
+        and TEN are worth 10 points score-wise, but JACK is an 11 in
+        rank_val and TEN is a 10. rank_val is used to sort potential
+        sets.
+        &#34;&#34;&#34;
+        val = None
+        if self.rank == Rank.JACK:
+            val = 11
+        elif self.rank == Rank.QUEEN:
+            val = 12
+        elif self.rank == Rank.KING:
+            val = 13
+        else:
+            val = int(self.rank.value)
+        return val
+
+    def same_suit(self, other) -&gt; bool:
+        &#34;&#34;&#34;Compare card with another and return true if both have the same suit.
+
+        Args:
+            other (Card): the card to compare
+        &#34;&#34;&#34;
+        if self.suit == other.suit:
+            return True
+        return False
+
+    def same_rank(self, other) -&gt; bool:
+        &#34;&#34;&#34;Compare card with another and return true if both have the same rank.
+
+        Args:
+            other (Card): the card to compare
+        &#34;&#34;&#34;
+        if self.rank == other.rank:
+            return True
+        return False
+
+    def is_same_card(self, other) -&gt; bool:
+        &#34;&#34;&#34;Compare card with another and return true if theyq have the rank and suit.
+
+        Args:
+            other (Card): the card to compare
+
+        Note: also see overridden == operator.
+        &#34;&#34;&#34;
+        if self.same_suit(other) and self.same_rank(other):
+            return True
+        return False
+
+    def __str__(self):
+        rank_str = self.rank.name[0] + self.rank.name[1:].lower()
+        suit_str = self.suit.name[0] + self.suit.name[1:].lower() + &#39;s&#39;
+        return &#34;{} of {}&#34;.format(rank_str, suit_str)
+
+    def __hash__(self):
+        return hash(self.rank) ^ hash(self.suit)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pylgrum.card.Card.is_same_card"><code class="name flex">
+<span>def <span class="ident">is_same_card</span></span>(<span>self, other)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compare card with another and return true if theyq have the rank and suit.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>other</code></strong> :&ensp;<a title="pylgrum.card.Card" href="#pylgrum.card.Card"><code>Card</code></a></dt>
+<dd>the card to compare</dd>
+</dl>
+<p>Note: also see overridden == operator.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def is_same_card(self, other) -&gt; bool:
+    &#34;&#34;&#34;Compare card with another and return true if theyq have the rank and suit.
+
+    Args:
+        other (Card): the card to compare
+
+    Note: also see overridden == operator.
+    &#34;&#34;&#34;
+    if self.same_suit(other) and self.same_rank(other):
+        return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.card.Card.rank_val"><code class="name flex">
+<span>def <span class="ident">rank_val</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return a sort-able rank value of the card.</p>
+<p>Note the differerence between rank_val and score_val: both JACK
+and TEN are worth 10 points score-wise, but JACK is an 11 in
+rank_val and TEN is a 10. rank_val is used to sort potential
+sets.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rank_val(self) -&gt; int:
+    &#34;&#34;&#34;Return a sort-able rank value of the card.
+
+    Note the differerence between rank_val and score_val: both JACK
+    and TEN are worth 10 points score-wise, but JACK is an 11 in
+    rank_val and TEN is a 10. rank_val is used to sort potential
+    sets.
+    &#34;&#34;&#34;
+    val = None
+    if self.rank == Rank.JACK:
+        val = 11
+    elif self.rank == Rank.QUEEN:
+        val = 12
+    elif self.rank == Rank.KING:
+        val = 13
+    else:
+        val = int(self.rank.value)
+    return val</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.card.Card.same_rank"><code class="name flex">
+<span>def <span class="ident">same_rank</span></span>(<span>self, other)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compare card with another and return true if both have the same rank.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>other</code></strong> :&ensp;<a title="pylgrum.card.Card" href="#pylgrum.card.Card"><code>Card</code></a></dt>
+<dd>the card to compare</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def same_rank(self, other) -&gt; bool:
+    &#34;&#34;&#34;Compare card with another and return true if both have the same rank.
+
+    Args:
+        other (Card): the card to compare
+    &#34;&#34;&#34;
+    if self.rank == other.rank:
+        return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.card.Card.same_suit"><code class="name flex">
+<span>def <span class="ident">same_suit</span></span>(<span>self, other)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Compare card with another and return true if both have the same suit.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>other</code></strong> :&ensp;<a title="pylgrum.card.Card" href="#pylgrum.card.Card"><code>Card</code></a></dt>
+<dd>the card to compare</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def same_suit(self, other) -&gt; bool:
+    &#34;&#34;&#34;Compare card with another and return true if both have the same suit.
+
+    Args:
+        other (Card): the card to compare
+    &#34;&#34;&#34;
+    if self.suit == other.suit:
+        return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="pylgrum.card.Card.score_val"><code class="name flex">
+<span>def <span class="ident">score_val</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Return the point value of a card.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def score_val(self) -&gt; int:
+    &#34;&#34;&#34;Return the point value of a card.&#34;&#34;&#34;
+    val = None
+    if self.rank == Rank.ACE:
+        val = 1
+    elif self.rank in (Rank.JACK, Rank.QUEEN, Rank.KING):
+        val = 10
+    else:
+        val = int(self.rank.value)
+    return val</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="pylgrum.card.Rank"><code class="flex name class">
+<span>class <span class="ident">Rank</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Rank(Enum):
+    &#34;&#34;&#34;Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).&#34;&#34;&#34;
+    ACE = &#39;1&#39;
+    TWO = &#39;2&#39;
+    THREE = &#39;3&#39;
+    FOUR = &#39;4&#39;
+    FIVE = &#39;5&#39;
+    SIX = &#39;6&#39;
+    SEVEN = &#39;7&#39;
+    EIGHT = &#39;8&#39;
+    NINE = &#39;9&#39;
+    TEN = &#39;10&#39;
+    JACK = &#39;J&#39;
+    QUEEN = &#39;Q&#39;
+    KING = &#39;K&#39;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pylgrum.card.Rank.ACE"><code class="name">var <span class="ident">ACE</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.EIGHT"><code class="name">var <span class="ident">EIGHT</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.FIVE"><code class="name">var <span class="ident">FIVE</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.FOUR"><code class="name">var <span class="ident">FOUR</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.JACK"><code class="name">var <span class="ident">JACK</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.KING"><code class="name">var <span class="ident">KING</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.NINE"><code class="name">var <span class="ident">NINE</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.QUEEN"><code class="name">var <span class="ident">QUEEN</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.SEVEN"><code class="name">var <span class="ident">SEVEN</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.SIX"><code class="name">var <span class="ident">SIX</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.TEN"><code class="name">var <span class="ident">TEN</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.THREE"><code class="name">var <span class="ident">THREE</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+<dt id="pylgrum.card.Rank.TWO"><code class="name">var <span class="ident">TWO</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card ranks (e.g. ace, face cards, royals, etc.).</p></section>
+</dd>
+</dl>
+</dd>
+<dt id="pylgrum.card.Suit"><code class="flex name class">
+<span>class <span class="ident">Suit</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card suits.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Suit(Enum):
+    &#34;&#34;&#34;Trivial enum of card suits.&#34;&#34;&#34;
+    SPADE = &#39;S&#39;
+    HEART = &#39;H&#39;
+    CLUB = &#39;C&#39;
+    DIAMOND = &#39;D&#39;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="pylgrum.card.Suit.CLUB"><code class="name">var <span class="ident">CLUB</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card suits.</p></section>
+</dd>
+<dt id="pylgrum.card.Suit.DIAMOND"><code class="name">var <span class="ident">DIAMOND</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card suits.</p></section>
+</dd>
+<dt id="pylgrum.card.Suit.HEART"><code class="name">var <span class="ident">HEART</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card suits.</p></section>
+</dd>
+<dt id="pylgrum.card.Suit.SPADE"><code class="name">var <span class="ident">SPADE</span></code></dt>
+<dd>
+<section class="desc"><p>Trivial enum of card suits.</p></section>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="pylgrum" href="index.html">pylgrum</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pylgrum.card.Card" href="#pylgrum.card.Card">Card</a></code></h4>
+<ul class="">
+<li><code><a title="pylgrum.card.Card.is_same_card" href="#pylgrum.card.Card.is_same_card">is_same_card</a></code></li>
+<li><code><a title="pylgrum.card.Card.rank_val" href="#pylgrum.card.Card.rank_val">rank_val</a></code></li>
+<li><code><a title="pylgrum.card.Card.same_rank" href="#pylgrum.card.Card.same_rank">same_rank</a></code></li>
+<li><code><a title="pylgrum.card.Card.same_suit" href="#pylgrum.card.Card.same_suit">same_suit</a></code></li>
+<li><code><a title="pylgrum.card.Card.score_val" href="#pylgrum.card.Card.score_val">score_val</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pylgrum.card.Rank" href="#pylgrum.card.Rank">Rank</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pylgrum.card.Rank.ACE" href="#pylgrum.card.Rank.ACE">ACE</a></code></li>
+<li><code><a title="pylgrum.card.Rank.EIGHT" href="#pylgrum.card.Rank.EIGHT">EIGHT</a></code></li>
+<li><code><a title="pylgrum.card.Rank.FIVE" href="#pylgrum.card.Rank.FIVE">FIVE</a></code></li>
+<li><code><a title="pylgrum.card.Rank.FOUR" href="#pylgrum.card.Rank.FOUR">FOUR</a></code></li>
+<li><code><a title="pylgrum.card.Rank.JACK" href="#pylgrum.card.Rank.JACK">JACK</a></code></li>
+<li><code><a title="pylgrum.card.Rank.KING" href="#pylgrum.card.Rank.KING">KING</a></code></li>
+<li><code><a title="pylgrum.card.Rank.NINE" href="#pylgrum.card.Rank.NINE">NINE</a></code></li>
+<li><code><a title="pylgrum.card.Rank.QUEEN" href="#pylgrum.card.Rank.QUEEN">QUEEN</a></code></li>
+<li><code><a title="pylgrum.card.Rank.SEVEN" href="#pylgrum.card.Rank.SEVEN">SEVEN</a></code></li>
+<li><code><a title="pylgrum.card.Rank.SIX" href="#pylgrum.card.Rank.SIX">SIX</a></code></li>
+<li><code><a title="pylgrum.card.Rank.TEN" href="#pylgrum.card.Rank.TEN">TEN</a></code></li>
+<li><code><a title="pylgrum.card.Rank.THREE" href="#pylgrum.card.Rank.THREE">THREE</a></code></li>
+<li><code><a title="pylgrum.card.Rank.TWO" href="#pylgrum.card.Rank.TWO">TWO</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pylgrum.card.Suit" href="#pylgrum.card.Suit">Suit</a></code></h4>
+<ul class="">
+<li><code><a title="pylgrum.card.Suit.CLUB" href="#pylgrum.card.Suit.CLUB">CLUB</a></code></li>
+<li><code><a title="pylgrum.card.Suit.DIAMOND" href="#pylgrum.card.Suit.DIAMOND">DIAMOND</a></code></li>
+<li><code><a title="pylgrum.card.Suit.HEART" href="#pylgrum.card.Suit.HEART">HEART</a></code></li>
+<li><code><a title="pylgrum.card.Suit.SPADE" href="#pylgrum.card.Suit.SPADE">SPADE</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
