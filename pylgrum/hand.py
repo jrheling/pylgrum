@@ -11,7 +11,7 @@ class Hand(CardStack):
     """
 
     def add(self, newcard: Card):
-        """Add a card to the hand.
+        """Add a card to the hand (extends CardStack.add()).
 
         Raises OverdealtHandError if adding the card would make the hand
         size > 11.

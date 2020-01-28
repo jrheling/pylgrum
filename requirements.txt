@@ -14,11 +14,14 @@ itsdangerous==1.1.0
 Jinja2==2.10.3
 jsonschema==3.2.0
 lazy-object-proxy==1.4.3
+Mako==1.1.1
+Markdown==3.1.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
 more-itertools==8.0.2
 openapi-spec-validator==0.2.8
 packaging==19.2
+pdoc3==0.7.4
 pluggy==0.13.1
 py==1.8.0
 pylint==2.4.4

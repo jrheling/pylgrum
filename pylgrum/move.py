@@ -15,7 +15,7 @@ class MoveState(Enum):
     COMPLETE = 3
 
 class CardSource(Enum):
-    """Describes where a Card acquired in a Move was taken from."""
+    """Describes where a Card acquired in a Move is taken from."""
     DRAW_STACK = 1
     DISCARD_STACK = 2
 
@@ -27,9 +27,15 @@ class Move():
     """
 
     def __init__(self, available_discard: Card) -> None:
+        """Create and initialize new Move.
+
+        Args:
+            available_discard (Card): the card showing on top of the discard pile
+        """
         self.state = MoveState.NEW
         self.available_discard = available_discard
         self.card_source = None  # CardSource
+        """Indicate if new card is to come from the draw or discard pile."""
         self.acquired = None     # Card
         """The card added to a player's hand during the move."""
         self.discarded = None   # Card
@@ -53,11 +59,15 @@ class Move():
         self.state = MoveState.IN_PROGRESS
 
     def discard(self, discarded: Card) -> None:
-        """Identify the card that will be discarded to finish this move."""
+        """Identify the card that will be discarded to finish this move.
+
+        Args:
+            discarded (Card): the card to be discarded
+        """
         if self.state != MoveState.IN_PROGRESS:
             raise IllegalMoveError("Can't discard from state {}".format(
                 self.state))
-        if self.discarded != None:
+        if self.discarded is not None:
             raise IllegalMoveError(
                 "Unexpectedly non-None discarded card in discard()")
         self.discarded = discarded

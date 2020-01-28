@@ -1,4 +1,4 @@
-"""CardStack class implementation."""
+"""The CardStack class implements a basic collection of Cards."""
 import random
 
 from pylgrum.card import Card
@@ -9,6 +9,9 @@ class CardStack():
 
     CardStack supports basic operations on collections of cards. In order to
     maintain generality, CardStack allows duplicates of a given card.
+
+    No constraints on the contents of the CardStack are enforced by this base
+    class, but common operations are implemented.
 
     The "top" of the stack is the end of the list.
 
@@ -26,22 +29,34 @@ class CardStack():
     """
 
     def __init__(self) -> None:
+        """Create a new CardStack."""
         self._cards = [] # List[Card]
 
     @property
     def cards(self) -> list:
+        """The list of Cards in the stack.
+
+        The caller should not modify the returned list.
+        """
         return self._cards
 
     def size(self) -> int:
-        """Number of Cards in the stack."""
+        """Return the number of cards in the stack."""
         return len(self._cards)
 
     def add(self, newcard: Card) -> None:
-        """Add a Card to the top of the stack."""
+        """Add a card to the top of the stack.
+
+        Args:
+            newcard (Card): the Card to add
+        """
         self._cards.append(newcard)
 
     def remove(self, i: int) -> Card:
-        """Remove and return the Card at the given index.
+        """Remove and return the card at the given index.
+
+        Args:
+            i (int): the index of the Card to remove
 
         Raises: CardNotFoundError
         """
@@ -55,9 +70,12 @@ class CardStack():
         return target_card
 
     def get(self, i: int) -> Card:
-        """Return the Card at the given index.
+        """Return the card at the given index.
 
-        Raises: CardNotFoundError
+        Args:
+            i (int): the index of the card to remove
+
+        Raises: CardNotFoundError (if specified index is not in the stack)
         """
         try:
             target_card = self._cards[i]
@@ -67,16 +85,13 @@ class CardStack():
 
 
     def find(self, targetcard: Card) -> int:
-        """find() searches the stack for a specified card and returns its index.
+        """Searche the stack for a specified card and return its index.
 
         Args:
-         c (Card): the card to search for.
-
-        Returns:
-         int : index in the stack to the card.
+            c (Card): the card to search for
 
         Raises:
-         CardNotFoundError: if specified card is not in the stack.
+            CardNotFoundError (if specified card is not in the stack)
         """
         for (position, checked_card) in enumerate(self._cards):
             if checked_card.is_same_card(targetcard):
@@ -100,8 +115,12 @@ class CardStack():
         """Randomly re-order the stack."""
         random.shuffle(self._cards)
 
-    def __eq__(self, other) -> bool:
-        """Stacks are equal iff they have the same cards in the same order."""
+    def __eq__(self, other: 'card.CardStack') -> bool:
+        """True iff both stacks have the same cards in the same order.
+
+        Args:
+            other (CardStack): the CardStack to compare
+        """
         return self._cards == other.cards
 
     def __str__(self) -> str:

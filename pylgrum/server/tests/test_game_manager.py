@@ -3,6 +3,7 @@ import json
 import uuid
 
 from pylgrum.server.game_manager import GameManager, Contestant
+from pylgrum.server.errors import ContestantAlreadyPlaying, InvalidContestant
 
 @pytest.fixture
 def gm_with_contestants():
@@ -31,7 +32,7 @@ def test_gm_creation(gm_with_contestants):
     assert(isinstance(gm_with_contestants.gm, GameManager))
 
 def test_unnamed_contestant(gm_with_contestants):
-    assert(gm_with_contestants.p1.name == Contestant.DEFAULT_NAME)
+    assert(gm_with_contestants.p1.name == Contestant._DEFAULT_NAME)
 
 def test_named_contestant(gm_with_contestants):
     assert(gm_with_contestants.p2.name == 'p2')
@@ -65,13 +66,13 @@ def test_contestants_added_to_new_game(game_underway):
 def test_bogus_contestant_raises(gm_with_contestants):
     f = gm_with_contestants # typographical shortcut for the fixture
     bogus_contestant = str(uuid.uuid4())
-    with pytest.raises(GameManager.InvalidContestant):
+    with pytest.raises(InvalidContestant):
         f.gm.create_game(f.p1.id, bogus_contestant)
 
 def test_contestant_only_plays_one_at_a_time(game_underway):
     f = game_underway # typographical shortcut for the fixture
     new_contestant = f.gm.add_contestant('new contestant')
-    with pytest.raises(Contestant.ContestantAlreadyPlaying):
+    with pytest.raises(ContestantAlreadyPlaying):
         f.gm.create_game(f.p1.id, new_contestant.id)
 
 def test_currently_playing_flag_set(game_underway):

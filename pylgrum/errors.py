@@ -2,19 +2,17 @@
 
 class PylgrumError(Exception):
     """Base class for this module's exceptions."""
-    pass
 
 class PylgrumErrorWithMessage(PylgrumError):
     """Base class with exception message."""
-    def __init__(self, message):
+    def __init__(self, message = None):
         self.message = message
         super().__init__()
 
 class PylgrumInternalError(PylgrumErrorWithMessage):
     """Catch-all for low-level errors."""
-    pass
 
-class CardNotFoundError(PylgrumError):
+class CardNotFoundError(PylgrumErrorWithMessage):
     """Raised when a card isn't found in a Stack."""
     def __init__(self, message):
         self.message = message
@@ -25,16 +23,14 @@ class OverdealtHandError(PylgrumError):
 
     Note: a hand has 10 cards, but will briefly hold 11 during a turn.
     """
-    pass
 
 class IllegalMoveError(PylgrumErrorWithMessage):
     """Raised when a Player does something illegal in a move.
 
     For example: asking a Move to draw after already asking to draw a
-    discard would result in IllegalMoveError."""
-    pass
+    discard would result in IllegalMoveError.
+    """
 
 class InvalidMeldError(PylgrumErrorWithMessage):
     """Raised when a meld or potential meld that isn't either all the same
     suit or all the same rank is encountered."""
-    pass

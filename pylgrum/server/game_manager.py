@@ -1,72 +1,22 @@
 """The GameManager class manages muliple games between multiple users."""
 
 import uuid
-import json
 
-from pylgrum.player import Player
 from pylgrum.game import Game
+from pylgrum.server.contestant import Contestant
 
-# Note: "Player" refers to a player _in a specific game_, so would be a confusing
-# term to refer to the humans or bots who might play on a GameServer.
-class Contestant():
-    DEFAULT_NAME = "Anon Y. Mouse"
-
-    class ContestantAlreadyPlaying(Exception):
-        """Raised when a Contestant tries to join a Game with one in progress."""
-        pass
-
-    """A Contestant is an entity that might play games."""
-    def __init__(self, name = None):
-        self.current_player = None
-        self.id = str(uuid.uuid4())
-        self.name = name if name else Contestant.DEFAULT_NAME
-
-    @property
-    def is_playing(self):
-        """True if the Contestant is in a game, or in the process of joining one.
-
-        Note: There is a moment after join_game() has been called when the Contestant
-        might not actually be in a game yet, but has agreed to join one (this moment)
-        is while the game is being created. In the future we could express a "pending"
-        state here, but for now this is considered "playing".
-        """
-        return self.current_player is not None
-
-    def join_game(self):
-        """Returns a Player object so a game can be started.
-
-        Note: the Player will reference a Game it has been joined to, so a Contestant
-        instance can access any Game it is part of.
-        """
-        if self.is_playing:
-            raise Contestant.ContestantAlreadyPlaying
-        self.current_player = Player(contestant_id = self.id)
-        return self.current_player
-
-    def __str__(self):
-        """Returns JSON with public members (e.g. for API return)."""
-        # Skipping certain fields (e.g. those with leading _) is surprisingly
-        #  involved, so for now just hand-write the JSON. Definite room for future
-        #  improvement
-        return json.dumps({
-            "id": self.id,
-            "name": self.name,
-            "currently_playing": self.is_playing
-        })
+from pylgrum.server.errors import InvalidContestant
 
 class GameManager():
     """A GameManager handles a pool of Contestants and a number of Games."""
 
-    class InvalidContestant(Exception):
-        """Raised for non-existant or invalid Contestants."""
-        pass
-
     def __init__(self):
+        """Initialize a new GameManger."""
         self.contestants = {}
         self.games = {}
 
     def list_contestants(self):
-        # return [str(self._contestants[c]) for c in self._contestants.keys()]
+        """Return a list of JSON objects representing currently registered contestants."""
         return [
             {
                 "id": c.id,
@@ -77,10 +27,17 @@ class GameManager():
         ]
 
     def delete_contestants(self):
+        """Clears the set of registered contestants.
+
+        Use with caution: this is primarily of value in unit tests.
+        """
         self.contestants = {}
 
-    def add_contestant(self, name = None):
+    def add_contestant(self, name=None):
         """Create and return new contestant with given name.
+
+        Args:
+            name (str): [optional] name of the new contestant
 
         Note: uses default name from Contestant class if no name given.
         """
@@ -91,30 +48,29 @@ class GameManager():
     def create_game(self, challenger_id: str, opponent_id: str):
         """Create a game between specified players.
 
-        Takes:
-         * challenger_id: str of UUID of player starting the game
-         * opponent_id: str of UUID of the other player
+        Args:
+            challenger_id (str): UUID of player starting the game
+            opponent_id (str): UUID of the other player
 
-        Note: both players must be registered contestants who are not already
-        in a game.
+        Raises InvalidContestant unless both players are registered contestants who
+        are not already in a game.
         """
         if challenger_id not in self.contestants.keys():
-            raise GameManager.InvalidContestant("Invalid challenger")
+            raise InvalidContestant("Invalid challenger")
         if opponent_id not in self.contestants.keys():
-            raise GameManager.InvalidContestant("Invalid opponent")
+            raise InvalidContestant("Invalid opponent")
 
-        p1 = self.contestants[challenger_id]
-        p2 = self.contestants[opponent_id]
+        player1 = self.contestants[challenger_id]
+        player2 = self.contestants[opponent_id]
 
         new_game_id = str(uuid.uuid4())
-        new_game = Game(p1.join_game(), p2.join_game(), game_id=new_game_id)
+        new_game = Game(player1.join_game(), player2.join_game(), game_id=new_game_id)
 
         self.games[new_game_id] = new_game
 
         return(
             {
-                "description": "Game between {} and {}".format(p1.name, p2.name),
+                "description": "Game between {} and {}".format(player1.name, player2.name),
                 "id": new_game_id
             }
         )
-

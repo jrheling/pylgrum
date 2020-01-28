@@ -7,6 +7,7 @@ class Deck(CardStack):
     """A deck has 52 cards in 4 suits (no jokers)."""
 
     def __init__(self):
+        """Create a new Deck."""
         super().__init__()
         for rank in list(Rank):
             for suit in list(Suit):

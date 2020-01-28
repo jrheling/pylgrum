@@ -1,7 +1,6 @@
 import unittest
 from pylgrum.player import Player
 from pylgrum.card import Card, Suit, Rank
-from pylgrum.hand import Hand
 from pylgrum.errors import OverdealtHandError, PylgrumInternalError
 from pylgrum.tui.hand_melds import HandWithMelds
 

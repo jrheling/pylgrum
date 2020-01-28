@@ -7,12 +7,44 @@ from pylgrum.card import Card
 from pylgrum.stack import CardStack
 from pylgrum.errors import IllegalMoveError, PylgrumInternalError, CardNotFoundError
 
-
-
 class Game():
-    """Base class for a game of gin rummy."""
+    """Base class for a game of gin rummy.
+
+    A game consists of a series of moves between two players. The Game object
+    is responsible for managing game state, including turn order between
+    the players and the exchange of cards.
+
+    Depending on subclass behavior, game play can proceed in two different
+    modes:
+
+        *synchronously*: where the Game drives play through the callbacks
+        to the Players (via the `*_hook()` methods below)
+
+        *asynchronously*: where Players submit moves (e.g. via the API) and
+        the Game enforces move validity and game state
+
+    The only real difference between the two modes is that the async player
+    is expected to track game state enough to know when to move. (Note that even
+    in this mode the player is not _trusted_ by the game - game still enforces
+    move validity.)
+
+    Most interactive usage is probably best served by the asynchronous mode,
+    though synchronous mode might be useful for e.g. machine-driven training.
+    """
 
     def __init__(self, player1: Player, player2: Player, game_id: str = None) -> None:
+        """Create a new game between two players.
+
+        Shuffles and deals a deck, and starts play.
+
+        Args:
+            player1 (Player): the player initiating the game
+            player2 (Player): the player being challenged
+            game_id (str): [optional] an ID used to track this game
+
+        If not provided, game_id will be None.
+        """
+
         self.player1 = player1
         self.player2 = player2
 
@@ -40,15 +72,18 @@ class Game():
 
     @property
     def current_player(self):
+        """The player whose turn it currently is."""
         return self._current_player
 
     @property
     def visible_discard(self):
+        """The card currently showing on the top of the discard pile."""
         return self._discards.peek()
 
     @property
     def contestant_ids(self):
-        return [ p.contestant_id for p in [self.player1, self.player2]]
+        """A list of contestant IDs for the players in this game."""
+        return [p.contestant_id for p in [self.player1, self.player2]]
 
     def _draw(self) -> Card:
         """Draw from the deck."""
@@ -72,15 +107,13 @@ class Game():
         elif self._current_player == self.player2:
             self._current_player = self.player1
         else:
-            print("TOTALLY IMPOSSIBLE - INTERNAL ERROR") #FIXME raise instead
+            raise PylgrumInternalError("No current_player?!")
 
     def pre_turn_hook(self):
         """Called before each move. For sub-class use."""
-        pass
 
     def post_turn_hook(self):
         """Called after each move. For sub-class use."""
-        pass
 
     def start_new_move(self):
         """Called at the start of a turn.
@@ -100,11 +133,18 @@ class Game():
     def acquire_card(self) -> None:
         """Add card from the selected source to the hand.
 
-        Card source is configured in the Move - calling this before that has
-        been done will raise IllegalMoveError.
+        Before this method is called, the `current_move` should indicate
+        whether the current player has chosen to take the discard or a new
+        card from the deck. This method moves the chosen card into the player's
+        hand.
+
+        Raises IllegalMoveError if called before the card source has been chosen.
         """
-        if (self.current_move.state != MoveState.IN_PROGRESS):
-            raise IllegalMoveError("Got to _acquire_card in Move state {}".format(self.current_move.state))
+        if self.current_move.state != MoveState.IN_PROGRESS:
+            raise IllegalMoveError(
+                "Got to _acquire_card in Move state {}"
+                .format(self.current_move.state)
+            )
         if self.current_move.card_source == CardSource.DRAW_STACK:
             self.current_move.acquired = self._draw()
         elif self.current_move.card_source == CardSource.DISCARD_STACK:
@@ -114,11 +154,18 @@ class Game():
     def finalize_move(self) -> None:
         """Complete a move by processing the specified discard.
 
-        If called for a move that is not complete, raises IllegalMoveError.
+        Before this method is called, the `current_move` should indicate which
+        card the current player has chosen to discard. This method actually
+        removes it from their hand and adds it to the discard pile.
+
+        Raises IllegalMoveError if called for a move that is not complete.
         """
-        if (self.current_move.state != MoveState.COMPLETE):
-            raise IllegalMoveError("Got to finalize_move in Move state {}".format(self.current_move.state))
-        if (not self.current_move.discard):
+        if self.current_move.state != MoveState.COMPLETE:
+            raise IllegalMoveError(
+                "Got to finalize_move in Move state {}"
+                .format(self.current_move.state)
+            )
+        if not self.current_move.discard:
             raise IllegalMoveError("No discard specified.")
 
         try:
@@ -129,14 +176,7 @@ class Game():
             self.current_player.hand.remove(discard_idx)
             self._discards.add(self.current_move.discarded)
 
-
     def _do_turn(self):
-        """Interact with a Player to make a Move.
-
-        Side effects:
-         * gives player card via the acquired property of the Move
-         * calls pre_turn_hook and post_turn_hook
-        """
         self.pre_turn_hook()
         self.start_new_move()
         self._current_player.turn_start(self.current_move)
@@ -185,15 +225,17 @@ class Game():
          - card: string form of card enum
         hand: list of suit,card objects
 
-        This is a conveniennce for the benefit of UIs and other
+        This is a convenience method for the benefit of UIs and other
         game management logic.
 
         (Note: all UUIDs are in string form.)
         """
         if player not in (self.player1, self.player2):
-            raise PylgrumInternalError("Can't generate game status for uninvolved player")
+            raise PylgrumInternalError(
+                "Can't generate game status for uninvolved player"
+            )
 
-        r = {
+        r_val = {
             "game_id": self.game_id,
             "description": "game between {} and {}".format(
                 self.player1.contestant_id,
@@ -204,22 +246,22 @@ class Game():
         try:
             visible_discard = self.visible_discard
         except CardNotFoundError:
-            r['visible_discard'] = {
+            r_val['visible_discard'] = {
                 'suit': "",
                 'card': ""
             }
         else:
-            r['visible_discard'] = {
+            r_val['visible_discard'] = {
                 'suit': visible_discard.suit.name,
                 'card': visible_discard.rank.name
             }
         ## only the curent player can see the acquired card
         if self.current_player == player:
             if (self.current_move is not None and
-                self.current_move.acquired is not None):
-                r['new_card'] = {
+                    self.current_move.acquired is not None):
+                r_val['new_card'] = {
                     'suit': self.current_move.acquired.suit.name,
                     'card': self.current_move.acquired.rank.name
                 }
-        r['hand'] = [{"suit": x.suit.name, "card": x.rank.name} for x in player.hand.cards]
-        return r
+        r_val['hand'] = [{"suit": x.suit.name, "card": x.rank.name} for x in player.hand.cards]
+        return r_val

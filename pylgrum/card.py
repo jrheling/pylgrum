@@ -28,25 +28,31 @@ class Suit(Enum):
 class Card:
     """Cards have suit+rank, point value, and can be compared (by point value).
 
-    Public methods:
-     __init__(Suit, Rank)
-     score_val() - returns point value for cards of that rank.
-     same_suit(Card) - True if both cards share a suit
-     same_rank(Card) - True if both cards share a rank
-     is_same_card(Card) - True if suit and rank match
-     overriden operators ==, !=, <, >, <=, >= work on point value
-       (e.g. Jack == King)
+    Attributes:
+        rank (Rank): the face value of the card (Ace, 2..10, Jack, Queen, King)
+        suit (Suit): the suit of the card (Heart, Club, Spade, Diamond)
+
+    In addition to Rank, Cards have a point value that maps the Rank to the
+    effect the card has on scoring in Gin Rummy (e.g. boht Jack and King are
+    worth 10 points).
+
+    This class overrides basic comparison operators with regard to point value,
+    *not* Rank.
 
     WARNING: it is arguably bad that "==" operates on point value as opposed
     to suit/rank. On the other hand, it might be strange if all comparison
     operators _other than_ "==" worked on point value, and "==" didn't.
     """
-    rank = None # type: Rank
-    suit = None # type: Suit
 
     def __init__(self, rank: Rank, suit: Suit) -> None:
-        self.suit = suit
-        self.rank = rank
+        """Create a new Card.
+
+        Args:
+            rank (Rank): the new Card's rank
+            suit (Suit): the suit of the new card
+        """
+        self.suit: Suit = suit
+        self.rank: Rank = rank
 
     def __eq__(self, other) -> bool:
         return self.score_val() == other.score_val()
@@ -67,13 +73,15 @@ class Card:
         return self.score_val() >= other.score_val()
 
     def score_val(self) -> int:
-        """Return the point value of a card (if held as 'deadwood')."""
-        if self.rank.name is "A":
-            return 1
-        elif self.rank.name in ("JACK", "QUEEN", "KING"):
-            return 10
+        """Return the point value of a card."""
+        val = None
+        if self.rank == Rank.ACE:
+            val = 1
+        elif self.rank in (Rank.JACK, Rank.QUEEN, Rank.KING):
+            val = 10
         else:
-            return int(self.rank.value)
+            val = int(self.rank.value)
+        return val
 
     def rank_val(self) -> int:
         """Return a sort-able rank value of the card.
@@ -83,29 +91,45 @@ class Card:
         rank_val and TEN is a 10. rank_val is used to sort potential
         sets.
         """
-        if self.rank.value == 'J':
-            return 11
-        elif self.rank.value == 'Q':
-            return 12
-        elif self.rank.value == 'K':
-            return 13
+        val = None
+        if self.rank == Rank.JACK:
+            val = 11
+        elif self.rank == Rank.QUEEN:
+            val = 12
+        elif self.rank == Rank.KING:
+            val = 13
         else:
-            return int(self.rank.value)
+            val = int(self.rank.value)
+        return val
 
     def same_suit(self, other) -> bool:
-        """True if both cards share a suit."""
+        """Compare card with another and return true if both have the same suit.
+
+        Args:
+            other (Card): the card to compare
+        """
         if self.suit == other.suit:
             return True
         return False
 
     def same_rank(self, other) -> bool:
-        """True if both cards share a rank."""
+        """Compare card with another and return true if both have the same rank.
+
+        Args:
+            other (Card): the card to compare
+        """
         if self.rank == other.rank:
             return True
         return False
 
     def is_same_card(self, other) -> bool:
-        """Unlike ==, is_same_card() requires same rank + suit."""
+        """Compare card with another and return true if theyq have the rank and suit.
+
+        Args:
+            other (Card): the card to compare
+
+        Note: also see overridden == operator.
+        """
         if self.same_suit(other) and self.same_rank(other):
             return True
         return False

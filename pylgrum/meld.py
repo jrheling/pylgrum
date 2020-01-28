@@ -1,8 +1,4 @@
-"""A Meld is a set or run - this class tracks potential or complete melds.
-
-Notably, melds are always sorted by rank value, so unlike their ancestors in
-the CardStack class tree, do not behave like stacks in all regards.
-"""
+"""A Meld is a set or run - this class tracks potential or complete melds."""
 
 from pylgrum.card import Card
 from pylgrum.stack import CardStack
@@ -11,14 +7,23 @@ from pylgrum.errors import InvalidMeldError
 class Meld(CardStack):
     """Referenceable data-structure to store melds and potential melds.
 
-    A meld is a set or run of at least three cards, where a run is a
-    sequence of cards from the same suit and a set a number of cards of the
-    same rank."""
+    A complete *set* is three or more cards of the same Rank.
+    A complete *run* is three or more cards of the same Suit with consecutive Ranks.
 
-    def __init__(self, *cards) -> None:
+    Note: Melds are always sorted by rank value, so unlike their ancestors in
+    the CardStack class tree, do not behave like stacks in all regards.
+
+    Because this class stores _potential_ Melds, any single card is a valid
+    meld.
+    """
+
+    def __init__(self, *cards: Card) -> None:
         """Create a new (potential) Meld with the specified cards.
 
-        Raises InvalidMeldError if Cards don't match in suit or rank.
+        Args:
+            *cards (Card): the cards to add to the Meld
+
+        Raises InvalidMeldError if cards don't match in suit or rank.
         """
 
         self.all_same_rank = False # a potential set must be all the same rank
@@ -50,12 +55,12 @@ class Meld(CardStack):
     def _update_validity(self) -> None:
         """Inspect a Meld for validity and potential completeness.
 
-        A _valid_ Meld is any Meld that could become a full run or set. In
-        order to be valid, then, a Meld needs to either be all the same rank
+        A _valid_ meld is any meld that could become a full run or set. In
+        order to be valid, then, a meld needs to either be all the same rank
         (if it's going to maybe become a set) or be all the same suit (if
         it has a chance of becoming a run).
 
-        Valid Melds may also be complete. Completeness requires at least 3
+        Valid melds may also be complete. Completeness requires at least 3
         cards and, in the case of runs, sequential continuity across all of
         them.
 
@@ -107,7 +112,7 @@ class Meld(CardStack):
 
     @staticmethod
     def _check_same_suit(*cards) -> bool:
-        """True iff all cards passed as argument are of the same Suit."""
+        """Return true iff all cards passed as argument are of the same suit."""
         cards = [*cards]
         if len(cards) > 0:
             reference_card = cards[0]
@@ -119,7 +124,7 @@ class Meld(CardStack):
 
     @staticmethod
     def _check_same_rank(*cards) -> bool:
-        """True iff all cards passed as argument are of the same Rank."""
+        """Return true iff all cards passed as argument are of the same rank."""
         cards = [*cards]
         if len(cards) > 0:
             reference_card = cards[0]
@@ -130,9 +135,12 @@ class Meld(CardStack):
         return False
 
     def add(self, newcard: Card) -> None:
-        """Add Cards that fit the Meld.
+        """Add a card that fits the meld (extends CardStack.add()).
 
-        Raise InvalidMeldError when non-fitting cards are attempted.
+        Args:
+            newcard (Card): the card to add
+
+        Raises InvalidMeldError when non-fitting cards are attempted.
         """
 
         # allow the addition if either same suit or same rank remains true
@@ -150,5 +158,12 @@ class Meld(CardStack):
         self._update_validity()
 
     def remove(self, i: int) -> Card:
+        """Remove a card from the meld (extends CardStack.remove()).
+
+        Args:
+            i (int): index of the card to be removed.
+
+        Raises CardNotFoundError
+        """
         super().remove(i)
         self._update_validity()
