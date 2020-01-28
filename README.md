@@ -29,6 +29,8 @@ PyLGRum is substantially complete and working, with the following open issues:
 
 ## Technical Documentation
 
+The PyLGRum package is [thoroughly documented here](file:///Users/jrh/code/pylgrum/docs/pylgrum/index.html).
+
 ## TODOs
 ```text
 at some point:
