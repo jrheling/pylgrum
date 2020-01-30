@@ -4,19 +4,19 @@ from enum import Enum
 
 class Rank(Enum):
     """Trivial enum of card ranks (e.g. ace, face cards, royals, etc.)."""
-    ACE = '1'
-    TWO = '2'
-    THREE = '3'
-    FOUR = '4'
-    FIVE = '5'
-    SIX = '6'
-    SEVEN = '7'
-    EIGHT = '8'
-    NINE = '9'
-    TEN = '10'
-    JACK = 'J'
-    QUEEN = 'Q'
-    KING = 'K'
+    ACE = 1
+    TWO = 2
+    THREE = 3
+    FOUR = 4
+    FIVE = 5
+    SIX = 6
+    SEVEN = 7
+    EIGHT = 8
+    NINE = 9
+    TEN = 10
+    JACK = 11
+    QUEEN = 12
+    KING = 13
 
 class Suit(Enum):
     """Trivial enum of card suits."""
@@ -91,16 +91,7 @@ class Card:
         rank_val and TEN is a 10. rank_val is used to sort potential
         sets.
         """
-        val = None
-        if self.rank == Rank.JACK:
-            val = 11
-        elif self.rank == Rank.QUEEN:
-            val = 12
-        elif self.rank == Rank.KING:
-            val = 13
-        else:
-            val = int(self.rank.value)
-        return val
+        return self.rank.value
 
     def same_suit(self, other) -> bool:
         """Compare card with another and return true if both have the same suit.
