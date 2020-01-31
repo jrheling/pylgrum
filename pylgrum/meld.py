@@ -45,6 +45,13 @@ class Meld(CardStack):
                 self.remove(i)
             raise
 
+    def __eq__(self, other):
+        """Melds are equal if they contain the same cards."""
+        return sorted(self.cards) == sorted(other.cards)
+
+    def __repr__(self):
+        return str(self._cards)
+
     @property
     def complete(self) -> bool:
         """True for any full, valid Meld."""

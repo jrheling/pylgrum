@@ -15,6 +15,11 @@ class TestMeld(unittest.TestCase):
         self.assertFalse(m.is_set)
         self.assertFalse(m.complete)
 
+    def test_melds_are_equal_if_same_cards(self):
+        m1 = Meld(Card.from_text("2H","JH","AH"))
+        m2 = Meld(Card.from_text("AH","2H","JH"))
+        self.assertEqual(m1, m2)
+
     def test_not_same_suit(self):
         m = Meld(Card(rank=Rank.TWO, suit=Suit.HEART),
                  Card(rank=Rank.TWO, suit=Suit.CLUB))
