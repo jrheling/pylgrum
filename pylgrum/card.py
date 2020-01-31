@@ -37,15 +37,11 @@ class Card:
         suit (Suit): the suit of the card (Heart, Club, Spade, Diamond)
 
     In addition to Rank, Cards have a point value that maps the Rank to the
-    effect the card has on scoring in Gin Rummy (e.g. boht Jack and King are
+    effect the card has on scoring in Gin Rummy (e.g. both Jack and King are
     worth 10 points).
 
-    This class overrides basic comparison operators with regard to point value,
-    *not* Rank.
-
-    WARNING: it is arguably bad that "==" operates on point value as opposed
-    to suit/rank. On the other hand, it might be strange if all comparison
-    operators _other than_ "==" worked on point value, and "==" didn't.
+    Card comparisons are done first on suit and then on rank. To evaluate cards
+    based on points as deadwood, use score_val()
     """
 
     def __init__(self, rank: Rank, suit: Suit) -> None:
@@ -59,22 +55,47 @@ class Card:
         self.rank: Rank = rank
 
     def __eq__(self, other) -> bool:
-        return self.score_val() == other.score_val()
+        return (self.suit.value == other.suit.value and
+                self.rank.value == other.rank.value)
 
     def __ne__(self, other) -> bool:
-        return self.score_val() != other.score_val()
+        return (self.suit.value != other.suit.value or
+                self.rank.value != other.rank.value)
 
     def __lt__(self, other) -> bool:
-        return self.score_val() < other.score_val()
+        if self.suit.value < other.suit.value:
+            return True
+        elif self.suit.value == other.suit.value:
+            return self.rank.value < other.rank.value
+        else:
+            return False
 
     def __le__(self, other) -> bool:
-        return self.score_val() <= other.score_val()
+        if self.suit.value <= other.suit.value:
+            return True
+        elif self.suit.value == other.suit.value:
+            return self.rank.value <= other.rank.value
+        else:
+            return False
 
     def __gt__(self, other) -> bool:
-        return self.score_val() > other.score_val()
+        if self.suit.value > other.suit.value:
+            return True
+        elif self.suit.value == other.suit.value:
+            return self.rank.value > other.rank.value
+        else:
+            return False
 
     def __ge__(self, other) -> bool:
-        return self.score_val() >= other.score_val()
+        if self.suit.value >= other.suit.value:
+            return True
+        elif self.suit.value == other.suit.value:
+            return self.rank.value >= other.rank.value
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.rank) ^ hash(self.suit)
 
     def score_val(self) -> int:
         """Return the point value of a card."""
@@ -153,5 +174,3 @@ class Card:
         suit_str = self.suit.name[0] + self.suit.name[1:].lower() + 's'
         return "{} of {}".format(rank_str, suit_str)
 
-    def __hash__(self):
-        return hash(self.rank) ^ hash(self.suit)
