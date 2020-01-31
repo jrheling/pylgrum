@@ -85,7 +85,7 @@ class CardStack():
 
 
     def find(self, targetcard: Card) -> int:
-        """Searche the stack for a specified card and return its index.
+        """Search the stack for a specified card and return its index.
 
         Args:
             c (Card): the card to search for

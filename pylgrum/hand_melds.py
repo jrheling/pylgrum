@@ -35,7 +35,16 @@ class HandWithMelds(Hand):
         """
         return self._melds
 
-    def create_meld(self, *cards) -> None:
+    def get_melds_with_overused_cards(self) -> list:
+        """Return a list of melds including at least one card that is in another meld."""
+        overused = set()
+        for (_, melds) in self._card_to_meld_id.items():
+            if len(melds) > 1:
+                # this card is in multiple melds - all of its melds are overused
+                overused.update(melds)
+        return [self._meld_id_to_meld[x] for x in list(overused)]
+
+    def create_meld(self, *cards) -> Meld:
         """Create a new [potential] meld within the hand.
 
         Args:
@@ -65,6 +74,7 @@ class HandWithMelds(Hand):
 
         self._melds.append(new_meld)
         self._meld_id_to_meld[id(new_meld)] = new_meld
+        return new_meld
 
     def remove_meld(self, meld: Meld) -> None:
         """Remove a Meld.
@@ -140,7 +150,7 @@ class HandWithMelds(Hand):
         )
 
     def melds_using_card(self, card: Card) -> list:
-        """Return melds that reference the given card.
+        """Return melds that reference the given card, or None.
 
         Args:
             card (Card): the card to find in melds

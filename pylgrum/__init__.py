@@ -17,6 +17,8 @@ Classes in core `pylgrum` package:
         Deck: 52 unique Cards
         Meld: A (potentially partial) set or run of Cards
         Hand: Cards held by a given Player
+        HandWithMelds: a Hand subclass, organized by (potentially partial) Melds
+        MeldDetector: Hand subclass that finds the best melds in a set of cards
     Game: A sequence of Moves between two Players
     Player: has a Hand, and implements hooks for the two phases of
         a Move

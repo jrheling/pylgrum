@@ -2,7 +2,7 @@ import unittest
 from unittest import skip
 from pylgrum.card import Card, Rank, Suit
 from pylgrum.meld import Meld
-from pylgrum.tui.hand_melds import HandWithMelds
+from pylgrum.hand_melds import HandWithMelds
 from pylgrum.errors import InvalidMeldError
 
 class TestHandWithMelds(unittest.TestCase):
@@ -125,6 +125,17 @@ class TestHandWithMelds(unittest.TestCase):
         self.assertFalse(id(self.h._melds[1]) in
                          self.h._card_to_meld_id[jack_d])
         self.assertEqual(len(self.h._card_to_meld_id[jack_d]), 1)
+
+    def test_get_melds_with_overused_cards(self):
+        jack_d = self.h.cards[1]
+        three_d = self.h.cards[5]
+        m1 = self.h.create_meld(jack_d, three_d)
+        m2 = self.h.create_meld(jack_d)
+        m3 = self.h.create_meld(self.h.cards[4])
+        overused = self.h.get_melds_with_overused_cards()
+        self.assertIn(m1, overused)
+        self.assertIn(m2, overused)
+        self.assertNotIn(m3, overused)
 
     def test_melds_using_card(self):
         jack_d = self.h.cards[1]

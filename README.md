@@ -32,6 +32,7 @@ PyLGRum is substantially complete and working, with the following open issues:
 The PyLGRum package is [thoroughly documented here](https://jrheling.github.io/pylgrum/pylgrum/).
 
 ## TODOs
+
 ```text
 at some point:
 - replace print statements in game play with non-terminal-assuming messages

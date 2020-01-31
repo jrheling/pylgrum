@@ -3,7 +3,7 @@
 from pylgrum.card import Card
 from pylgrum.move import Move
 from pylgrum.player import Player
-from pylgrum.tui.hand_melds import HandWithMelds
+from pylgrum.hand_melds import HandWithMelds
 from pylgrum.errors import InvalidMeldError
 
 from pylgrum.tui.util import clear_screen
