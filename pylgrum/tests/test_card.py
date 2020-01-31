@@ -117,5 +117,31 @@ class TestCard(unittest.TestCase):
         dict[three] = "foo"
         self.assertEqual(dict[otherthree], "foo")
 
+    def test_card_sort_by_rank(self):
+        nine = Card(rank=Rank.NINE, suit=Suit.CLUB)
+        ten = Card(rank=Rank.TEN, suit=Suit.DIAMOND)
+        jack = Card(rank=Rank.JACK, suit=Suit.HEART)
+        king = Card(rank=Rank.KING, suit=Suit.SPADE)
+
+        cards = [king, ten, nine, jack]
+        cards.sort(key=lambda card: card.rank.value)
+        expected = [nine, ten, jack, king]
+        for i in range(0,len(cards)):
+            self.assertTrue(cards[i].is_same_card(expected[i]))
+
+    def test_card_sort_by_suit(self):
+        # expected order Spade > Heart > Club > Diamond
+        club = Card(rank=Rank.NINE, suit=Suit.CLUB)
+        diamond = Card(rank=Rank.TEN, suit=Suit.DIAMOND)
+        heart = Card(rank=Rank.JACK, suit=Suit.HEART)
+        spade = Card(rank=Rank.KING, suit=Suit.SPADE)
+
+        cards = [club, heart, diamond, spade]
+        cards.sort(key=lambda card: card.suit.value)
+        expected = [diamond, club, heart, spade]
+        for i in range(0,len(cards)):
+            print("expect {} to match {}".format(cards[i], expected[i]))
+            self.assertTrue(cards[i].is_same_card(expected[i]))
+
 if __name__ == '__main__':
     unittest.main()

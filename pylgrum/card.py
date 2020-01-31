@@ -19,11 +19,15 @@ class Rank(Enum):
     KING = 13
 
 class Suit(Enum):
-    """Trivial enum of card suits."""
-    SPADE = 'S'
-    HEART = 'H'
-    CLUB = 'C'
-    DIAMOND = 'D'
+    """Trivial enum of card suits.
+
+    Comparison uses bridge-style suit rankings:
+        Spade > Heart > Club > Diamond
+    """
+    SPADE = 4
+    HEART = 3
+    CLUB = 2
+    DIAMOND = 1
 
 class Card:
     """Cards have suit+rank, point value, and can be compared (by point value).
@@ -125,7 +129,26 @@ class Card:
             return True
         return False
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
+        rank_val = self.rank.value
+        if rank_val > 1 and rank_val < 11:
+            rank_str = self.rank.value
+        elif rank_val == 1:
+            rank_str = 'A'
+        elif rank_val == 11:
+            rank_str = 'J'
+        elif rank_val == 12:
+            rank_str = 'Q'
+        elif rank_val == 13:
+            rank_str = 'K'
+        suit_str = self.suit.name[0]
+        return "{}{}".format(rank_str, suit_str)
+
+    @property
+    def long_name(self):
         rank_str = self.rank.name[0] + self.rank.name[1:].lower()
         suit_str = self.suit.name[0] + self.suit.name[1:].lower() + 's'
         return "{} of {}".format(rank_str, suit_str)
