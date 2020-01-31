@@ -1,6 +1,6 @@
 """Hand subclass that finds the best melds in a set of cards."""
 
-from itertools import cycle, groupby
+from itertools import cycle, groupby, combinations
 
 from pylgrum.hand import Hand
 from pylgrum.card import Card, Suit, Rank
@@ -144,7 +144,19 @@ class MeldDetector(HandWithMelds):
 
         Note: *all* sets are found, even those that are subsets of other sets.
         """
-        #!FIXME - implement
+        sorted_by_rank = sorted(self._cards, key=lambda card: card.rank.value)
+        grouped_by_rank = groupby(sorted_by_rank, key=lambda card: card.rank)
+
+        for _, cards_of_rank_X in grouped_by_rank:
+            cards = list(cards_of_rank_X)
+            if len(cards) == 4:
+                # 4 distinct 3-long sets, 1 4-long set
+                for combo in combinations(cards, 3):
+                    self.create_meld(*combo)
+                self.create_meld(*cards)
+                pass
+            elif len(cards) == 3:
+                self.create_meld(*cards)
 
     @property
     def is_complete_hand(self) -> bool:

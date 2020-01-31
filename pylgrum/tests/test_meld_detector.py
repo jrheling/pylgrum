@@ -30,6 +30,23 @@ def hand_with_simple_runs():
     yield hand
 
 @pytest.fixture
+def hand_with_sets():
+    """A hand with two sets.
+
+    Should find 6 sets:
+        (QH, QC, QD)
+        (2S, 2H, 2D, 2C) - 5 permutations of this
+    """
+    hand = Hand()
+    for card in Card.from_text(
+        "JH", "QH", "QC", "QD", "2S",
+        "3C", "2H", "6S", "2D", "2C"
+    ):
+        hand.add(card)
+
+    yield hand
+
+@pytest.fixture
 def hand_with_complex_runs():
     """Multiple suits, not in order, overlapping runs
 
@@ -101,6 +118,11 @@ def test_simple_run_detection(hand_with_simple_runs):
     md._find_runs()
     assert(len(md._melds) == 2)
 
+def test_simple_set_detection(hand_with_sets):
+    md = MeldDetector(*hand_with_sets.cards)
+    md._find_sets()
+    assert(len(md._melds) == 6)
+
 def test_complex_run_detection(hand_with_complex_runs):
         # (3H, 4H, 5H),
         # (4H, 5H, 6H),
@@ -132,6 +154,16 @@ def test_runs_must_be_three_long_to_count():
 
     md = MeldDetector(*hand.cards)
     md._find_runs()
+    assert(len(md._melds) == 0)
+
+def test_sets_must_be_three_long_to_count():
+    hand = Hand()
+
+    hand.add(Card(rank=Rank.JACK, suit=Suit.HEART))    # 0:  JH
+    hand.add(Card(rank=Rank.JACK, suit=Suit.DIAMOND))   # 1:  JD
+
+    md = MeldDetector(*hand.cards)
+    md._find_sets()
     assert(len(md._melds) == 0)
 
 def test_runs_must_be_same_suit():
