@@ -1,6 +1,9 @@
 """The CardStack class implements a basic collection of Cards."""
 import random
 
+from itertools import groupby, cycle
+from collections.abc import Iterable
+
 from pylgrum.card import Card
 from pylgrum.errors import CardNotFoundError
 
@@ -45,12 +48,18 @@ class CardStack():
         return len(self._cards)
 
     def add(self, newcard: Card) -> None:
-        """Add a card to the top of the stack.
+        """Add card(s) to the top of the stack.
 
         Args:
-            newcard (Card): the Card to add
+            newcard (Card): the Card to add, or a list of Cards
         """
-        self._cards.append(newcard)
+        if isinstance(newcard, Iterable) and isinstance(newcard[0], Card):
+            for card in newcard:
+                self.add(card)
+        elif isinstance(newcard, Card):
+            self._cards.append(newcard)
+        else:
+            raise TypeError
 
     def remove(self, i: int) -> Card:
         """Remove and return the card at the given index.
@@ -134,3 +143,41 @@ class CardStack():
         cards_to_print.reverse()
         r_str = ", ".join([c.__str__() for c in cards_to_print])
         return r_str
+
+    def group_by_suit(self):
+        """Yield a list of cards of each suit.
+
+        Note: works on a copy of the input (so we can sort by suit without
+        expecting the caller to have done so and without modifying input).
+        """
+        sorted_by_suit = sorted(self._cards, key=lambda card: card.suit.value)
+
+        by_suit = groupby(
+            sorted_by_suit,
+            key=lambda card: card.suit
+        )
+        for _, suit_group in by_suit:
+            yield list(suit_group)
+
+    @staticmethod
+    def get_all_sequences(input_cards):
+        """Yield a tuple for each sequence of consecutively-ranked cards.
+
+        Args:
+            input_cards (iterable of Card): cards in which to find sequences
+
+        Note: this only looks for sequences of consecutively-ranked cards,
+        without regard for suit. To limit by suit, call group_by_suit() first
+        and then pass its output to this method.
+        """
+        sorted_by_rank = sorted(input_cards, key=lambda card: card.rank.value)
+
+        temp_list = cycle(sorted_by_rank)
+        next(temp_list)
+        groups = groupby(
+            sorted_by_rank,
+            key=lambda card: card.rank.value+1 == next(temp_list).rank.value
+        )
+        for k, v in groups:
+            if k:
+                yield tuple(v) + (next((next(groups)[1])), )

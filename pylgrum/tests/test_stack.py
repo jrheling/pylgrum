@@ -36,6 +36,16 @@ class TestStack(unittest.TestCase):
         cs.add(c)
         self.assertEqual(cs.size(), 1)
 
+    def test_stack_add_list(self):
+        cs = CardStack()
+        cs.add(Card.from_text("3H", "2C", "AD"))
+        self.assertEqual(cs.size(), 3)
+
+    def test_stack_add_raises_when_wrong_arg_type(self):
+        cs = CardStack()
+        with self.assertRaises(TypeError):
+            cs.add("this is a string not a card")
+
     def test_stack_remove(self):
         cs = get_test_stack()
         two_h = Card(rank=Rank.TWO, suit=Suit.HEART)
