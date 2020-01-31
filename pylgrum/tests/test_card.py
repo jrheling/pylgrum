@@ -6,12 +6,32 @@ class TestCard(unittest.TestCase):
     def SetUp(self):
         pass
 
-    def test_card_creation(self):
+    def test_card_creation_with_init(self):
         c = Card(rank=Rank.QUEEN, suit=Suit.HEART)
         self.assertIsInstance(c.suit, Suit)
         self.assertIsInstance(c.rank, Rank)
         self.assertIs(c.suit, Suit.HEART)
         self.assertIs(c.rank, Rank.QUEEN)
+
+    def test_face_card_creation_from_text(self):
+        c = Card.from_text("QH")
+        self.assertIsInstance(c.suit, Suit)
+        self.assertIsInstance(c.rank, Rank)
+        self.assertIs(c.suit, Suit.HEART)
+        self.assertIs(c.rank, Rank.QUEEN)
+
+    def test_nonface_card_creation_from_text(self):
+        c = Card.from_text("3C")
+        self.assertIsInstance(c.suit, Suit)
+        self.assertIsInstance(c.rank, Rank)
+        self.assertIs(c.suit, Suit.CLUB)
+        self.assertIs(c.rank, Rank.THREE)
+
+    def test_multiple_card_creation_from_text(self):
+        cards = Card.from_text("3C","4S","QH")
+        self.assertEqual(len(cards), 3)
+        self.assertEqual(cards[0], Card.from_text("3C"))
+        self.assertEqual(cards[2], Card.from_text("QH"))
 
     def test_royalty_scores_ten(self):
         j = Card(rank=Rank.JACK, suit=Suit.SPADE)

@@ -54,6 +54,47 @@ class Card:
         self.suit: Suit = suit
         self.rank: Rank = rank
 
+    @classmethod
+    def from_text(cls, *card_strings):
+        """Return a new Card from a string XY, where X indicates rank and Y suit.
+
+        Args:
+            card_strings (str): the encoded rank/suit of the card to create
+
+        For example, "3H" creates a 3 of Hearts, "AC" an Ace of Clubs, etc.
+        """
+        face_cards = {
+            'A': 1,
+            'J': 11,
+            'Q': 12,
+            'K': 13
+        }
+        suits = {
+            'S': 'SPADE',
+            'H': 'HEART',
+            'C': 'CLUB',
+            'D': 'DIAMOND'
+        }
+
+        new_cards = []
+        for text in card_strings:
+            rank_char = text[:1]
+            try:
+                rank = Rank(int(rank_char))
+            except ValueError:
+                # here for A, J, Q, K
+                rank = Rank(face_cards[rank_char])
+
+            suit_char = text[1:]
+            suit = Suit[suits[suit_char]]
+
+            new_cards.append(Card(rank=rank, suit=suit))
+
+        if len(new_cards) == 1:
+            return new_cards[0]
+        elif len(new_cards) > 1:
+            return new_cards
+
     def __eq__(self, other) -> bool:
         return (self.suit.value == other.suit.value and
                 self.rank.value == other.rank.value)
