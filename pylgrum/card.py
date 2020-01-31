@@ -77,16 +77,30 @@ class Card:
         }
 
         new_cards = []
-        for text in card_strings:
-            rank_char = text[:1]
+        for card_abbreviation in card_strings:
+            if len(card_abbreviation) == 3:
+                ## is a 10 or an error
+                rank_char = card_abbreviation[:2]
+                if rank_char != "10":
+                    raise ValueError
+                suit_char = card_abbreviation[2:]
+            elif len(card_abbreviation) == 2:
+                rank_char = card_abbreviation[:1]
+                suit_char = card_abbreviation[1:]
+            else:
+                raise ValueError
+
             try:
                 rank = Rank(int(rank_char))
             except ValueError:
                 # here for A, J, Q, K
                 rank = Rank(face_cards[rank_char])
 
-            suit_char = text[1:]
-            suit = Suit[suits[suit_char]]
+            try:
+                suit = Suit[suits[suit_char]]
+            except KeyError:
+                print("text was {}, suit_char {}".format(card_abbreviation, suit_char))
+                raise
 
             new_cards.append(Card(rank=rank, suit=suit))
 
