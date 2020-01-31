@@ -116,32 +116,7 @@ class MeldDetector(HandWithMelds):
         (4,5,6), and (3,4,5,6).
         """
 
-        def group_by_suit(input_list):
-            # generator that yields a list of cards in each suit represented
-            #  in input_list
-            #
-            # (assumes input list is already sorted)
-            by_suit = groupby(
-                input_list,
-                key=lambda card: card.suit
-            )
-            for suit, suit_group in by_suit:
-                yield list(suit_group)
-
-        def get_all_sequences(input_list): #!FIXME - move to CardStack?
-            # generator that yields a tuple for each card sequences in the input list
-            #  wherein each card is consecutively sequenced by card ranks
-            temp_list = cycle(input_list)
-            next(temp_list)
-            groups = groupby(
-                input_list,
-                key=lambda j: j.rank.value+1 == next(temp_list).rank.value
-            )
-            for k, v in groups:
-                if k:
-                    yield tuple(v) + (next((next(groups)[1])), )
-
-        def all_runs_in_sequences(sequences): #!FIXME - move to CardStack?
+        def all_runs_in_sequences(sequences):
             # generator that yields a tuple for every run (sequence w/ len>=3)
             #  in the input list of sequences
             #
@@ -156,8 +131,8 @@ class MeldDetector(HandWithMelds):
         print("going into run detection, cards: {}".format(self._cards))
         runs = [
             run
-            for suit_group in group_by_suit(self._cards)
-            for sublist in all_runs_in_sequences(get_all_sequences(suit_group))
+            for suit_group in self.group_by_suit()
+            for sublist in all_runs_in_sequences(MeldDetector.get_all_sequences(suit_group))
             for run in sublist
         ]
 

@@ -109,10 +109,20 @@ def test_complex_run_detection(hand_with_complex_runs):
         # (4H, 5H, 6H, 7H),
         # (3H, 4H, 5H, 6H, 7H),
         # (9C, 10C, JC)
+    expected_melds = [
+        Meld(Card.from_text("3H", "4H", "5H")),
+        Meld(Card.from_text("4H", "5H", "6H")),
+        Meld(Card.from_text("5H", "6H", "7H")),
+        Meld(Card.from_text("3H", "4H", "5H", "6H")),
+        Meld(Card.from_text("4H", "5H", "6H", "7H")),
+        Meld(Card.from_text("3H", "4H", "5H", "6H", "7H")),
+        Meld(Card.from_text("9C", "10C", "JC"))
+    ]
     md = MeldDetector(*hand_with_complex_runs.cards)
     md._find_runs()
     assert(len(md._melds) == 7)
-    # !FIXME - check specific runs
+    for meld in expected_melds:
+        assert(meld in md._melds)
 
 def test_runs_must_be_three_long_to_count():
     hand = Hand()
