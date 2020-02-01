@@ -126,13 +126,13 @@ class TestHandWithMelds(unittest.TestCase):
                          self.h._card_to_meld_id[jack_d])
         self.assertEqual(len(self.h._card_to_meld_id[jack_d]), 1)
 
-    def test_get_melds_with_overused_cards(self):
+    def test_melds_with_overused_cards(self):
         jack_d = self.h.cards[1]
         three_d = self.h.cards[5]
         m1 = self.h.create_meld(jack_d, three_d)
         m2 = self.h.create_meld(jack_d)
         m3 = self.h.create_meld(self.h.cards[4])
-        overused = self.h.get_melds_with_overused_cards()
+        overused = self.h.melds_with_overused_cards()
         self.assertIn(m1, overused)
         self.assertIn(m2, overused)
         self.assertNotIn(m3, overused)

@@ -97,14 +97,40 @@ class HandWithMelds(Hand):
                 return False
         return True
 
-    def get_melds_with_overused_cards(self) -> list:
-        """Return a list of melds including at least one card that is in another meld."""
-        overused = set()
+    def melds_with_no_overused_cards(self, complete: bool = False) -> list:
+        """Return a list of melds having no cards also in other melds.
+
+        Args:
+            complete (bool): if True, only consider complete melds
+        """
+        melds_with_overuse = set()
         for (_, melds) in self._card_to_meld_id.items():
             if len(melds) > 1:
                 # this card is in multiple melds - all of its melds are overused
-                overused.update(melds)
-        return [self._meld_id_to_meld[x] for x in list(overused)]
+                melds_with_overuse.update(melds)
+        if complete:
+            return [self._meld_id_to_meld[x]
+                for x in list(melds_with_overuse)
+                if self._meld_id_to_meld[x].complete]
+        else:
+            return [self._meld_id_to_meld[x] for x in list(melds_with_overuse)]
+
+    def melds_with_overused_cards(self, complete: bool = False) -> list:
+        """Return a list of melds including at least one card that is in another meld.
+
+        Args:
+            complete (bool): if True, only consider complete melds
+        """
+        melds_with_overuse = set()
+        for (_, melds) in self._card_to_meld_id.items():
+            if len(melds) > 1:
+                # this card is in multiple melds - all of its melds are overused
+                melds_with_overuse.update(melds)
+        if complete:
+            return [self._meld_id_to_meld[x]
+                for x in list(melds_with_overuse)
+                if self._meld_id_to_meld[x].complete]
+        return [self._meld_id_to_meld[x] for x in list(melds_with_overuse)]
 
     def create_meld(self, *cards) -> Meld:
         """Create a new [potential] meld within the hand.
