@@ -53,8 +53,10 @@ class CardStack():
         Args:
             newcard (Card): the Card to add, or a list of Cards
         """
-        if isinstance(newcard, Iterable) and isinstance(newcard[0], Card):
+        if isinstance(newcard, Iterable):
             for card in newcard:
+                if not isinstance(card, Card):
+                    raise TypeError
                 self.add(card)
         elif isinstance(newcard, Card):
             self._cards.append(newcard)
