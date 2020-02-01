@@ -294,8 +294,6 @@ def test_overlapping_set_and_run_detection(hand_with_complex_sets_and_runs):
     md = MeldDetector(*hand_with_complex_sets_and_runs.cards)
     md._detect_all_melds()
     assert(len(md._melds) == 10)
-    assert(md.deadwood_value == 0)
-    assert(md.deadwood_count == 0)
     for meld in expected_melds:
         assert(meld in md._melds)
 
@@ -326,7 +324,6 @@ def test_optimal_melds_chosen_from_hand_with_overlapping_melds(hand_with_overlap
     assert(md.deadwood_count == 3)
     assert(md.deadwood_value == 28)
 
-
 def test_optimal_melds_chosen_from_complex_set(hand_with_complex_sets_and_runs):
     expected_melds = [
         Meld(Card.from_text("2C", "2D", "2H")),
@@ -339,6 +336,214 @@ def test_optimal_melds_chosen_from_complex_set(hand_with_complex_sets_and_runs):
     for meld in expected_melds:
         assert(meld in md.optimal_hand.melds)
     assert(md.deadwood_value == 3)
+
+def test_optimal_meld_scenario_1():
+    h = Hand()
+    for card in Card.from_text(
+        "10S", "9S", "8S",
+        "8H",
+        "9C", "8C", "7C", "6C", "5C",
+        "KD"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("10S", "9S", "8S")),
+        Meld(Card.from_text("9C", "8C", "7C", "6C", "5C"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 18)
+    assert(md.optimal_hand.deadwood_count == 2)
+
+def test_optimal_meld_scenario_2():
+    h = Hand()
+    for card in Card.from_text(
+        "10S", "9S", "8S",
+        "9H", "8H",
+        "9C", "8C", "7C",
+        "9D",
+        "QD"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("9S", "9H", "9C", "9D")),
+        Meld(Card.from_text("8S", "8H", "8C"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 17)
+    assert(md.optimal_hand.deadwood_count == 2)
+
+def test_optimal_meld_scenario_3():
+    h = Hand()
+    for card in Card.from_text(
+        "10S", "9S", "8S",
+        "9H", "8H",
+        "9C", "8C", "7C",
+        "9D",
+        "JS"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("9H", "9C", "9D")),
+        Meld(Card.from_text("8S", "9S", "10S", "JS"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 23)
+    assert(md.optimal_hand.deadwood_count == 2)
+
+def test_optimal_meld_scenario_4():
+    h = Hand()
+    for card in Card.from_text(
+        "10S", "9S", "8S",
+        "9H", "8H",
+        "9C", "8C", "7C",
+        "9D",
+        "8D"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("9S", "9H", "9C", "9D")),
+        Meld(Card.from_text("8S", "8H", "8C", "8D"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 17)
+    assert(md.optimal_hand.deadwood_count == 2)
+
+def test_optimal_meld_scenario_5():
+    h = Hand()
+    for card in Card.from_text(
+        "10S", "9S", "8S",
+        "9H", "8H",
+        "9C", "8C", "7C",
+        "9D",
+        "6C"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("9S", "9H", "9C", "9D")),
+        Meld(Card.from_text("8S", "8H", "8C"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 23)
+    assert(md.optimal_hand.deadwood_count == 3)
+
+def test_optimal_meld_scenario_6():
+    h = Hand()
+    for card in Card.from_text(
+        "4S", "3S", "2S", "AS",
+        "3H", "2H", "AH",
+        "4D", "3D", "2D"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("4S", "3S", "2S", "AS")),
+        Meld(Card.from_text("3H", "2H", "AH")),
+        Meld(Card.from_text("4D", "3D", "2D"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 0)
+    assert(md.optimal_hand.deadwood_count == 0)
+
+def test_optimal_meld_scenario_7():
+    h = Hand()
+    for card in Card.from_text(
+        "4C",
+        "4S", "3S", "2S",
+        "4H", "3H", "2H", "AH",
+        "3D", "2D"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("4C", "4S", "4H")),
+        Meld(Card.from_text("3H", "3S", "3D")),
+        Meld(Card.from_text("2H", "2S", "2D"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 1)
+    assert(md.optimal_hand.deadwood_count == 1)
+
+def test_optimal_meld_scenario_8():
+    h = Hand()
+    for card in Card.from_text(
+        "4C",
+        "4S", "3S", "2S",
+        "5H", "4H", "3H", "AH",
+        "3D", "2D"
+    ):
+        h.add(card)
+
+    ## in this scenario, there are two equally optimal outcomes
+    optimal_expected_option1 = [
+        Meld(Card.from_text("4C", "4S", "4H")),
+        Meld(Card.from_text("3H", "3S", "3D"))
+    ]
+    optimal_expected_option2 = [
+        Meld(Card.from_text("4S", "3S", "2S")),
+        Meld(Card.from_text("5H", "4H", "3H"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected_option1)) # works for either
+
+    is_option_1 = True
+    is_option_2 = True
+
+    for expected_meld in optimal_expected_option1:
+        if expected_meld not in md.optimal_hand.melds:
+            is_option_1 = False
+
+    for expected_meld in optimal_expected_option2:
+        if expected_meld not in md.optimal_hand.melds:
+            is_option_2 = False
+
+    assert(not is_option_1 and is_option_2) #highlander principle
+    assert(is_option_1 or is_option_2)
+
+    # b/c the two are equiv. this is true regardless of option
+    assert(md.optimal_hand.deadwood_value == 10)
+    assert(md.optimal_hand.deadwood_count == 4)
 
 def test_(hand_with_complex_sets_and_runs):
     """foo"""

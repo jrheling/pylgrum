@@ -170,7 +170,7 @@ class MeldDetector(HandWithMelds):
              - for each meld the card is in:
                 - create a potential hand that only uses that card in that one meld
             """
-            pass
+            raise NotImplementedError
 
         # now things get tricky - if there is no deadwood *but* there are some
         # overused cards then we need to see if there is a set of melds that avoids
