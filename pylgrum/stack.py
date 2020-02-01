@@ -47,7 +47,7 @@ class CardStack():
         """Return the number of cards in the stack."""
         return len(self._cards)
 
-    def add(self, newcard: Card) -> None:
+    def add(self, newcard: Card) -> None: # FIXME this type annotation is wrong
         """Add card(s) to the top of the stack.
 
         Args:
@@ -152,11 +152,11 @@ class CardStack():
         """
         sorted_by_suit = sorted(self._cards, key=lambda card: card.suit.value)
 
-        by_suit = groupby(
+        grouped_by_suit = groupby(
             sorted_by_suit,
             key=lambda card: card.suit
         )
-        for _, suit_group in by_suit:
+        for _, suit_group in grouped_by_suit:
             yield list(suit_group)
 
     @staticmethod

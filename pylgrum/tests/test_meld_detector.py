@@ -75,6 +75,75 @@ def hand_with_complex_runs():
 
     yield hand
 
+@pytest.fixture
+def hand_with_simple_sets_and_runs():
+    """A hand with non-overlapping sets and runs.
+
+    Should find 6 melds:
+        2C 2S 2H  (1 set)
+        4D 5D 6D  (1 run)
+        9S 10S JS (1 set)
+        4C
+
+    This hand should have 4 points of deadwood (1 deadwood card)
+    """
+    hand = Hand()
+    for card in Card.from_text(
+        "2C", "2S", "2H", "4D", "5D",
+        "6D", "9S", "10S", "JS", "4C"
+    ):
+        hand.add(card)
+
+    yield hand
+
+
+@pytest.fixture
+def hand_with_overlapping_sets_and_runs():
+    """A hand with obviously overlapping sets and runs.
+
+    Should find 6 melds:
+        2C 2S 2H 2D (5 permutations of set)
+        4D 5D 6D    (1 run)
+        8S
+        10S
+        JS
+
+    This hand should have 28 points of deadwood (3 deadwood cards)
+
+    The optimal sets from this hand are:
+        2C 2S 2H 2D
+        4D 5D 6D
+    """
+    hand = Hand()
+    for card in Card.from_text(
+        "2C", "2S", "2H", "2D", "4D", "5D", "6D", "8S", "10S", "JS"
+    ):
+        hand.add(card)
+
+    yield hand
+
+@pytest.fixture
+def hand_with_complex_sets_and_runs():
+    """A hand with overlapping sets and runs.
+
+    Should find 10 melds:
+        2C 2S 2H 2D (5 permutations of set)
+        3D 4D 5D    (3 perms of run (including 2 above): 234, 345, 2345)
+        3S          (1 set - 333)
+        3C AC       (1 run - A23 (2 is above))
+
+    This hand should have 0 points of deadwood (0 deadwood cards)
+    """
+    hand = Hand()
+    for card in Card.from_text(
+        "2C", "2S", "2H", "2D",
+        "3D", "4D", "5D", "3S",
+        "3C", "AC"
+    ):
+        hand.add(card)
+
+    yield hand
+
 def test_new_meld_detector_with_no_cards():
     md = MeldDetector()
     assert(isinstance(md, MeldDetector))
@@ -90,12 +159,6 @@ def test_add_clears_detect_flag(hand_with_simple_runs):
     md._detect_all_melds()
     md.add(Card(rank=Rank.SIX, suit=Suit.CLUB))
     assert(md._detected == False)
-
-def test_deadwood_count_is_correct():
-    """implement"""
-
-def test_deadwood_value_is_correct():
-    """implement"""
 
 def test_small_hand_is_not_complete():
     hand = Hand()
@@ -115,12 +178,12 @@ def test_correctly_sized_hand_is_complete(hand_with_simple_runs):
 def test_simple_run_detection(hand_with_simple_runs):
     """'simple' here means each run sequence is only 3 long, so no overlap"""
     md = MeldDetector(*hand_with_simple_runs.cards)
-    md._find_runs()
+    md._detect_all_melds()
     assert(len(md._melds) == 2)
 
 def test_simple_set_detection(hand_with_sets):
     md = MeldDetector(*hand_with_sets.cards)
-    md._find_sets()
+    md._detect_all_melds()
     assert(len(md._melds) == 6)
 
 def test_complex_run_detection(hand_with_complex_runs):
@@ -141,7 +204,7 @@ def test_complex_run_detection(hand_with_complex_runs):
         Meld(Card.from_text("9C", "10C", "JC"))
     ]
     md = MeldDetector(*hand_with_complex_runs.cards)
-    md._find_runs()
+    md._detect_all_melds()
     assert(len(md._melds) == 7)
     for meld in expected_melds:
         assert(meld in md._melds)
@@ -153,7 +216,7 @@ def test_runs_must_be_three_long_to_count():
     hand.add(Card(rank=Rank.QUEEN, suit=Suit.HEART))   # 1:  QH
 
     md = MeldDetector(*hand.cards)
-    md._find_runs()
+    md._detect_all_melds()
     assert(len(md._melds) == 0)
 
 def test_sets_must_be_three_long_to_count():
@@ -163,7 +226,7 @@ def test_sets_must_be_three_long_to_count():
     hand.add(Card(rank=Rank.JACK, suit=Suit.DIAMOND))   # 1:  JD
 
     md = MeldDetector(*hand.cards)
-    md._find_sets()
+    md._detect_all_melds()
     assert(len(md._melds) == 0)
 
 def test_runs_must_be_same_suit():
@@ -174,12 +237,109 @@ def test_runs_must_be_same_suit():
     hand.add(Card(rank=Rank.KING, suit=Suit.CLUB))
 
     md = MeldDetector(*hand.cards)
-    md._find_runs()
+    md._detect_all_melds()
     assert(len(md._melds) == 0)
 
-def test_():
-    """implement"""
+def test_set_and_run_detection(hand_with_overlapping_sets_and_runs):
+    expected_melds = [
+        Meld(Card.from_text("2C", "2S", "2D", "2H")),
+        Meld(Card.from_text("2S", "2D", "2H")),
+        Meld(Card.from_text("2C", "2D", "2H")),
+        Meld(Card.from_text("2C", "2S", "2H")),
+        Meld(Card.from_text("2C", "2S", "2D")),
+        Meld(Card.from_text("4D", "5D", "6D"))
+    ]
+    md = MeldDetector(*hand_with_overlapping_sets_and_runs.cards)
+    md._detect_all_melds()
+    assert(len(md._melds) == 6)
+    for meld in expected_melds:
+        assert(meld in md._melds)
 
-## FIXME - copy run tests for sets once they're working
+def test_deadwood_count_is_correct_from_simple_hand(hand_with_simple_sets_and_runs):
+    md = MeldDetector(*hand_with_simple_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(md.optimal_hand.deadwood_count == 1)
 
-## FIXME - add optimal meld detection
+def test_deadwood_value_is_correct_from_simple_hand(hand_with_simple_sets_and_runs):
+    md = MeldDetector(*hand_with_simple_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(md.optimal_hand.deadwood_value == 4)
+
+def test_deadwood_count_is_correct_from_overlapping_hand(hand_with_overlapping_sets_and_runs):
+    md = MeldDetector(*hand_with_overlapping_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(md.optimal_hand.deadwood_count == 3)
+
+def test_deadwood_value_is_correct_from_overlapping_hand(hand_with_overlapping_sets_and_runs):
+    md = MeldDetector(*hand_with_overlapping_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(md.optimal_hand.deadwood_value == 28)
+
+def test_overlapping_set_and_run_detection(hand_with_complex_sets_and_runs):
+    expected_melds = [
+        Meld(Card.from_text("2C", "2S", "2D", "2H")),
+        Meld(Card.from_text("2S", "2D", "2H")),
+        Meld(Card.from_text("2C", "2D", "2H")),
+        Meld(Card.from_text("2C", "2S", "2H")),
+        Meld(Card.from_text("2C", "2S", "2D")),
+
+        Meld(Card.from_text("2D", "3D", "4D")),
+        Meld(Card.from_text("3D", "4D", "5D")),
+        Meld(Card.from_text("2D", "3D", "4D", "5D")),
+
+        Meld(Card.from_text("3D", "3S", "3C")),
+
+        Meld(Card.from_text("AC", "2C", "3C")),
+    ]
+    md = MeldDetector(*hand_with_complex_sets_and_runs.cards)
+    md._detect_all_melds()
+    assert(len(md._melds) == 10)
+    assert(md.deadwood_value == 0)
+    assert(md.deadwood_count == 0)
+    for meld in expected_melds:
+        assert(meld in md._melds)
+
+def test_optimal_melds_chosen_from_simple_hand(hand_with_simple_sets_and_runs):
+    expected_melds = [
+        Meld(Card.from_text("2C", "2S", "2H")),
+        Meld(Card.from_text("9S", "10S", "JS")),
+        Meld(Card.from_text("4D", "5D", "6D"))
+    ]
+    md = MeldDetector(*hand_with_simple_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(len(md.optimal_hand.melds) == 3)
+    for meld in expected_melds:
+        assert(meld in md.optimal_hand.melds)
+    assert(md.deadwood_count == 1)
+    assert(md.deadwood_value == 4)
+
+def test_optimal_melds_chosen_from_hand_with_overlapping_melds(hand_with_overlapping_sets_and_runs):
+    expected_melds = [
+        Meld(Card.from_text("2C", "2S", "2D", "2H")),
+        Meld(Card.from_text("4D", "5D", "6D"))
+    ]
+    md = MeldDetector(*hand_with_overlapping_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(len(md.optimal_hand.melds) == 2)
+    for meld in expected_melds:
+        assert(meld in md.optimal_hand.melds)
+    assert(md.deadwood_count == 3)
+    assert(md.deadwood_value == 28)
+
+
+def test_optimal_melds_chosen_from_complex_set(hand_with_complex_sets_and_runs):
+    expected_melds = [
+        Meld(Card.from_text("2C", "2D", "2H")),
+        Meld(Card.from_text("3D", "4D", "5D")),
+        Meld(Card.from_text("AC", "2C", "3C"))
+    ]
+    md = MeldDetector(*hand_with_complex_sets_and_runs.cards)
+    md.detect_optimal_melds()
+    assert(len(md.optimal_hand.melds) == 3)
+    for meld in expected_melds:
+        assert(meld in md.optimal_hand.melds)
+    assert(md.deadwood_value == 3)
+
+def test_(hand_with_complex_sets_and_runs):
+    """foo"""
+

@@ -3,7 +3,7 @@
 from pylgrum.card import Card
 from pylgrum.hand import Hand
 from pylgrum.meld import Meld
-from pylgrum.errors import InvalidMeldError
+from pylgrum.errors import InvalidMeldError, InvalidHand
 
 class HandWithMelds(Hand):
     """Extends Hand to track partial/complete melds within a hand.
@@ -34,6 +34,68 @@ class HandWithMelds(Hand):
         **The returned melds should never be modified directly.**
         """
         return self._melds
+
+    def melds_using_card(self, card: Card) -> list:
+        """Return (potentially empty) list of melds that reference the given card.
+
+        Args:
+            card (Card): the card to find in melds
+        """
+        rlist = []
+        rlist.extend([self._meld_id_to_meld[x]
+            for x in self._card_to_meld_id.get(card,[])])
+        return rlist
+
+    def is_deadwood(self, card: Card) -> bool:
+        """True if the card is not part of any complete melds.
+
+        Args:
+            card (Card): the card to find in melds
+
+        Raises InvalidHand if called when some cards are in >1 complete meld.
+        """
+        if not self.is_valid:
+            raise InvalidHand
+        for meld in self.melds_using_card(card):
+            if meld.complete:
+                return False
+        return True
+
+    def deadwood(self) -> list:
+        """List of cards not in any complete melds.
+
+        Raises InvalidHand if called when some cards are in >1 complete meld.
+        """
+        return list(filter(lambda card: self.is_deadwood(card), self.cards))
+
+    @property
+    def deadwood_count(self) -> int:
+        """Number of cards in the hand that aren't in a complete meld.
+
+        Raises InvalidHand if called when some cards are in >1 complete meld.
+        """
+        return len(self.deadwood())
+
+    @property
+    def deadwood_value(self) -> int:
+        """Total value of cards in the hand that aren't in a meld.
+
+        Raises InvalidHand if called when some cards are in >1 complete meld.
+        """
+        return sum(c.score_val() for c in self.deadwood())
+
+    @property
+    def is_valid(self) -> bool:
+        """True if no cards are used in multiple complete melds."""
+        for (_, melds) in self._card_to_meld_id.items():
+            # if any card is in >melds *and* >1 of them are complete,
+            #  the hand is not valid
+            num_complete_melds_using_card = len(list(filter(
+                lambda meld: self._meld_id_to_meld[meld].complete, melds
+                )))
+            if num_complete_melds_using_card > 1:
+                return False
+        return True
 
     def get_melds_with_overused_cards(self) -> list:
         """Return a list of melds including at least one card that is in another meld."""
@@ -149,16 +211,6 @@ class HandWithMelds(Hand):
             self.cards[card_idx]
         )
 
-    def melds_using_card(self, card: Card) -> list:
-        """Return melds that reference the given card, or None.
-
-        Args:
-            card (Card): the card to find in melds
-        """
-        if card in self._card_to_meld_id.keys():
-            return [self._meld_id_to_meld[x]
-                    for x in self._card_to_meld_id[card]]
-        return None
 
     # note: need to deal with assessing validity given the possiblity of
     #  mutually incompatible melds (i.e. those that use the same card)

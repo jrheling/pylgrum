@@ -31,8 +31,10 @@ class MeldDetector(HandWithMelds):
         to match the contents of the provided Hand.
         """
         super().__init__()
-        for card in [*cards]:
-            self.add(card)
+        self.optimal_hand = HandWithMelds()
+        if cards:
+            self.add(cards)
+            self.optimal_hand.add(cards)
 
         # flag used to indicate if detection has been done - cleared when the
         #  underlying card stack changes such that we need to re-dectect
@@ -76,26 +78,6 @@ class MeldDetector(HandWithMelds):
         """Sort the cards by suit then rank."""
         self._detected = False
         self._cards.sort()
-
-    @property
-    def deadwood_count(self) -> int:
-        """Number of cards in the hand that aren't in a meld."""
-        self._detect_all_melds()
-        deadwood_count = 0
-        for card in self.cards:
-            if self.melds_using_card(card) is None:
-                deadwood_count += 1
-        return deadwood_count
-
-    @property
-    def deadwood_value(self) -> int:
-        """Total value of cards in the hand that aren't in a meld."""
-        self._detect_all_melds()
-        deadwood_val = 0
-        for card in self.cards:
-            if self.melds_using_card(card) is None:
-                deadwood_val += card.score_val()
-        return deadwood_val
 
     def _detect_all_melds(self) -> None:
         """Compute all complete melds in the hand.
@@ -168,18 +150,27 @@ class MeldDetector(HandWithMelds):
         self._detect_all_melds()
         overused = self.get_melds_with_overused_cards()
 
-        # completion conditions, easiest-to-detect first
-        if self.deadwood_count > 1:
-            # not winning
-            return
+        # if no cards are in multiple melds, then "optimal" is easy
+        if len(overused) == 0:
+            for meld in self._melds:
+                self.optimal_hand.create_meld(*meld.cards)
+        else:
+            """
+            A complete hand can only use each card once (no "overuse"), but
+            if we got here it means the set of all potential melds includes
+            some that overuse at least some cards.
 
-        if len(overused) == 0 and self.deadwood_count == 0:
-            # winning hand
-            return
+            By definition, the "optimal" set of melds is that which leaves
+            the smallest deadwood (by point value).
 
-        if len(overused) == 0 and self.deadwood_count == 1:
-            # winning, with some deadwood
-            return
+            This algorithm brute-forces its way to discovering the optimal set.
+
+            1) build a list of potential hands (sets of melds) that don't overuse
+             - each card used in N (N>1) sets represents N possible hands
+             - for each meld the card is in:
+                - create a potential hand that only uses that card in that one meld
+            """
+            pass
 
         # now things get tricky - if there is no deadwood *but* there are some
         # overused cards then we need to see if there is a set of melds that avoids
