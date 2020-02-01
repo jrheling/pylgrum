@@ -5,6 +5,7 @@ from itertools import cycle, groupby, combinations
 from pylgrum.hand import Hand
 from pylgrum.card import Card, Suit, Rank
 from pylgrum.hand_melds import HandWithMelds
+from pylgrum.errors import InvalidHand
 
 class MeldDetector(HandWithMelds):
     """MeldDetector finds the optimal set of melds within a hand.
@@ -148,7 +149,7 @@ class MeldDetector(HandWithMelds):
     def detect_optimal_melds(self) -> None:
         """Find the best set of melds in the hand."""
         self._detect_all_melds()
-        overused = self.get_melds_with_overused_cards()
+        overused = self.melds_with_overused_cards()
 
         # if no cards are in multiple melds, then "optimal" is easy
         if len(overused) == 0:
@@ -169,10 +170,66 @@ class MeldDetector(HandWithMelds):
              - each card used in N (N>1) sets represents N possible hands
              - for each meld the card is in:
                 - create a potential hand that only uses that card in that one meld
-            """
-            raise NotImplementedError
+            """ #! FIXME - correct the docs to match reality
 
-        # now things get tricky - if there is no deadwood *but* there are some
-        # overused cards then we need to see if there is a set of melds that avoids
-        # card overuse without deadwood
+            possible_hands = []
+            # find each meld that contains overused card
+            for meld_to_resolve in self.melds_with_overused_cards(complete=True):
+                cards_to_resolve = list(filter(
+                    lambda card: len(self.melds_using_card(card)) > 1,
+                    meld_to_resolve.cards
+                ))
+                if len(cards_to_resolve) > 1:
+                    # !starting simple, with only a single overused card per meld
+                    print("skipping over meld with >1 overused cards")
+                    continue
+                    # raise NotImplementedError
+                for card in cards_to_resolve:
+                    # try a hand in which this card is only used in this meld
+                    possible_hand = HandWithMelds()
+                    possible_hand.add(self.cards)
+
+                    # first put all complete melds into our possible hand
+                    for meld in filter(
+                        lambda m: m.complete,
+                        self.melds
+                    ):
+                        possible_hand.create_meld(*meld.cards)
+
+                    # now remove the current card from the N-1 of the melds that use it
+                    meld_being_resolved = next(filter(
+                        lambda meld: meld == meld_to_resolve,
+                        possible_hand.melds_using_card(card)
+                    ))
+                    melds_losing_this_card = filter(
+                        lambda meld: meld != meld_to_resolve,
+                        possible_hand.melds_using_card(card)
+                    )
+                    for meld in melds_losing_this_card:
+                        meld.remove(meld.find(card))
+                        # removing this card may have made the meld incomplete
+                        #  - if so, remove it
+                        # Note: this is gratuitious, b/c incomplete melds will
+                        #  just be ingored later
+                        if not meld.complete:
+                            possible_hand.remove_meld(meld)
+
+                    possible_hands.append(possible_hand)
+
+            best_hand = None
+            for hand_being_evaluated in possible_hands:
+                try:
+                    score = hand_being_evaluated.deadwood_value
+                except InvalidHand:
+                    print("skipping invalid hand")
+                    next
+                if best_hand is None:
+                    best_hand = hand_being_evaluated
+                elif hand_being_evaluated.deadwood_value < best_hand.deadwood_value:
+                    best_hand = hand_being_evaluated
+
+            self.optimal_hand = best_hand
+
+            # raise NotImplementedError
+
         #!FIXME - implement

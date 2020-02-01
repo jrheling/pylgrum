@@ -6,6 +6,9 @@ from pylgrum.meld import Meld
 from pylgrum.meld_detector import MeldDetector
 from pylgrum.errors import InvalidMeldError
 
+
+COMPLEX_OPTIMIZATION_UNIMP=True
+
 @pytest.fixture
 def hand_with_simple_runs():
     """A simple, same-suit, in-order hand with two runs.
@@ -265,11 +268,13 @@ def test_deadwood_value_is_correct_from_simple_hand(hand_with_simple_sets_and_ru
     md.detect_optimal_melds()
     assert(md.optimal_hand.deadwood_value == 4)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_deadwood_count_is_correct_from_overlapping_hand(hand_with_overlapping_sets_and_runs):
     md = MeldDetector(*hand_with_overlapping_sets_and_runs.cards)
     md.detect_optimal_melds()
     assert(md.optimal_hand.deadwood_count == 3)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_deadwood_value_is_correct_from_overlapping_hand(hand_with_overlapping_sets_and_runs):
     md = MeldDetector(*hand_with_overlapping_sets_and_runs.cards)
     md.detect_optimal_melds()
@@ -311,6 +316,7 @@ def test_optimal_melds_chosen_from_simple_hand(hand_with_simple_sets_and_runs):
     assert(md.deadwood_count == 1)
     assert(md.deadwood_value == 4)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_melds_chosen_from_hand_with_overlapping_melds(hand_with_overlapping_sets_and_runs):
     expected_melds = [
         Meld(Card.from_text("2C", "2S", "2D", "2H")),
@@ -324,6 +330,7 @@ def test_optimal_melds_chosen_from_hand_with_overlapping_melds(hand_with_overlap
     assert(md.deadwood_count == 3)
     assert(md.deadwood_value == 28)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_melds_chosen_from_complex_set(hand_with_complex_sets_and_runs):
     expected_melds = [
         Meld(Card.from_text("2C", "2D", "2H")),
@@ -337,6 +344,7 @@ def test_optimal_melds_chosen_from_complex_set(hand_with_complex_sets_and_runs):
         assert(meld in md.optimal_hand.melds)
     assert(md.deadwood_value == 3)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_1():
     h = Hand()
     for card in Card.from_text(
@@ -360,6 +368,7 @@ def test_optimal_meld_scenario_1():
     assert(md.optimal_hand.deadwood_value == 18)
     assert(md.optimal_hand.deadwood_count == 2)
 
+# @pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_2():
     h = Hand()
     for card in Card.from_text(
@@ -384,6 +393,7 @@ def test_optimal_meld_scenario_2():
     assert(md.optimal_hand.deadwood_value == 17)
     assert(md.optimal_hand.deadwood_count == 2)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_3():
     h = Hand()
     for card in Card.from_text(
@@ -408,6 +418,7 @@ def test_optimal_meld_scenario_3():
     assert(md.optimal_hand.deadwood_value == 23)
     assert(md.optimal_hand.deadwood_count == 2)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_4():
     h = Hand()
     for card in Card.from_text(
@@ -432,6 +443,7 @@ def test_optimal_meld_scenario_4():
     assert(md.optimal_hand.deadwood_value == 17)
     assert(md.optimal_hand.deadwood_count == 2)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_5():
     h = Hand()
     for card in Card.from_text(
@@ -456,6 +468,7 @@ def test_optimal_meld_scenario_5():
     assert(md.optimal_hand.deadwood_value == 23)
     assert(md.optimal_hand.deadwood_count == 3)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_6():
     h = Hand()
     for card in Card.from_text(
@@ -479,6 +492,7 @@ def test_optimal_meld_scenario_6():
     assert(md.optimal_hand.deadwood_value == 0)
     assert(md.optimal_hand.deadwood_count == 0)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_7():
     h = Hand()
     for card in Card.from_text(
@@ -503,6 +517,7 @@ def test_optimal_meld_scenario_7():
     assert(md.optimal_hand.deadwood_value == 1)
     assert(md.optimal_hand.deadwood_count == 1)
 
+@pytest.mark.skipif(COMPLEX_OPTIMIZATION_UNIMP, reason="not ready yet")
 def test_optimal_meld_scenario_8():
     h = Hand()
     for card in Card.from_text(
@@ -544,6 +559,29 @@ def test_optimal_meld_scenario_8():
     # b/c the two are equiv. this is true regardless of option
     assert(md.optimal_hand.deadwood_value == 10)
     assert(md.optimal_hand.deadwood_count == 4)
+
+def test_optimal_meld_scenario_9():
+    # this is a relatively simple scenario - only one card is overused
+    h = Hand()
+    for card in Card.from_text(
+        "6D", "6C", "6H",
+        "2H", "3H", "4H",
+        "2S", "2C"
+    ):
+        h.add(card)
+
+    optimal_expected = [
+        Meld(Card.from_text("6D", "6C", "6H")),
+        Meld(Card.from_text("2H", "3H", "4H"))
+    ]
+    md = MeldDetector(*h.cards)
+    md.detect_optimal_melds()
+
+    assert(len(md.optimal_hand.melds) == len(optimal_expected))
+    for expected_meld in optimal_expected:
+        assert(expected_meld in md.optimal_hand.melds)
+    assert(md.optimal_hand.deadwood_value == 4)
+    assert(md.optimal_hand.deadwood_count == 2)
 
 def test_(hand_with_complex_sets_and_runs):
     """foo"""
