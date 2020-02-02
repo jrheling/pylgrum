@@ -1,9 +1,8 @@
 """Hand subclass that finds the best melds in a set of cards."""
 
-from itertools import cycle, groupby, combinations, permutations
+from itertools import groupby, combinations, permutations
 
-from pylgrum.hand import Hand
-from pylgrum.card import Card, Suit, Rank
+from pylgrum.card import Card
 from pylgrum.hand_melds import HandWithMelds
 from pylgrum.errors import InvalidHand
 
@@ -49,6 +48,11 @@ class MeldDetector(HandWithMelds):
         """
         return set(self._cards)
 
+    @property
+    def is_complete_hand(self) -> bool:
+        """True if there are 10 or 11 cards in the hand."""
+        return len(self.cards) == 10 or len(self.cards) == 11
+
     # These do not make sense for HandDetector instances, and will not behave
     # in a useful, reliable, or helpful way. Make that clear by raising
     def remove(self, i: int):
@@ -59,13 +63,13 @@ class MeldDetector(HandWithMelds):
     def get(self, i: int):
         raise NotImplementedError
 
-    def find(self, c: Card):       # parent method returns an index
+    def find(self, targetcard: Card):       # parent method returns an index
         raise NotImplementedError
 
     def draw(self):
         raise NotImplementedError
 
-    def peek(self, i: int):        # "top" of stack is meaningless here
+    def peek(self):        # "top" of stack is meaningless here
         raise NotImplementedError
 
     # The following methods all simply wrap their superclass implementations for
@@ -74,6 +78,63 @@ class MeldDetector(HandWithMelds):
         """Extends base method to add a card to the hand."""
         super().add(newcard)
         self._sort_cards()
+
+    def detect_optimal_melds(self) -> None:
+        """Find the best set of melds in the hand."""
+        self._detect_all_melds()
+        overused = self.melds_with_overused_cards(complete=True)
+        # print("** non-overused melds: {}".format(
+        #   self.melds_with_no_overused_cards(complete=True)
+        # ))
+        # print("** overused melds: {}\n".format(
+        #   self.melds_with_overused_cards(complete=True)
+        # ))
+
+        # if no cards are in multiple melds, then "optimal" is easy
+        if len(overused) == 0:
+            for meld in self._melds:
+                self.optimal_hand.create_meld(*meld.cards)
+        else:
+            #
+            # A complete hand can only use each card once (no "overuse"), but
+            # if we got here it means the set of all potential melds includes
+            # some that overuse at least some cards.
+            #
+            # By definition, the "optimal" set of melds is that which leaves
+            # the smallest deadwood (by point value).
+            #
+            # This algorithm brute-forces its way to discovering the optimal set.
+            #
+
+            # might IMPROVEME by making a set (need to define __hash__  on HandWithMelds)
+            possible_hands = []
+            melds_with_overuse = self.melds_with_overused_cards(complete=True)
+            # Compute every possible ordering of them. A winning hand can never
+            #  use more than 3 melds, so we can look just at that length.
+            meld_orderings = permutations(melds_with_overuse, min(3, len(melds_with_overuse)))
+            for ordering in meld_orderings:
+                possible_hands.append(self._solve_hand_for_melds_in_order(ordering))
+
+            best_hand = None
+            for hand_being_evaluated in possible_hands:
+                try:
+                    if best_hand is None:
+                        # hack so we raise before setting best_hand
+                        assert hand_being_evaluated.deadwood_value
+
+                        best_hand = hand_being_evaluated
+                        # print("initializing best_hand: {}".format(best_hand.melds))
+                    elif hand_being_evaluated.deadwood_value < best_hand.deadwood_value:
+                        best_hand = hand_being_evaluated
+                        # print("new best hand: {}".format(best_hand.melds))
+                except InvalidHand:
+                    # print("skipping invalid hand: {}".format(hand_being_evaluated.melds))
+                    continue
+
+            # print("FINAL best hand: {} (deadwood={})".format(
+            #     best_hand.melds, best_hand.deadwood_value
+            # ))
+            self.optimal_hand = best_hand
 
     def _sort_cards(self) -> None:
         """Sort the cards by suit then rank."""
@@ -88,7 +149,7 @@ class MeldDetector(HandWithMelds):
         """
         if self._detected is False:
             self._find_runs()
-            self._find_sets()
+            self._find_complete_sets()
             self._detected = True
 
     def _find_runs(self):
@@ -122,29 +183,23 @@ class MeldDetector(HandWithMelds):
         for run in runs:
             self.create_meld(*list(run))
 
-    def _find_sets(self):
-        """Find all sets in the hand and create melds for them.
+    def _find_complete_sets(self):
+        """Find all complete sets in the hand and create melds for them.
 
         Note: *all* sets are found, even those that are subsets of other sets.
         """
         sorted_by_rank = sorted(self._cards, key=lambda card: card.rank.value)
         grouped_by_rank = groupby(sorted_by_rank, key=lambda card: card.rank)
 
-        for _, cards_of_rank_X in grouped_by_rank:
-            cards = list(cards_of_rank_X)
+        for _, cards_of_rank_x in grouped_by_rank:
+            cards = list(cards_of_rank_x)
             if len(cards) == 4:
                 # 4 distinct 3-long sets, 1 4-long set
                 for combo in combinations(cards, 3):
                     self.create_meld(*combo)
                 self.create_meld(*cards)
-                pass
             elif len(cards) == 3:
                 self.create_meld(*cards)
-
-    @property
-    def is_complete_hand(self) -> bool:
-        """True if there are 10 or 11 cards in the hand."""
-        return len(self.cards) == 10 or len(self.cards) == 11
 
     def _solve_hand_for_melds_in_order(self, ordering) -> HandWithMelds:
         """Return the possible hand created by resolving meld conflicts
@@ -183,9 +238,12 @@ class MeldDetector(HandWithMelds):
                 # print("  hand: {}".format(possible_hand.melds))
 
                 melds_losing_this_card = filter(
+                    # pylint: disable=cell-var-from-loop
                     lambda meld: meld != meld_to_solve,
+                    # pylint: enable=cell-var-from-loop
                     possible_hand.melds_using_card(card)
                 )
+
                 for meld in melds_losing_this_card:
                     # print(" . removing {} from meld {} in potential new hand".format(card, meld))
                     possible_hand.remove_from_meld(meld, card)
@@ -195,56 +253,5 @@ class MeldDetector(HandWithMelds):
                         possible_hand.remove_meld(meld)
                 # print("  hand now: {}".format(possible_hand.melds))
 
-
         # print("resolution of {} yielded hand: {}".format(meld_to_solve, possible_hand.melds))
         return possible_hand
-
-    def detect_optimal_melds(self) -> None:
-        """Find the best set of melds in the hand."""
-        self._detect_all_melds()
-        overused = self.melds_with_overused_cards(complete=True)
-        # print("** non-overused melds: {}".format(self.melds_with_no_overused_cards(complete=True)))
-        # print("** overused melds: {}\n".format(self.melds_with_overused_cards(complete=True)))
-
-        # if no cards are in multiple melds, then "optimal" is easy
-        if len(overused) == 0:
-            for meld in self._melds:
-                self.optimal_hand.create_meld(*meld.cards)
-        else:
-            """
-            A complete hand can only use each card once (no "overuse"), but
-            if we got here it means the set of all potential melds includes
-            some that overuse at least some cards.
-
-            By definition, the "optimal" set of melds is that which leaves
-            the smallest deadwood (by point value).
-
-            This algorithm brute-forces its way to discovering the optimal set.
-            """
-            # might IMPROVEME by making a set (need to define __hash__  on HandWithMelds)
-            possible_hands = []
-            melds_with_overuse = self.melds_with_overused_cards(complete=True)
-            # Compute every possible ordering of them. A winning hand can never
-            #  use more than 3 melds, so we can look just at that length.
-            meld_orderings = permutations(melds_with_overuse, min(3, len(melds_with_overuse)))
-            for ordering in meld_orderings:
-                possible_hands.append(self._solve_hand_for_melds_in_order(ordering))
-
-            best_hand = None
-            for hand_being_evaluated in possible_hands:
-                try:
-                    if best_hand is None:
-                        hand_being_evaluated.deadwood_value # hack so we raise before setting best_hand
-                        best_hand = hand_being_evaluated
-                        # print("initializing best_hand: {}".format(best_hand.melds))
-                    elif hand_being_evaluated.deadwood_value < best_hand.deadwood_value:
-                        best_hand = hand_being_evaluated
-                        # print("new best hand: {}".format(best_hand.melds))
-                except InvalidHand:
-                    # print("skipping invalid hand: {}".format(hand_being_evaluated.melds))
-                    next
-
-            # print("FINAL best hand: {} (deadwood={})".format(
-            #     best_hand.melds, best_hand.deadwood_value
-            # ))
-            self.optimal_hand = best_hand

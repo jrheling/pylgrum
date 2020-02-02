@@ -35,39 +35,6 @@ class HandWithMelds(Hand):
         """
         return self._melds
 
-    def melds_using_card(self, card: Card) -> list:
-        """Return (potentially empty) list of melds that reference the given card.
-
-        Args:
-            card (Card): the card to find in melds
-        """
-        rlist = []
-        rlist.extend([self._meld_id_to_meld[x]
-            for x in self._card_to_meld_id.get(card,[])])
-        return rlist
-
-    def is_deadwood(self, card: Card) -> bool:
-        """True if the card is not part of any complete melds.
-
-        Args:
-            card (Card): the card to find in melds
-
-        Raises InvalidHand if called when some cards are in >1 complete meld.
-        """
-        if not self.is_valid:
-            raise InvalidHand
-        for meld in self.melds_using_card(card):
-            if meld.complete:
-                return False
-        return True
-
-    def deadwood(self) -> list:
-        """List of cards not in any complete melds.
-
-        Raises InvalidHand if called when some cards are in >1 complete meld.
-        """
-        return list(filter(lambda card: self.is_deadwood(card), self.cards))
-
     @property
     def deadwood_count(self) -> int:
         """Number of cards in the hand that aren't in a complete meld.
@@ -96,38 +63,6 @@ class HandWithMelds(Hand):
             if num_complete_melds_using_card > 1:
                 return False
         return True
-
-    def melds_with_no_overused_cards(self, complete: bool = False) -> list:
-        """Return a list of melds having no cards also in other melds.
-
-        Args:
-            complete (bool): if True, only consider complete melds
-        """
-        overused = self.melds_with_overused_cards(complete=complete)
-        if complete:
-            return [x
-                for x in self.melds
-                if x.complete and x not in overused
-            ]
-        else:
-            return [x for x in self.melds if x not in overused]
-
-    def melds_with_overused_cards(self, complete: bool = False) -> list:
-        """Return a list of melds including at least one card that is in another meld.
-
-        Args:
-            complete (bool): if True, only consider complete melds
-        """
-        melds_with_overuse = set()
-        for (_, melds) in self._card_to_meld_id.items():
-            if len(melds) > 1:
-                # this card is in multiple melds - all of its melds are overused
-                melds_with_overuse.update(melds)
-        if complete:
-            return [self._meld_id_to_meld[x]
-                for x in list(melds_with_overuse)
-                if self._meld_id_to_meld[x].complete]
-        return [self._meld_id_to_meld[x] for x in list(melds_with_overuse)]
 
     def create_meld(self, *cards) -> Meld:
         """Create a new [potential] meld within the hand.
@@ -234,6 +169,70 @@ class HandWithMelds(Hand):
             self.cards[card_idx]
         )
 
+    def melds_with_no_overused_cards(self, complete: bool = False) -> list:
+        """Return a list of melds having no cards also in other melds.
 
-    # note: need to deal with assessing validity given the possiblity of
-    #  mutually incompatible melds (i.e. those that use the same card)
+        Args:
+            complete (bool): if True, only consider complete melds
+        """
+        overused = self.melds_with_overused_cards(complete=complete)
+        if complete:
+            return [
+                x
+                for x in self.melds
+                if x.complete and x not in overused
+                ]
+        return [x for x in self.melds if x not in overused]
+
+    def melds_with_overused_cards(self, complete: bool = False) -> list:
+        """Return a list of melds including at least one card that is in another meld.
+
+        Args:
+            complete (bool): if True, only consider complete melds
+        """
+        melds_with_overuse = set()
+        for (_, melds) in self._card_to_meld_id.items():
+            if len(melds) > 1:
+                # this card is in multiple melds - all of its melds are overused
+                melds_with_overuse.update(melds)
+        if complete:
+            return [self._meld_id_to_meld[x]
+                    for x in list(melds_with_overuse)
+                    if self._meld_id_to_meld[x].complete]
+        return [self._meld_id_to_meld[x] for x in list(melds_with_overuse)]
+
+    def melds_using_card(self, card: Card) -> list:
+        """Return (potentially empty) list of melds that reference the given card.
+
+        Args:
+            card (Card): the card to find in melds
+        """
+        rlist = []
+        rlist.extend(
+            [self._meld_id_to_meld[x]
+             for x in self._card_to_meld_id.get(card, [])]
+        )
+        return rlist
+
+    def deadwood(self) -> list:
+        """List of cards not in any complete melds.
+
+        Raises InvalidHand if called when some cards are in >1 complete meld.
+        """
+        # pylint: disable=unnecessary-lambda
+        return list(filter(lambda card: self.is_deadwood(card), self.cards))
+
+    def is_deadwood(self, card: Card) -> bool:
+        """True if the card is not part of any complete melds.
+
+        Args:
+            card (Card): the card to find in melds
+
+        Raises InvalidHand if called when some cards are in >1 complete meld.
+        """
+        if not self.is_valid:
+            raise InvalidHand
+        for meld in self.melds_using_card(card):
+            if meld.complete:
+                return False
+        return True
