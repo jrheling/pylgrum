@@ -1,6 +1,6 @@
 """Hand subclass that finds the best melds in a set of cards."""
 
-from itertools import cycle, groupby, combinations
+from itertools import cycle, groupby, combinations, permutations
 
 from pylgrum.hand import Hand
 from pylgrum.card import Card, Suit, Rank
@@ -105,13 +105,13 @@ class MeldDetector(HandWithMelds):
             #
             # e.g. input 2,3,4,5 yields (2,3,4),(3,4,5),(2,3,4,5)
             for seq in sequences:
-                print("seq is {}".format(seq))
+                # print("seq is {}".format(seq))
                 for seq_len in range(3, len(seq)+1): # will be null if len<3
-                    print("seq_len is {}".format(seq_len))
+                    # print("seq_len is {}".format(seq_len))
                     yield zip(*(seq[i:] for i in range(seq_len)))
 
         self._sort_cards()
-        print("going into run detection, cards: {}".format(self._cards))
+        # print("going into run detection, cards: {}".format(self._cards))
         runs = [
             run
             for suit_group in self.group_by_suit()
@@ -146,10 +146,65 @@ class MeldDetector(HandWithMelds):
         """True if there are 10 or 11 cards in the hand."""
         return len(self.cards) == 10 or len(self.cards) == 11
 
+    def _solve_hand_for_melds_in_order(self, ordering) -> HandWithMelds:
+        """Return the possible hand created by resolving meld conflicts
+        in the specified order."""
+
+        # Notation: in this context, "solving" a meld means making
+        #  it no longer a card-overusing meld (by removing the cards
+        #  in this meld from other melds).
+
+        # init the new hand in which we'll describe this possible solution
+        possible_hand = HandWithMelds()
+        possible_hand.add(self.cards)
+        for meld in filter(lambda m: m.complete, self.melds):
+            possible_hand.create_meld(*meld.cards)
+
+        for meld_to_solve in ordering:
+            # earlier meld resolution could have either removed this meld
+            #  b/c it became invalid or solved it - in either case we've
+            #  nothing more to do
+            if meld_to_solve not in possible_hand.melds:
+                continue
+            if meld_to_solve not in possible_hand.melds_with_overused_cards(complete=True):
+                continue
+
+            # print('=' * 50)
+            # print("resolving overused meld {}".format(meld_to_solve))
+            cards_to_solve = list(filter(
+                lambda card: len(possible_hand.melds_using_card(card)) > 1,
+                meld_to_solve.cards
+            ))
+
+            for card in cards_to_solve:
+                # remove the current card from all other melds
+
+                # print(". resolving card {}".format(card))
+                # print("  hand: {}".format(possible_hand.melds))
+
+                melds_losing_this_card = filter(
+                    lambda meld: meld != meld_to_solve,
+                    possible_hand.melds_using_card(card)
+                )
+                for meld in melds_losing_this_card:
+                    # print(" . removing {} from meld {} in potential new hand".format(card, meld))
+                    possible_hand.remove_from_meld(meld, card)
+
+                    if not meld.complete:
+                        # print("  .. that made meld incomplete - removing it")
+                        possible_hand.remove_meld(meld)
+                # print("  hand now: {}".format(possible_hand.melds))
+
+
+        # print("resolution of {} yielded hand: {}".format(meld_to_solve, possible_hand.melds))
+        return possible_hand
+
     def detect_optimal_melds(self) -> None:
         """Find the best set of melds in the hand."""
         self._detect_all_melds()
-        overused = self.melds_with_overused_cards()
+        overused = self.melds_with_overused_cards(complete=True)
+        # print("** non-overused melds: {}".format(self.melds_with_no_overused_cards(complete=True)))
+        # print("** overused melds: {}\n".format(self.melds_with_overused_cards(complete=True)))
 
         # if no cards are in multiple melds, then "optimal" is easy
         if len(overused) == 0:
@@ -165,71 +220,31 @@ class MeldDetector(HandWithMelds):
             the smallest deadwood (by point value).
 
             This algorithm brute-forces its way to discovering the optimal set.
-
-            1) build a list of potential hands (sets of melds) that don't overuse
-             - each card used in N (N>1) sets represents N possible hands
-             - for each meld the card is in:
-                - create a potential hand that only uses that card in that one meld
-            """ #! FIXME - correct the docs to match reality
-
+            """
+            # might IMPROVEME by making a set (need to define __hash__  on HandWithMelds)
             possible_hands = []
-            # find each meld that contains overused card
-            for meld_to_resolve in self.melds_with_overused_cards(complete=True):
-                cards_to_resolve = list(filter(
-                    lambda card: len(self.melds_using_card(card)) > 1,
-                    meld_to_resolve.cards
-                ))
-                if len(cards_to_resolve) > 1:
-                    # !starting simple, with only a single overused card per meld
-                    print("skipping over meld with >1 overused cards")
-                    continue
-                    # raise NotImplementedError
-                for card in cards_to_resolve:
-                    # try a hand in which this card is only used in this meld
-                    possible_hand = HandWithMelds()
-                    possible_hand.add(self.cards)
-
-                    # first put all complete melds into our possible hand
-                    for meld in filter(
-                        lambda m: m.complete,
-                        self.melds
-                    ):
-                        possible_hand.create_meld(*meld.cards)
-
-                    # now remove the current card from the N-1 of the melds that use it
-                    meld_being_resolved = next(filter(
-                        lambda meld: meld == meld_to_resolve,
-                        possible_hand.melds_using_card(card)
-                    ))
-                    melds_losing_this_card = filter(
-                        lambda meld: meld != meld_to_resolve,
-                        possible_hand.melds_using_card(card)
-                    )
-                    for meld in melds_losing_this_card:
-                        meld.remove(meld.find(card))
-                        # removing this card may have made the meld incomplete
-                        #  - if so, remove it
-                        # Note: this is gratuitious, b/c incomplete melds will
-                        #  just be ingored later
-                        if not meld.complete:
-                            possible_hand.remove_meld(meld)
-
-                    possible_hands.append(possible_hand)
+            melds_with_overuse = self.melds_with_overused_cards(complete=True)
+            # Compute every possible ordering of them. A winning hand can never
+            #  use more than 3 melds, so we can look just at that length.
+            meld_orderings = permutations(melds_with_overuse, min(3, len(melds_with_overuse)))
+            for ordering in meld_orderings:
+                possible_hands.append(self._solve_hand_for_melds_in_order(ordering))
 
             best_hand = None
             for hand_being_evaluated in possible_hands:
                 try:
-                    score = hand_being_evaluated.deadwood_value
+                    if best_hand is None:
+                        hand_being_evaluated.deadwood_value # hack so we raise before setting best_hand
+                        best_hand = hand_being_evaluated
+                        # print("initializing best_hand: {}".format(best_hand.melds))
+                    elif hand_being_evaluated.deadwood_value < best_hand.deadwood_value:
+                        best_hand = hand_being_evaluated
+                        # print("new best hand: {}".format(best_hand.melds))
                 except InvalidHand:
-                    print("skipping invalid hand")
+                    # print("skipping invalid hand: {}".format(hand_being_evaluated.melds))
                     next
-                if best_hand is None:
-                    best_hand = hand_being_evaluated
-                elif hand_being_evaluated.deadwood_value < best_hand.deadwood_value:
-                    best_hand = hand_being_evaluated
 
+            # print("FINAL best hand: {} (deadwood={})".format(
+            #     best_hand.melds, best_hand.deadwood_value
+            # ))
             self.optimal_hand = best_hand
-
-            # raise NotImplementedError
-
-        #!FIXME - implement
