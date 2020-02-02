@@ -103,17 +103,14 @@ class HandWithMelds(Hand):
         Args:
             complete (bool): if True, only consider complete melds
         """
-        melds_with_overuse = set()
-        for (_, melds) in self._card_to_meld_id.items():
-            if len(melds) > 1:
-                # this card is in multiple melds - all of its melds are overused
-                melds_with_overuse.update(melds)
+        overused = self.melds_with_overused_cards(complete=complete)
         if complete:
-            return [self._meld_id_to_meld[x]
-                for x in list(melds_with_overuse)
-                if self._meld_id_to_meld[x].complete]
+            return [x
+                for x in self.melds
+                if x.complete and x not in overused
+            ]
         else:
-            return [self._meld_id_to_meld[x] for x in list(melds_with_overuse)]
+            return [x for x in self.melds if x not in overused]
 
     def melds_with_overused_cards(self, complete: bool = False) -> list:
         """Return a list of melds including at least one card that is in another meld.
